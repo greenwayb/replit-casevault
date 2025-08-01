@@ -3,6 +3,7 @@ import {
   cases,
   documents,
   caseUsers,
+  disclosurePdfs,
   type User,
   type UpsertUser,
   type Case,
@@ -11,6 +12,8 @@ import {
   type InsertDocument,
   type CaseUser,
   type InsertCaseUser,
+  type DisclosurePdf,
+  type InsertDisclosurePdf,
   type Role,
 } from "@shared/schema";
 import { db } from "./db";
@@ -42,6 +45,11 @@ export interface IStorage {
   updateDocumentWithAIAnalysis(documentId: number, analysis: any): Promise<Document>;
   getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]>;
   getExistingAccountGroups(caseId: number, category: 'BANKING' | 'REAL_PROPERTY'): Promise<string[]>;
+  
+  // Disclosure PDF operations
+  createDisclosurePdf(disclosurePdf: InsertDisclosurePdf): Promise<DisclosurePdf>;
+  getDisclosurePdfsByCase(caseId: number): Promise<DisclosurePdf[]>;
+  getLatestDisclosurePdf(caseId: number): Promise<DisclosurePdf | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -232,8 +240,38 @@ export class DatabaseStorage implements IStorage {
     // Delete all documents in the case
     await db.delete(documents).where(eq(documents.caseId, id));
     
+    // Delete disclosure PDFs in the case
+    await db.delete(disclosurePdfs).where(eq(disclosurePdfs.caseId, id));
+    
     // Delete the case itself
     await db.delete(cases).where(eq(cases.id, id));
+  }
+
+  // Disclosure PDF operations
+  async createDisclosurePdf(disclosurePdf: InsertDisclosurePdf): Promise<DisclosurePdf> {
+    const [newDisclosurePdf] = await db
+      .insert(disclosurePdfs)
+      .values(disclosurePdf)
+      .returning();
+    return newDisclosurePdf;
+  }
+
+  async getDisclosurePdfsByCase(caseId: number): Promise<DisclosurePdf[]> {
+    return await db
+      .select()
+      .from(disclosurePdfs)
+      .where(eq(disclosurePdfs.caseId, caseId))
+      .orderBy(desc(disclosurePdfs.generatedAt));
+  }
+
+  async getLatestDisclosurePdf(caseId: number): Promise<DisclosurePdf | undefined> {
+    const [latestPdf] = await db
+      .select()
+      .from(disclosurePdfs)
+      .where(eq(disclosurePdfs.caseId, caseId))
+      .orderBy(desc(disclosurePdfs.generatedAt))
+      .limit(1);
+    return latestPdf;
   }
 }
 

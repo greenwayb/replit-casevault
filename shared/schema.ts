@@ -94,6 +94,18 @@ export const documents = pgTable("documents", {
   csvGenerated: boolean("csv_generated").default(false),
 });
 
+// Disclosure PDFs table
+export const disclosurePdfs = pgTable("disclosure_pdfs", {
+  id: serial("id").primaryKey(),
+  caseId: integer("case_id").notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  filename: varchar("filename").notNull(),
+  generatedById: varchar("generated_by_id").notNull().references(() => users.id),
+  generatedAt: timestamp("generated_at").defaultNow(),
+  documentCount: integer("document_count").notNull(),
+  // Store the cutoff date - documents added after this date will be marked as new
+  lastGeneratedAt: timestamp("last_generated_at"),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   createdCases: many(cases),
@@ -105,6 +117,7 @@ export const casesRelations = relations(cases, ({ one, many }) => ({
   createdBy: one(users, { fields: [cases.createdById], references: [users.id] }),
   caseUsers: many(caseUsers),
   documents: many(documents),
+  disclosurePdfs: many(disclosurePdfs),
 }));
 
 export const caseUsersRelations = relations(caseUsers, ({ one }) => ({
@@ -115,6 +128,11 @@ export const caseUsersRelations = relations(caseUsers, ({ one }) => ({
 export const documentsRelations = relations(documents, ({ one }) => ({
   case: one(cases, { fields: [documents.caseId], references: [cases.id] }),
   uploadedBy: one(users, { fields: [documents.uploadedById], references: [users.id] }),
+}));
+
+export const disclosurePdfsRelations = relations(disclosurePdfs, ({ one }) => ({
+  case: one(cases, { fields: [disclosurePdfs.caseId], references: [cases.id] }),
+  generatedBy: one(users, { fields: [disclosurePdfs.generatedById], references: [users.id] }),
 }));
 
 // Schemas
@@ -136,6 +154,11 @@ export const insertCaseUserSchema = createInsertSchema(caseUsers).omit({
   createdAt: true,
 });
 
+export const insertDisclosurePdfSchema = createInsertSchema(disclosurePdfs).omit({
+  id: true,
+  generatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -145,6 +168,8 @@ export type Document = typeof documents.$inferSelect;
 export type InsertDocument = z.infer<typeof insertDocumentSchema>;
 export type CaseUser = typeof caseUsers.$inferSelect;
 export type InsertCaseUser = z.infer<typeof insertCaseUserSchema>;
+export type DisclosurePdf = typeof disclosurePdfs.$inferSelect;
+export type InsertDisclosurePdf = z.infer<typeof insertDisclosurePdfSchema>;
 export type Role = 'DISCLOSER' | 'REVIEWER' | 'DISCLOSEE' | 'CASEADMIN';
 export type CaseStatus = 'ACTIVE' | 'UNDER_REVIEW' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
 export type Category = 'REAL_PROPERTY' | 'BANKING';

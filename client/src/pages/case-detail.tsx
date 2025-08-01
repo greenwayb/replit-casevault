@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import DocumentTree from "@/components/document-tree";
 import DocumentViewer from "@/components/document-viewer";
 import DocumentUploadModal from "@/components/document-upload-modal";
+import { DisclosurePdfManager } from "@/components/disclosure-pdf-manager";
 import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 
 export default function CaseDetail() {
@@ -161,6 +162,11 @@ export default function CaseDetail() {
             <Upload className="h-4 w-4 mr-2" />
             Upload Document
           </Button>
+        </div>
+
+        {/* Disclosure PDF Manager */}
+        <div className="p-3 md:p-4 border-b border-gray-200">
+          <DisclosurePdfManager caseId={parseInt(id!)} />
         </div>
 
         {/* Document Tree */}
