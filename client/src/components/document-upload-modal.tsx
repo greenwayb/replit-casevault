@@ -406,9 +406,8 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
                 ) : "Upload Document"}
               </Button>
             </div>
-              </div>
-            </form>
-          </Form>
+          </form>
+        </Form>
             </TabsContent>
 
             <TabsContent value="google-drive" className="mt-6">

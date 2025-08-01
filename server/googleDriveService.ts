@@ -8,10 +8,21 @@ export class GoogleDriveService {
   private drive: any;
 
   constructor() {
+    // We'll dynamically configure OAuth per user request
+    this.oauth2Client = new OAuth2Client();
+    this.drive = google.drive({ version: 'v3', auth: this.oauth2Client });
+  }
+
+  // Configure OAuth client with user-specific settings
+  configureOAuth(redirectUri: string) {
+    // Using default development credentials - in production these would come from user configuration
+    const clientId = '12345-abcdef.apps.googleusercontent.com'; // placeholder
+    const clientSecret = 'placeholder-secret'; // placeholder
+    
     this.oauth2Client = new OAuth2Client(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5000/api/auth/google/callback'
+      clientId,
+      clientSecret,
+      redirectUri
     );
     
     this.drive = google.drive({ version: 'v3', auth: this.oauth2Client });
