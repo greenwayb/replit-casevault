@@ -39,6 +39,14 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Bank abbreviations lookup table for consistency
+export const bankAbbreviations = pgTable("bank_abbreviations", {
+  id: serial("id").primaryKey(),
+  fullName: varchar("full_name").notNull().unique(),
+  abbreviation: varchar("abbreviation").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const roleEnum = pgEnum('role', ['DISCLOSER', 'REVIEWER', 'DISCLOSEE', 'CASEADMIN']);
 export const caseStatusEnum = pgEnum('case_status', ['ACTIVE', 'UNDER_REVIEW', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED']);
 export const categoryEnum = pgEnum('category', ['REAL_PROPERTY', 'BANKING', 'TAXATION', 'SUPERANNUATION', 'EMPLOYMENT', 'SHARES_INVESTMENTS', 'VEHICLES']);
@@ -75,10 +83,12 @@ export const documents = pgTable("documents", {
   accountHolderName: varchar("account_holder_name", { length: 255 }),
   accountName: varchar("account_name", { length: 255 }),
   financialInstitution: varchar("financial_institution", { length: 255 }),
+  bankAbbreviation: varchar("bank_abbreviation", { length: 10 }), // Store the abbreviation used
   accountNumber: varchar("account_number", { length: 100 }),
   bsbSortCode: varchar("bsb_sort_code", { length: 20 }),
   transactionDateFrom: timestamp("transaction_date_from"),
   transactionDateTo: timestamp("transaction_date_to"),
+  displayName: varchar("display_name"), // Formatted display name (e.g., "B1 CBA 1234")
   
   // Hierarchical numbering
   documentNumber: varchar("document_number", { length: 50 }), // e.g., "B1.1", "B1.2", "RP1.1"
@@ -162,6 +172,9 @@ export const insertDisclosurePdfSchema = createInsertSchema(disclosurePdfs).omit
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+
+export type BankAbbreviation = typeof bankAbbreviations.$inferSelect;
+export type InsertBankAbbreviation = typeof bankAbbreviations.$inferInsert;
 export type Case = typeof cases.$inferSelect;
 export type InsertCase = z.infer<typeof insertCaseSchema>;
 export type Document = typeof documents.$inferSelect;

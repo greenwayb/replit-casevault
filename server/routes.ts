@@ -313,33 +313,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const documentId = parseInt(req.params.id);
       const { bankingInfo, csvInfo, isManualReview } = req.body;
-
-      // For manual review, generate document numbers
-      let documentNumber = bankingInfo.documentNumber;
-      let accountGroupNumber = bankingInfo.accountGroupNumber;
       
-      if (isManualReview) {
-        // Get existing documents to generate proper numbering
-        const document = await storage.getDocumentById(documentId);
-        const caseDocuments = await storage.getDocumentsByCase(document!.caseId);
-        const bankingDocs = caseDocuments.filter(doc => doc.category === 'BANKING' && doc.accountGroupNumber);
-        
-        // Generate account group number and document number
-        accountGroupNumber = '1'; // Simple for now, can be enhanced
-        documentNumber = `B${accountGroupNumber}.1`; // Simple for now
+      const { BankAbbreviationService } = await import('./bankAbbreviationService');
+      const { DocumentNumberingService } = await import('./documentNumberingService');
+
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
       }
+
+      // Generate bank abbreviation
+      const bankAbbreviation = await BankAbbreviationService.getOrCreateAbbreviation(
+        bankingInfo.financialInstitution
+      );
+
+      // Generate hierarchical numbering
+      const { groupNumber, documentNumber } = await DocumentNumberingService.generateBankingNumber(
+        document.caseId,
+        bankingInfo.accountHolderName
+      );
+
+      // Generate display name
+      const displayName = DocumentNumberingService.generateBankingDisplayName(
+        documentNumber,
+        bankAbbreviation,
+        bankingInfo.accountNumber || ''
+      );
 
       // Update document with confirmed banking analysis
       const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, {
         accountHolderName: bankingInfo.accountHolderName,
         accountName: bankingInfo.accountName,
         financialInstitution: bankingInfo.financialInstitution,
+        bankAbbreviation,
         accountNumber: bankingInfo.accountNumber,
         bsbSortCode: bankingInfo.bsbSortCode,
         transactionDateFrom: bankingInfo.transactionDateFrom ? new Date(bankingInfo.transactionDateFrom) : undefined,
         transactionDateTo: bankingInfo.transactionDateTo ? new Date(bankingInfo.transactionDateTo) : undefined,
         documentNumber,
-        accountGroupNumber,
+        accountGroupNumber: groupNumber,
+        displayName,
         aiProcessed: true,
         csvPath: csvInfo?.csvPath,
         csvRowCount: csvInfo?.csvRowCount,

@@ -11,6 +11,7 @@ interface Document {
   id: number;
   filename: string;
   originalName: string;
+  displayName?: string;
   category: string;
   fileSize: number;
   mimeType: string;
@@ -19,6 +20,7 @@ interface Document {
   accountHolderName?: string;
   accountName?: string;
   financialInstitution?: string;
+  bankAbbreviation?: string;
   accountNumber?: string;
   bsbSortCode?: string;
   transactionDateFrom?: string;
@@ -303,7 +305,7 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="text-sm font-medium text-slate-900 truncate">
-                                        {doc.originalName}
+                                        {doc.displayName || doc.originalName}
                                       </div>
                                       <div className="text-xs text-slate-500 flex items-center gap-1">
                                         <Calendar className="h-3 w-3" />
@@ -352,7 +354,7 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                           <FileText className="h-4 w-4 mr-2 text-slate-400" />
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-slate-900 truncate">
-                              {doc.originalName}
+                              {doc.displayName || doc.originalName}
                             </div>
                             <div className="text-xs text-slate-500">
                               {formatDate(doc.createdAt)} • {formatFileSize(doc.fileSize)}
