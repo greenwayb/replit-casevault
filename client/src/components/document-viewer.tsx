@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Download, Maximize2, FileText, Calendar, FileSpreadsheet, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import BankingBalanceChart from "./banking-balance-chart";
 
 interface Document {
   id: number;
@@ -33,6 +35,13 @@ interface DocumentViewerProps {
 
 export default function DocumentViewer({ document }: DocumentViewerProps) {
   const { toast } = useToast();
+
+  // Fetch CSV data for banking documents to show balance chart
+  const { data: csvData } = useQuery({
+    queryKey: ['/api/documents', document?.id, 'csv-data'],
+    enabled: document?.category === 'BANKING' && document?.csvGenerated === true,
+    retry: false,
+  });
 
   const handleDownload = async () => {
     if (!document) return;
@@ -227,14 +236,23 @@ export default function DocumentViewer({ document }: DocumentViewerProps) {
       </div>
       
       {/* PDF Viewer Area */}
-      <div className="flex-1 p-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-250px)] min-h-[600px]">
+      <div className="flex-1 p-6 space-y-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-350px)] min-h-[500px]">
           <iframe
             src={`/api/documents/${document.id}/view`}
             className="w-full h-full rounded-lg"
             title={document.originalName}
           />
         </div>
+        
+        {/* Banking Balance Chart for Banking Documents */}
+        {document.category === 'BANKING' && document.csvGenerated && (
+          <BankingBalanceChart 
+            csvData={csvData?.csvData}
+            documentName={document.originalName}
+            accountName={document.accountName}
+          />
+        )}
       </div>
     </div>
   );

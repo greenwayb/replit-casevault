@@ -570,6 +570,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get CSV data for chart (returns raw CSV content)
+  app.get('/api/documents/:id/csv-data', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const documentId = parseInt(req.params.id);
+      
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check if user has access to the case
+      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
+      if (!userRole) {
+        return res.status(403).json({ message: "Access denied to this document" });
+      }
+
+      if (!document.csvPath || !document.csvGenerated) {
+        return res.status(404).json({ message: "CSV file not available for this document" });
+      }
+
+      const csvFilePath = path.join(uploadDir, document.csvPath);
+      if (!fs.existsSync(csvFilePath)) {
+        return res.status(404).json({ message: "CSV file not found" });
+      }
+
+      // Read and return CSV content
+      const csvContent = fs.readFileSync(csvFilePath, 'utf-8');
+      res.json({ csvData: csvContent });
+    } catch (error) {
+      console.error("Error fetching CSV data:", error);
+      res.status(500).json({ message: "Failed to fetch CSV data" });
+    }
+  });
+
   // Google Drive Integration Routes
   const googleDriveService = new GoogleDriveService();
 

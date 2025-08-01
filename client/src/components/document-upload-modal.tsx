@@ -152,6 +152,7 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
           description: "Document uploaded and processed successfully!",
         });
         queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+        queryClient.invalidateQueries({ queryKey: ["/api/activity/recent"] });
         form.reset();
         setSelectedFile(null);
         setUploadProgress(0);
@@ -220,6 +221,7 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
       });
 
       queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activity/recent"] });
       form.reset();
       setSelectedFile(null);
       setUploadProgress(0);
@@ -250,6 +252,7 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
       });
 
       queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activity/recent"] });
       form.reset();
       setSelectedFile(null);
       setUploadProgress(0);
@@ -269,6 +272,7 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
 
   const handleGoogleDriveImported = () => {
     queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+    queryClient.invalidateQueries({ queryKey: ["/api/activity/recent"] });
   };
 
   return (

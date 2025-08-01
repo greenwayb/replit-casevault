@@ -65,6 +65,7 @@ export default function CreateCaseModal({ open, onOpenChange }: CreateCaseModalP
         description: "Case created successfully!",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/cases"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activity/recent"] });
       form.reset();
       onOpenChange(false);
     },
