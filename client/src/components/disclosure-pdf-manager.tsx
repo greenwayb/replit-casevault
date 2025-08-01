@@ -41,9 +41,19 @@ export function DisclosurePdfManager({ caseId }: DisclosurePdfManagerProps) {
   const generatePdfMutation = useMutation({
     mutationFn: async () => {
       setIsGenerating(true);
-      return await apiRequest(`/api/cases/${caseId}/generate-disclosure-pdf`, {
+      const response = await fetch(`/api/cases/${caseId}/generate-disclosure-pdf`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to generate PDF' }));
+        throw new Error(errorData.message || 'Failed to generate PDF');
+      }
+      
+      return await response.json();
     },
     onSuccess: (data) => {
       toast({
