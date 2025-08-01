@@ -28,6 +28,7 @@ export interface IStorage {
   getCaseByNumber(caseNumber: string): Promise<Case | undefined>;
   getCaseById(id: number): Promise<Case | undefined>;
   getUserRoleInCase(userId: string, caseId: number): Promise<Role | undefined>;
+  deleteCase(id: number): Promise<void>;
   
   // Case user operations
   addUserToCase(caseUser: InsertCaseUser): Promise<CaseUser>;
@@ -222,6 +223,17 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(documents)
       .where(eq(documents.id, id));
+  }
+
+  async deleteCase(id: number): Promise<void> {
+    // Delete case users first (foreign key constraint)
+    await db.delete(caseUsers).where(eq(caseUsers.caseId, id));
+    
+    // Delete all documents in the case
+    await db.delete(documents).where(eq(documents.caseId, id));
+    
+    // Delete the case itself
+    await db.delete(cases).where(eq(cases.id, id));
   }
 }
 

@@ -1,20 +1,22 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { apiRequest } from "@/lib/queryClient";
 import Sidebar from "@/components/sidebar";
 import CreateCaseModal from "@/components/create-case-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Briefcase, FileText, Upload, Eye, Calendar } from "lucide-react";
+import { Plus, Briefcase, FileText, Upload, Eye, Calendar, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -37,6 +39,48 @@ export default function Dashboard() {
     queryKey: ["/api/cases"],
     enabled: isAuthenticated,
   });
+
+  const deleteCaseMutation = useMutation({
+    mutationFn: async (caseId: number) => {
+      await apiRequest(`/api/cases/${caseId}`, {
+        method: 'DELETE',
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Case deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/cases"] });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete case",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteCase = (caseItem: any, event: React.MouseEvent) => {
+    event.stopPropagation();
+    event.preventDefault();
+    
+    if (window.confirm(`Are you sure you want to delete case ${caseItem.caseNumber}? This action cannot be undone and will delete all documents in the case.`)) {
+      deleteCaseMutation.mutate(caseItem.id);
+    }
+  };
 
   const getStatusBadgeClass = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -132,7 +176,7 @@ export default function Dashboard() {
               cases.map((caseItem: any) => (
                 <Card 
                   key={caseItem.id} 
-                  className="legal-card p-8 cursor-pointer transition-all duration-200"
+                  className="legal-card p-8 cursor-pointer transition-all duration-200 group relative"
                   onClick={() => setLocation(`/cases/${caseItem.id}`)}
                 >
                   <div className="flex items-center justify-between mb-6">
@@ -162,6 +206,42 @@ export default function Dashboard() {
                       <Badge className={`${getRoleBadgeClass(caseItem.role)} px-2 py-1`}>
                         {caseItem.role}
                       </Badge>
+                    </div>
+                  </div>
+                  
+                  {/* Action buttons for CASEADMIN */}
+                  {caseItem.role === 'CASEADMIN' && (
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={(e) => handleDeleteCase(caseItem, e)}
+                        title="Delete Case"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-primary border-primary/20 hover:bg-primary/5"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLocation(`/cases/${caseItem.id}`);
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </Button>
+                      <div className="text-xs text-slate-500 flex items-center">
+                        <FileText className="h-3 w-3 mr-1" />
+                        Last updated: {formatDate(caseItem.updatedAt || caseItem.createdAt)}
+                      </div>
                     </div>
                   </div>
                 </Card>

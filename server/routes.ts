@@ -369,6 +369,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete case
+  app.delete('/api/cases/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const caseId = parseInt(req.params.id);
+      
+      const caseToDelete = await storage.getCaseById(caseId);
+      if (!caseToDelete) {
+        return res.status(404).json({ message: "Case not found" });
+      }
+
+      // Check if user has access to the case and is a CASEADMIN
+      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      if (!userRole || userRole !== 'CASEADMIN') {
+        return res.status(403).json({ message: "Only CASEADMIN can delete cases" });
+      }
+
+      await storage.deleteCase(caseId);
+      res.json({ message: "Case deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting case:", error);
+      res.status(500).json({ message: "Failed to delete case" });
+    }
+  });
+
   app.get('/api/documents/:id/download', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
