@@ -40,7 +40,7 @@ interface DocumentTreeProps {
 }
 
 export default function DocumentTree({ documents, onDocumentSelect, selectedDocument, caseId }: DocumentTreeProps) {
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['REAL_PROPERTY', 'BANKING']));
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['REAL_PROPERTY', 'BANKING', 'TAXATION', 'SUPERANNUATION', 'EMPLOYMENT', 'SHARES_INVESTMENTS', 'VEHICLES']));
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
   const { toast } = useToast();
@@ -142,12 +142,22 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
         return { name: 'A) Real Property', color: 'text-blue-500' };
       case 'BANKING':
         return { name: 'B) Banking', color: 'text-green-500' };
+      case 'TAXATION':
+        return { name: 'C) Taxation', color: 'text-orange-500' };
+      case 'SUPERANNUATION':
+        return { name: 'D) Superannuation', color: 'text-purple-500' };
+      case 'EMPLOYMENT':
+        return { name: 'E) Employment', color: 'text-red-500' };
+      case 'SHARES_INVESTMENTS':
+        return { name: 'F) Shares/Investments', color: 'text-indigo-500' };
+      case 'VEHICLES':
+        return { name: 'G) Vehicles', color: 'text-yellow-600' };
       default:
         return { name: category, color: 'text-gray-500' };
     }
   };
 
-  const categories = ['REAL_PROPERTY', 'BANKING'];
+  const categories = ['REAL_PROPERTY', 'BANKING', 'TAXATION', 'SUPERANNUATION', 'EMPLOYMENT', 'SHARES_INVESTMENTS', 'VEHICLES'];
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();

@@ -41,7 +41,7 @@ export const users = pgTable("users", {
 
 export const roleEnum = pgEnum('role', ['DISCLOSER', 'REVIEWER', 'DISCLOSEE', 'CASEADMIN']);
 export const caseStatusEnum = pgEnum('case_status', ['ACTIVE', 'UNDER_REVIEW', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED']);
-export const categoryEnum = pgEnum('category', ['REAL_PROPERTY', 'BANKING']);
+export const categoryEnum = pgEnum('category', ['REAL_PROPERTY', 'BANKING', 'TAXATION', 'SUPERANNUATION', 'EMPLOYMENT', 'SHARES_INVESTMENTS', 'VEHICLES']);
 
 export const cases = pgTable("cases", {
   id: serial("id").primaryKey(),

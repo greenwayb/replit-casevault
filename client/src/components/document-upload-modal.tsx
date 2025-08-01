@@ -36,7 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GoogleDrivePicker } from "./google-drive-picker";
 
 const uploadDocumentSchema = z.object({
-  category: z.enum(["REAL_PROPERTY", "BANKING"], {
+  category: z.enum(["REAL_PROPERTY", "BANKING", "TAXATION", "SUPERANNUATION", "EMPLOYMENT", "SHARES_INVESTMENTS", "VEHICLES"], {
     required_error: "Please select a category",
   }),
   file: z
@@ -313,6 +313,11 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
                     <SelectContent>
                       <SelectItem value="REAL_PROPERTY">A) Real Property</SelectItem>
                       <SelectItem value="BANKING">B) Banking</SelectItem>
+                      <SelectItem value="TAXATION">C) Taxation</SelectItem>
+                      <SelectItem value="SUPERANNUATION">D) Superannuation</SelectItem>
+                      <SelectItem value="EMPLOYMENT">E) Employment</SelectItem>
+                      <SelectItem value="SHARES_INVESTMENTS">F) Shares/Investments</SelectItem>
+                      <SelectItem value="VEHICLES">G) Vehicles</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

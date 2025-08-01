@@ -44,7 +44,14 @@ Preferred communication style: Simple, everyday language.
 - **File Operations**: Upload, download, and metadata management
 - **AI Processing**: Automatic Banking document analysis with OpenAI GPT-4o
 - **CSV Generation**: Automatic extraction of transaction data into downloadable CSV files
-- **Hierarchical Numbering**: Banking documents organized as B1 (accounts), B1.1/B1.2 (individual documents)
+- **Hierarchical Numbering**: Documents organized by category with comprehensive numbering system:
+  - A) Real Property: A1, A2, A3...
+  - B) Banking: B1 (account holders), B1.1/B1.2 (individual documents)
+  - C) Taxation: C1, C2, C3...
+  - D) Superannuation: D1, D2, D3...
+  - E) Employment: E1, E2, E3...
+  - F) Shares/Investments: F1, F2, F3...
+  - G) Vehicles: G1, G2, G3...
 
 ## Case Management
 - **Case Creation**: Unique case number generation with creator assignment
@@ -60,6 +67,7 @@ Preferred communication style: Simple, everyday language.
 - **Logo Integration**: Added Family Court Doco logo throughout application (landing page, sidebar, PDF documents)
 - **PDF Generation**: Fixed jsPDF constructor issues and integrated logo into generated disclosure PDFs
 - **Enhanced Case Cards**: Installed framer-motion dependency and implemented TiltedCard component for interactive case cards with 3D tilt effects and hover animations
+- **Expanded Disclosure Tree**: Extended document categorization system to include 7 categories: Real Property (A), Banking (B), Taxation (C), Superannuation (D), Employment (E), Shares/Investments (F), and Vehicles (G) with hierarchical numbering system
 
 # External Dependencies
 

@@ -35,51 +35,67 @@ export class DisclosurePdfService {
   private static generateHierarchicalNumbers(documents: DocumentWithUser[]): Map<number, string> {
     const numberMap = new Map<number, string>();
     
-    // Group documents by category
-    const realPropertyDocs = documents.filter(d => d.category === 'REAL_PROPERTY');
-    const bankingDocs = documents.filter(d => d.category === 'BANKING');
+    // Define all categories with their codes
+    const categoryInfo = [
+      { key: 'REAL_PROPERTY', code: 'A' },
+      { key: 'BANKING', code: 'B' },
+      { key: 'TAXATION', code: 'C' },
+      { key: 'SUPERANNUATION', code: 'D' },
+      { key: 'EMPLOYMENT', code: 'E' },
+      { key: 'SHARES_INVESTMENTS', code: 'F' },
+      { key: 'VEHICLES', code: 'G' }
+    ];
     
-    // Real Property numbering (A1, A2, etc.)
-    realPropertyDocs.forEach((doc, index) => {
-      numberMap.set(doc.id, `A${index + 1}`);
-    });
-    
-    // Banking numbering with account holder grouping
-    const accountHolders = new Map<string, DocumentWithUser[]>();
-    bankingDocs.forEach(doc => {
-      const key = doc.accountHolderName || 'Unknown Account Holder';
-      if (!accountHolders.has(key)) {
-        accountHolders.set(key, []);
-      }
-      accountHolders.get(key)!.push(doc);
-    });
-    
-    let accountGroupIndex = 1;
-    accountHolders.forEach((docs, accountHolder) => {
-      const baseNumber = `B${accountGroupIndex}`;
+    categoryInfo.forEach(({ key, code }) => {
+      const categoryDocs = documents.filter(d => d.category === key);
       
-      // Group by financial institution within account holder
-      const institutions = new Map<string, DocumentWithUser[]>();
-      docs.forEach(doc => {
-        const inst = doc.financialInstitution || 'Miscellaneous Banking';
-        if (!institutions.has(inst)) {
-          institutions.set(inst, []);
-        }
-        institutions.get(inst)!.push(doc);
-      });
-      
-      let subGroupIndex = 1;
-      institutions.forEach((instDocs, institution) => {
-        const subGroupNumber = `${baseNumber}.${subGroupIndex}`;
-        
-        instDocs.forEach((doc, docIndex) => {
-          numberMap.set(doc.id, `${subGroupNumber}.${docIndex + 1}`);
+      if (key === 'BANKING') {
+        // Banking numbering with account holder grouping
+        const accountHolders = new Map<string, DocumentWithUser[]>();
+        categoryDocs.forEach(doc => {
+          const accountKey = doc.accountHolderName || 'Unknown Account Holder';
+          if (!accountHolders.has(accountKey)) {
+            accountHolders.set(accountKey, []);
+          }
+          accountHolders.get(accountKey)!.push(doc);
         });
         
-        subGroupIndex++;
-      });
-      
-      accountGroupIndex++;
+        let accountGroupIndex = 1;
+        accountHolders.forEach((docs, accountHolder) => {
+          const baseNumber = `${code}${accountGroupIndex}`;
+          
+          // Group by financial institution within account holder
+          const institutions = new Map<string, DocumentWithUser[]>();
+          docs.forEach(doc => {
+            const inst = doc.financialInstitution || 'Miscellaneous Banking';
+            if (!institutions.has(inst)) {
+              institutions.set(inst, []);
+            }
+            institutions.get(inst)!.push(doc);
+          });
+          
+          let subGroupIndex = 1;
+          institutions.forEach((instDocs, institution) => {
+            const subGroupNumber = `${baseNumber}.${subGroupIndex}`;
+            
+            instDocs.forEach((doc, docIndex) => {
+              const docNumber = institutions.size > 1 
+                ? `${subGroupNumber}.${docIndex + 1}`
+                : `${baseNumber}.${docIndex + 1}`;
+              numberMap.set(doc.id, docNumber);
+            });
+            
+            subGroupIndex++;
+          });
+          
+          accountGroupIndex++;
+        });
+      } else {
+        // Standard numbering for other categories (A1, A2, C1, C2, etc.)
+        categoryDocs.forEach((doc, index) => {
+          numberMap.set(doc.id, `${code}${index + 1}`);
+        });
+      }
     });
     
     return numberMap;
@@ -92,121 +108,125 @@ export class DisclosurePdfService {
   ): DisclosureDocumentRow[] {
     const rows: DisclosureDocumentRow[] = [];
     
-    // Group documents by category for structured display
-    const realPropertyDocs = documents.filter(d => d.category === 'REAL_PROPERTY');
-    const bankingDocs = documents.filter(d => d.category === 'BANKING');
+    // Define all categories with their labels
+    const categoryInfo = [
+      { key: 'REAL_PROPERTY', label: 'REAL PROPERTY', code: 'A' },
+      { key: 'BANKING', label: 'BANKING', code: 'B' },
+      { key: 'TAXATION', label: 'TAXATION', code: 'C' },
+      { key: 'SUPERANNUATION', label: 'SUPERANNUATION', code: 'D' },
+      { key: 'EMPLOYMENT', label: 'EMPLOYMENT', code: 'E' },
+      { key: 'SHARES_INVESTMENTS', label: 'SHARES/INVESTMENTS', code: 'F' },
+      { key: 'VEHICLES', label: 'VEHICLES', code: 'G' }
+    ];
     
-    // Add Real Property section
-    if (realPropertyDocs.length > 0) {
-      rows.push({
-        isNew: false,
-        category: 'A',
-        hierarchicalNumber: 'A',
-        description: 'REAL PROPERTY',
-        dated: '',
-        dateDisclosedToOP: ''
-      });
+    // Process each category
+    categoryInfo.forEach(({ key, label, code }) => {
+      const categoryDocs = documents.filter(d => d.category === key);
       
-      realPropertyDocs.forEach(doc => {
-        const isNew = lastGeneratedAt ? doc.createdAt > lastGeneratedAt : false;
-        rows.push({
-          isNew,
-          category: 'A',
-          hierarchicalNumber: hierarchicalNumbers.get(doc.id) || '',
-          description: doc.originalName,
-          dated: this.formatDate(doc.createdAt),
-          dateDisclosedToOP: this.formatDate(new Date())
-        });
-      });
-    }
-    
-    // Add Banking section
-    if (bankingDocs.length > 0) {
-      rows.push({
-        isNew: false,
-        category: 'B',
-        hierarchicalNumber: 'B',
-        description: 'BANKING',
-        dated: '',
-        dateDisclosedToOP: ''
-      });
-      
-      // Group by account holder
-      const accountHolders = new Map<string, DocumentWithUser[]>();
-      bankingDocs.forEach(doc => {
-        const key = doc.accountHolderName || 'Unknown Account Holder';
-        if (!accountHolders.has(key)) {
-          accountHolders.set(key, []);
-        }
-        accountHolders.get(key)!.push(doc);
-      });
-      
-      let accountGroupIndex = 1;
-      accountHolders.forEach((docs, accountHolder) => {
-        const baseNumber = `B${accountGroupIndex}`;
-        
-        // Add account holder row
+      if (categoryDocs.length > 0) {
+        // Add section header
         rows.push({
           isNew: false,
-          category: 'B',
-          hierarchicalNumber: baseNumber,
-          description: accountHolder,
+          category: code,
+          hierarchicalNumber: code,
+          description: label,
           dated: '',
           dateDisclosedToOP: ''
         });
         
-        // Group by financial institution
-        const institutions = new Map<string, DocumentWithUser[]>();
-        docs.forEach(doc => {
-          const inst = doc.financialInstitution || 'Miscellaneous Banking';
-          if (!institutions.has(inst)) {
-            institutions.set(inst, []);
-          }
-          institutions.get(inst)!.push(doc);
-        });
-        
-        let subGroupIndex = 1;
-        institutions.forEach((instDocs, institution) => {
-          const subGroupNumber = `${baseNumber}.${subGroupIndex}`;
+        // Add documents for this category
+        if (key === 'BANKING') {
+          // Special handling for banking with account holder grouping
+          const accountHolders = new Map<string, DocumentWithUser[]>();
+          categoryDocs.forEach(doc => {
+            const accountHolder = doc.accountHolderName || 'Unknown Account Holder';
+            if (!accountHolders.has(accountHolder)) {
+              accountHolders.set(accountHolder, []);
+            }
+            accountHolders.get(accountHolder)!.push(doc);
+          });
           
-          // Add institution header if multiple institutions exist
-          if (institutions.size > 1) {
+          let accountGroupIndex = 1;
+          accountHolders.forEach((docs, accountHolder) => {
+            const baseNumber = `${code}${accountGroupIndex}`;
+            
+            // Add account holder row
             rows.push({
               isNew: false,
-              category: 'B',
-              hierarchicalNumber: subGroupNumber,
-              description: institution,
+              category: code,
+              hierarchicalNumber: baseNumber,
+              description: accountHolder,
               dated: '',
               dateDisclosedToOP: ''
             });
-          }
-          
-          instDocs.forEach(doc => {
+            
+            // Group by financial institution
+            const institutions = new Map<string, DocumentWithUser[]>();
+            docs.forEach(doc => {
+              const inst = doc.financialInstitution || 'Miscellaneous Banking';
+              if (!institutions.has(inst)) {
+                institutions.set(inst, []);
+              }
+              institutions.get(inst)!.push(doc);
+            });
+            
+            let subGroupIndex = 1;
+            institutions.forEach((instDocs, institution) => {
+              const subGroupNumber = `${baseNumber}.${subGroupIndex}`;
+              
+              // Add institution header if multiple institutions exist
+              if (institutions.size > 1) {
+                rows.push({
+                  isNew: false,
+                  category: code,
+                  hierarchicalNumber: subGroupNumber,
+                  description: institution,
+                  dated: '',
+                  dateDisclosedToOP: ''
+                });
+              }
+              
+              instDocs.forEach(doc => {
+                const isNew = lastGeneratedAt ? doc.createdAt > lastGeneratedAt : false;
+                const description = doc.accountNumber 
+                  ? `${doc.originalName} - Account Ending ${doc.accountNumber.slice(-4)}`
+                  : doc.originalName;
+                
+                const dated = doc.transactionDateFrom && doc.transactionDateTo
+                  ? this.formatDateRange(doc.transactionDateFrom, doc.transactionDateTo)
+                  : this.formatDate(doc.createdAt);
+                
+                rows.push({
+                  isNew,
+                  category: code,
+                  hierarchicalNumber: hierarchicalNumbers.get(doc.id) || '',
+                  description,
+                  dated,
+                  dateDisclosedToOP: this.formatDate(new Date())
+                });
+              });
+              
+              subGroupIndex++;
+            });
+            
+            accountGroupIndex++;
+          });
+        } else {
+          // Standard document listing for other categories
+          categoryDocs.forEach(doc => {
             const isNew = lastGeneratedAt ? doc.createdAt > lastGeneratedAt : false;
-            const description = doc.accountNumber 
-              ? `${doc.originalName} - Account Ending ${doc.accountNumber.slice(-4)}`
-              : doc.originalName;
-            
-            const dated = doc.transactionDateFrom && doc.transactionDateTo
-              ? this.formatDateRange(doc.transactionDateFrom, doc.transactionDateTo)
-              : this.formatDate(doc.createdAt);
-            
             rows.push({
               isNew,
-              category: 'B',
+              category: code,
               hierarchicalNumber: hierarchicalNumbers.get(doc.id) || '',
-              description,
-              dated,
+              description: doc.originalName,
+              dated: this.formatDate(doc.createdAt),
               dateDisclosedToOP: this.formatDate(new Date())
             });
           });
-          
-          subGroupIndex++;
-        });
-        
-        accountGroupIndex++;
-      });
-    }
+        }
+      }
+    });
     
     return rows;
   }
