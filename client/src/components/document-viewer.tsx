@@ -228,7 +228,7 @@ export default function DocumentViewer({ document }: DocumentViewerProps) {
       
       {/* PDF Viewer Area */}
       <div className="flex-1 p-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-250px)] min-h-[600px]">
           <iframe
             src={`/api/documents/${document.id}/view`}
             className="w-full h-full rounded-lg"

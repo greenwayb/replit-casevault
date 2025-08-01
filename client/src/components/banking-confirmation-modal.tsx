@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -74,6 +75,19 @@ export default function BankingConfirmationModal({
       transactionDateTo: bankingInfo.transactionDateTo || '',
     },
   });
+
+  // Reset form values when bankingInfo changes
+  React.useEffect(() => {
+    form.reset({
+      accountHolderName: bankingInfo.accountHolderName || '',
+      accountName: bankingInfo.accountName || '',
+      financialInstitution: bankingInfo.financialInstitution || '',
+      accountNumber: bankingInfo.accountNumber || '',
+      bsbSortCode: bankingInfo.bsbSortCode || '',
+      transactionDateFrom: bankingInfo.transactionDateFrom || '',
+      transactionDateTo: bankingInfo.transactionDateTo || '',
+    });
+  }, [bankingInfo, form]);
 
   const onSubmit = (data: BankingConfirmationFormData) => {
     onConfirm({

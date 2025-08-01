@@ -496,22 +496,224 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Google Drive Integration Placeholder Routes
-  // Note: These routes are placeholders for when Google OAuth credentials are configured
+  // Google Drive Integration Routes
+  const googleDriveService = new GoogleDriveService();
 
-  // Google Drive authentication status (always returns not authenticated for now)
+  // Store user tokens in memory (in production, use a proper session store)
+  const userTokens = new Map();
+
+  // Google Drive authentication - initiate OAuth flow
+  app.get('/api/google-drive/auth', isAuthenticated, (req: any, res) => {
+    try {
+      const redirectUri = `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+      googleDriveService.configureOAuth(redirectUri);
+      const authUrl = googleDriveService.getAuthUrl();
+      res.json({ authUrl });
+    } catch (error) {
+      console.error('Error generating auth URL:', error);
+      res.status(500).json({ 
+        message: 'Google OAuth credentials not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.',
+        error: error.message 
+      });
+    }
+  });
+
+  // Google Drive OAuth callback
+  app.get('/api/auth/google/callback', isAuthenticated, async (req: any, res) => {
+    try {
+      const { code } = req.query;
+      if (!code) {
+        return res.status(400).send('Authorization code not provided');
+      }
+
+      const redirectUri = `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+      googleDriveService.configureOAuth(redirectUri);
+      
+      const tokens = await googleDriveService.getTokens(code as string);
+      const userId = req.user.claims.sub;
+      
+      // Store tokens for the user
+      userTokens.set(userId, tokens);
+
+      // Close the popup window
+      res.send(`
+        <script>
+          window.opener.postMessage({ type: 'GOOGLE_DRIVE_AUTH_SUCCESS' }, '*');
+          window.close();
+        </script>
+      `);
+    } catch (error) {
+      console.error('Google Drive authentication error:', error);
+      res.status(500).send('Authentication failed');
+    }
+  });
+
+  // Check Google Drive authentication status
   app.get('/api/google-drive/auth-status', isAuthenticated, (req: any, res) => {
+    const userId = req.user.claims.sub;
+    const tokens = userTokens.get(userId);
+    
     res.json({
-      authenticated: false,
-      message: 'Google OAuth credentials not configured'
+      authenticated: !!tokens
     });
   });
 
-  // Google Drive connection endpoint
-  app.post('/api/google-drive/connect', isAuthenticated, (req: any, res) => {
-    res.status(501).json({
-      message: 'Google Drive integration requires OAuth configuration. Please contact your administrator to set up Google OAuth credentials.'
-    });
+  // List Google Drive files
+  app.get('/api/google-drive/files', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const tokens = userTokens.get(userId);
+      
+      if (!tokens) {
+        return res.status(401).json({ message: 'Google Drive not authenticated' });
+      }
+
+      const redirectUri = `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+      googleDriveService.configureOAuth(redirectUri);
+      googleDriveService.setTokens(tokens);
+      
+      const { search, pageToken } = req.query;
+      let result;
+      
+      if (search) {
+        result = await googleDriveService.searchFiles(search as string, pageToken as string);
+      } else {
+        result = await googleDriveService.listPdfFiles(pageToken as string);
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error listing Google Drive files:', error);
+      res.status(500).json({ message: 'Failed to list Google Drive files' });
+    }
+  });
+
+  // Import files from Google Drive
+  app.post('/api/google-drive/import', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const tokens = userTokens.get(userId);
+      
+      if (!tokens) {
+        return res.status(401).json({ message: 'Google Drive not authenticated' });
+      }
+
+      const { fileIds, caseId } = req.body;
+      
+      if (!fileIds || !Array.isArray(fileIds) || fileIds.length === 0) {
+        return res.status(400).json({ message: 'File IDs are required' });
+      }
+
+      if (!caseId) {
+        return res.status(400).json({ message: 'Case ID is required' });
+      }
+
+      // Verify user has access to the case
+      const caseData = await storage.getCase(caseId);
+      if (!caseData) {
+        return res.status(404).json({ message: 'Case not found' });
+      }
+
+      const userAccess = await storage.getUserCaseAccess(userId, caseId);
+      if (!userAccess) {
+        return res.status(403).json({ message: 'Access denied to this case' });
+      }
+
+      const redirectUri = `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+      googleDriveService.configureOAuth(redirectUri);
+      googleDriveService.setTokens(tokens);
+      
+      let importedCount = 0;
+      const errors = [];
+
+      for (const fileId of fileIds) {
+        try {
+          // Download file from Google Drive
+          const { buffer, metadata } = await googleDriveService.downloadFile(fileId);
+          
+          // Generate unique filename
+          const originalName = metadata.name;
+          const uniqueFilename = `${Date.now()}_${Math.random().toString(36).substring(2)}_${originalName}`;
+          const filePath = path.join(uploadDir, uniqueFilename);
+          
+          // Save file to uploads directory
+          await fs.writeFileSync(filePath, buffer);
+          
+          // Create document record
+          const documentData = {
+            caseId,
+            filename: uniqueFilename,
+            originalName,
+            category: 'BANKING', // Default to BANKING for now
+            fileSize: buffer.length,
+            mimeType: metadata.mimeType || 'application/pdf',
+            uploadedById: userId,
+          };
+
+          const document = await storage.createDocument(documentData);
+          
+          // Process with AI for banking documents
+          if (documentData.category === 'BANKING') {
+            try {
+              const documentNumber = await generateDocumentNumber(caseId);
+              const accountGroupNumber = await generateAccountGroupNumber(caseId);
+              
+              const analysisResult = await analyzeBankingDocument(filePath, originalName);
+              
+              if (analysisResult.success && analysisResult.data) {
+                // Generate CSV if transaction data is available
+                let csvPath = null;
+                let csvRowCount = 0;
+                let csvGenerated = false;
+                
+                try {
+                  const csvResult = await generateCSVFromPDF(filePath, originalName);
+                  if (csvResult.success && csvResult.csvPath) {
+                    csvPath = path.basename(csvResult.csvPath);
+                    csvRowCount = csvResult.rowCount || 0;
+                    csvGenerated = true;
+                  }
+                } catch (csvError) {
+                  console.error("CSV generation failed:", csvError);
+                }
+                
+                // Update document with AI analysis results
+                await storage.updateDocument(document.id, {
+                  ...analysisResult.data,
+                  documentNumber,
+                  accountGroupNumber,
+                  aiProcessed: true,
+                  csvPath,
+                  csvRowCount,
+                  csvGenerated,
+                });
+              }
+            } catch (aiError) {
+              console.error("AI processing failed:", aiError);
+              await storage.updateDocument(document.id, {
+                aiProcessed: false,
+                processingError: aiError.message,
+              });
+            }
+          }
+          
+          importedCount++;
+        } catch (fileError) {
+          console.error(`Failed to import file ${fileId}:`, fileError);
+          errors.push(`Failed to import file: ${fileError.message}`);
+        }
+      }
+
+      res.json({
+        importedCount,
+        totalRequested: fileIds.length,
+        errors: errors.length > 0 ? errors : undefined
+      });
+      
+    } catch (error) {
+      console.error('Error importing Google Drive files:', error);
+      res.status(500).json({ message: 'Failed to import files from Google Drive' });
+    }
   });
 
   const httpServer = createServer(app);

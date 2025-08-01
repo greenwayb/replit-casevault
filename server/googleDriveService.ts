@@ -13,15 +13,16 @@ export class GoogleDriveService {
     this.drive = google.drive({ version: 'v3', auth: this.oauth2Client });
   }
 
-  // Configure OAuth client with user-specific settings
+  // Configure OAuth client with environment credentials
   configureOAuth(redirectUri: string) {
-    // Using default development credentials - in production these would come from user configuration
-    const clientId = '12345-abcdef.apps.googleusercontent.com'; // placeholder
-    const clientSecret = 'placeholder-secret'; // placeholder
+    // Check if Google OAuth credentials are available
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      throw new Error('Google OAuth credentials not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.');
+    }
     
     this.oauth2Client = new OAuth2Client(
-      clientId,
-      clientSecret,
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
       redirectUri
     );
     
