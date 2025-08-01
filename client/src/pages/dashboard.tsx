@@ -13,6 +13,7 @@ import { Plus, Briefcase, FileText, Upload, Eye, Calendar, Trash2 } from "lucide
 import { useState } from "react";
 import { useLocation } from "wouter";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
+import TiltedCard from "@/components/TiltedCard";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -183,77 +184,83 @@ export default function Dashboard() {
               ))
             ) : cases && cases.length > 0 ? (
               cases.map((caseItem: any) => (
-                <Card 
-                  key={caseItem.id} 
-                  className="legal-card p-4 md:p-6 lg:p-8 cursor-pointer transition-all duration-200 group relative touch-manipulation"
+                <TiltedCard
+                  key={caseItem.id}
+                  containerHeight="320px"
+                  containerWidth="100%"
+                  rotateAmplitude={8}
+                  scaleOnHover={1.08}
                   onClick={() => setLocation(`/cases/${caseItem.id}`)}
+                  className="w-full"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-4 sm:gap-0">
-                    <div className="flex items-center space-x-3 md:space-x-4 w-full sm:w-auto">
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/10 rounded-lg flex items-center justify-center ring-2 ring-primary/20 flex-shrink-0">
-                        <Briefcase className="h-6 w-6 md:h-7 md:w-7 text-primary" />
+                  <Card className="legal-card p-4 md:p-6 lg:p-8 cursor-pointer transition-all duration-200 group relative touch-manipulation h-full shadow-lg border-0">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-4 sm:gap-0">
+                      <div className="flex items-center space-x-3 md:space-x-4 w-full sm:w-auto">
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/10 rounded-lg flex items-center justify-center ring-2 ring-primary/20 flex-shrink-0">
+                          <Briefcase className="h-6 w-6 md:h-7 md:w-7 text-primary" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-bold text-slate-900 text-base md:text-lg tracking-tight truncate">{caseItem.caseNumber}</h3>
+                          <p className="text-xs md:text-sm text-slate-600 flex items-center font-medium mt-1">
+                            <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
+                            <span className="truncate">Created: {formatDate(caseItem.createdAt)}</span>
+                          </p>
+                        </div>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-bold text-slate-900 text-base md:text-lg tracking-tight truncate">{caseItem.caseNumber}</h3>
-                        <p className="text-xs md:text-sm text-slate-600 flex items-center font-medium mt-1">
-                          <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
-                          <span className="truncate">Created: {formatDate(caseItem.createdAt)}</span>
-                        </p>
-                      </div>
-                    </div>
-                    <Badge className={`${getStatusBadgeClass(caseItem.status)} px-2 md:px-3 py-1 text-xs md:text-sm flex-shrink-0`}>
-                      {caseItem.status?.replace('_', ' ')}
-                    </Badge>
-                  </div>
-                  <div className="space-y-2 md:space-y-3 border-t border-slate-100 pt-3 md:pt-4">
-                    <div className="flex items-center justify-between text-xs md:text-sm">
-                      <span className="text-slate-600 font-medium">Documents:</span>
-                      <span className="font-bold text-slate-900">{caseItem.documentCount || 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs md:text-sm">
-                      <span className="text-slate-600 font-medium">Role:</span>
-                      <Badge className={`${getRoleBadgeClass(caseItem.role)} px-2 py-1 text-xs`}>
-                        {caseItem.role}
+                      <Badge className={`${getStatusBadgeClass(caseItem.status)} px-2 md:px-3 py-1 text-xs md:text-sm flex-shrink-0`}>
+                        {caseItem.status?.replace('_', ' ')}
                       </Badge>
                     </div>
-                  </div>
-                  
-                  {/* Action buttons for CASEADMIN */}
-                  {caseItem.role === 'CASEADMIN' && (
-                    <div className="absolute top-2 md:top-4 right-2 md:right-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 md:h-8 md:w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 touch-manipulation"
-                        onClick={(e) => handleDeleteCase(caseItem, e)}
-                        title="Delete Case"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                  
-                  <div className="space-y-3 md:space-y-4">
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-primary border-primary/20 hover:bg-primary/5 touch-manipulation text-xs md:text-sm px-3 md:px-4 py-2"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setLocation(`/cases/${caseItem.id}`);
-                        }}
-                      >
-                        <Eye className="h-3 w-3 md:h-4 md:w-4 mr-2" />
-                        View Details
-                      </Button>
-                      <div className="text-xs text-slate-500 flex items-center justify-center sm:justify-end">
-                        <FileText className="h-3 w-3 mr-1 flex-shrink-0" />
-                        <span className="truncate">Last updated: {formatDate(caseItem.updatedAt || caseItem.createdAt)}</span>
+                    <div className="space-y-2 md:space-y-3 border-t border-slate-100 pt-3 md:pt-4">
+                      <div className="flex items-center justify-between text-xs md:text-sm">
+                        <span className="text-slate-600 font-medium">Documents:</span>
+                        <span className="font-bold text-slate-900">{caseItem.documentCount || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs md:text-sm">
+                        <span className="text-slate-600 font-medium">Role:</span>
+                        <Badge className={`${getRoleBadgeClass(caseItem.role)} px-2 py-1 text-xs`}>
+                          {caseItem.role}
+                        </Badge>
                       </div>
                     </div>
-                  </div>
-                </Card>
+                  
+                    {/* Action buttons for CASEADMIN */}
+                    {caseItem.role === 'CASEADMIN' && (
+                      <div className="absolute top-2 md:top-4 right-2 md:right-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 md:h-8 md:w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 touch-manipulation"
+                          onClick={(e) => handleDeleteCase(caseItem, e)}
+                          title="Delete Case"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-3 md:space-y-4 mt-auto">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-primary border-primary/20 hover:bg-primary/5 touch-manipulation text-xs md:text-sm px-3 md:px-4 py-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLocation(`/cases/${caseItem.id}`);
+                          }}
+                        >
+                          <Eye className="h-3 w-3 md:h-4 md:w-4 mr-2" />
+                          View Details
+                        </Button>
+                        <div className="text-xs text-slate-500 flex items-center justify-center sm:justify-end">
+                          <FileText className="h-3 w-3 mr-1 flex-shrink-0" />
+                          <span className="truncate">Last updated: {formatDate(caseItem.updatedAt || caseItem.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </TiltedCard>
               ))
             ) : (
               <div className="col-span-full text-center py-12 md:py-16 px-4">

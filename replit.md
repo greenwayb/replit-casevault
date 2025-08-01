@@ -59,6 +59,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced UI Layout**: Moved disclosure PDF manager to right-hand panel with navigation controls to preserve document tree functionality
 - **Logo Integration**: Added Family Court Doco logo throughout application (landing page, sidebar, PDF documents)
 - **PDF Generation**: Fixed jsPDF constructor issues and integrated logo into generated disclosure PDFs
+- **Enhanced Case Cards**: Installed framer-motion dependency and implemented TiltedCard component for interactive case cards with 3D tilt effects and hover animations
 
 # External Dependencies
 
