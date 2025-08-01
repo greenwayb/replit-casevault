@@ -31,7 +31,9 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CloudUpload } from "lucide-react";
+import { CloudUpload, HardDrive } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GoogleDrivePicker } from "./google-drive-picker";
 
 const uploadDocumentSchema = z.object({
   category: z.enum(["REAL_PROPERTY", "BANKING"], {
@@ -61,6 +63,7 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showBankingConfirmation, setShowBankingConfirmation] = useState(false);
   const [pendingBankingData, setPendingBankingData] = useState<any>(null);
+  const [showGoogleDrivePicker, setShowGoogleDrivePicker] = useState(false);
   
   const form = useForm<UploadDocumentFormData>({
     resolver: zodResolver(uploadDocumentSchema),
@@ -264,15 +267,34 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
     }
   };
 
+  const handleGoogleDriveImported = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Upload Document</DialogTitle>
-          <DialogDescription>
-            Select a PDF file and choose the appropriate category
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Upload Document</DialogTitle>
+            <DialogDescription>
+              Upload documents from your device or import directly from Google Drive
+            </DialogDescription>
+          </DialogHeader>
+
+          <Tabs defaultValue="local" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="local" className="flex items-center gap-2">
+                <CloudUpload className="h-4 w-4" />
+                Local Upload
+              </TabsTrigger>
+              <TabsTrigger value="google-drive" className="flex items-center gap-2">
+                <HardDrive className="h-4 w-4" />
+                Google Drive
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="local" className="mt-6">
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -384,22 +406,47 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
                 ) : "Upload Document"}
               </Button>
             </div>
-          </form>
-        </Form>
-      </DialogContent>
-      
-      {/* Banking Confirmation Modal */}
-      {pendingBankingData && (
-        <BankingConfirmationModal
-          open={showBankingConfirmation}
-          onOpenChange={setShowBankingConfirmation}
-          bankingInfo={pendingBankingData.extractedBankingInfo}
-          onConfirm={handleBankingConfirm}
-          onReject={handleBankingReject}
-          documentId={pendingBankingData.id}
-          isManualReview={pendingBankingData.aiProcessingFailed}
-        />
-      )}
-    </Dialog>
+              </div>
+            </form>
+          </Form>
+            </TabsContent>
+
+            <TabsContent value="google-drive" className="mt-6">
+              <div className="text-center py-6">
+                <HardDrive className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium mb-2">Import from Google Drive</h3>
+                <p className="text-gray-600 mb-4">
+                  Browse and import PDF documents directly from your Google Drive
+                </p>
+                <Button onClick={() => setShowGoogleDrivePicker(true)}>
+                  Open Google Drive Picker
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+        
+        {/* Banking Confirmation Modal */}
+        {pendingBankingData && (
+          <BankingConfirmationModal
+            open={showBankingConfirmation}
+            onOpenChange={setShowBankingConfirmation}
+            bankingInfo={pendingBankingData.extractedBankingInfo}
+            onConfirm={handleBankingConfirm}
+            onReject={handleBankingReject}
+            documentId={pendingBankingData.id}
+            isManualReview={pendingBankingData.aiProcessingFailed}
+          />
+        )}
+      </Dialog>
+
+      {/* Google Drive Picker Modal */}
+      <GoogleDrivePicker
+        open={showGoogleDrivePicker}
+        onOpenChange={setShowGoogleDrivePicker}
+        caseId={caseId}
+        onFileImported={handleGoogleDriveImported}
+      />
+    </>
   );
 }
