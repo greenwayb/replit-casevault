@@ -1,6 +1,8 @@
 # Overview
 
-DocuFlow is a document management system built for legal and business document workflows. The application provides secure case-based document organization with role-based access control, allowing users to create cases, upload PDF documents, and manage access permissions across different user roles (DISCLOSER, REVIEWER, DISCLOSEE, CASEADMIN).
+DocuFlow is an AI-powered document management system built for legal and business document workflows. The application provides secure case-based document organization with role-based access control, allowing users to create cases, upload PDF documents, and manage access permissions across different user roles (DISCLOSER, REVIEWER, DISCLOSEE, CASEADMIN). 
+
+The system features AI-powered Banking document analysis that automatically extracts financial metadata and generates CSV files from PDF uploads, organizing documents with hierarchical numbering (B1, B1.1, B1.2, etc.).
 
 # User Preferences
 
@@ -40,6 +42,9 @@ Preferred communication style: Simple, everyday language.
 - **Organization**: Hierarchical categorization (REAL_PROPERTY, BANKING)
 - **Access Control**: Case-based permissions with user role assignments
 - **File Operations**: Upload, download, and metadata management
+- **AI Processing**: Automatic Banking document analysis with OpenAI GPT-4o
+- **CSV Generation**: Automatic extraction of transaction data into downloadable CSV files
+- **Hierarchical Numbering**: Banking documents organized as B1 (accounts), B1.1/B1.2 (individual documents)
 
 ## Case Management
 - **Case Creation**: Unique case number generation with creator assignment

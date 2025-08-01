@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, Folder, FileText, Edit, Building, Calendar, Hash } from "lucide-react";
+import { ChevronDown, ChevronRight, Folder, FileText, Edit, Building, Calendar, Hash, Download, FileSpreadsheet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AccountEditDialog } from "./account-edit-dialog";
 
@@ -23,6 +23,9 @@ interface Document {
   accountGroupNumber?: string;
   aiProcessed?: boolean;
   processingError?: string;
+  csvPath?: string;
+  csvRowCount?: number;
+  csvGenerated?: boolean;
 }
 
 interface DocumentTreeProps {
@@ -268,6 +271,9 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                                         <span>{formatDate(doc.createdAt)}</span>
                                       )}
                                       <span>• {formatFileSize(doc.fileSize)}</span>
+                                      {doc.csvGenerated && doc.csvRowCount && (
+                                        <span>• CSV: {doc.csvRowCount} rows</span>
+                                      )}
                                     </div>
                                   </div>
                                 </Button>

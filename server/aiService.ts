@@ -18,6 +18,12 @@ export interface BankingDocumentAnalysis {
   confidence: number;
 }
 
+export interface CSVGenerationResult {
+  csvPath: string;
+  csvContent: string;
+  rowCount: number;
+}
+
 export async function analyzeBankingDocument(filePath: string): Promise<BankingDocumentAnalysis> {
   try {
     // Read the PDF file as base64
@@ -102,4 +108,81 @@ export function generateAccountGroupNumber(existingGroups: string[], accountName
   
   const nextNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
   return `${nextNumber}`;
+}
+
+export async function generateCSVFromPDF(filePath: string, documentId: number): Promise<CSVGenerationResult> {
+  try {
+    // Read the PDF file as base64
+    const fileBuffer = fs.readFileSync(filePath);
+    const base64File = fileBuffer.toString('base64');
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        {
+          role: "system",
+          content: `You are a financial document data extraction expert. Extract tabular data from banking documents and convert it to CSV format.
+
+          For banking statements, extract transaction data with these columns:
+          - Date (YYYY-MM-DD format)
+          - Description 
+          - Reference/Transaction_ID
+          - Debit (negative amounts, leave blank if credit)
+          - Credit (positive amounts, leave blank if debit)
+          - Balance
+          - Category (if determinable from description)
+
+          For other financial documents, extract the most relevant tabular data available.
+
+          Return a JSON response with:
+          {
+            "csvContent": "string - Complete CSV content with headers and data rows",
+            "rowCount": "number - Number of data rows (excluding header)",
+            "dataType": "string - Type of data extracted (e.g., 'transactions', 'summary', 'account_details')"
+          }
+
+          If no tabular data is found, return empty csvContent with rowCount 0.`
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Please extract tabular data from this financial document and convert it to CSV format."
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:application/pdf;base64,${base64File}`
+              }
+            }
+          ]
+        }
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 4000,
+    });
+
+    const extractionResult = JSON.parse(response.choices[0].message.content || '{}');
+    
+    // Generate CSV file path
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    const csvFileName = `document_${documentId}_data.csv`;
+    const csvPath = path.join(uploadsDir, csvFileName);
+    
+    // Write CSV content to file
+    const csvContent = extractionResult.csvContent || '';
+    if (csvContent) {
+      fs.writeFileSync(csvPath, csvContent, 'utf8');
+    }
+    
+    return {
+      csvPath: csvContent ? csvFileName : '', // Store relative path
+      csvContent,
+      rowCount: extractionResult.rowCount || 0
+    };
+  } catch (error) {
+    console.error('Error generating CSV from PDF:', error);
+    throw new Error(`Failed to generate CSV: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }

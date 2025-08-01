@@ -151,6 +151,9 @@ export class DatabaseStorage implements IStorage {
       accountGroupNumber?: string;
       aiProcessed?: boolean;
       processingError?: string;
+      csvPath?: string;
+      csvRowCount?: number;
+      csvGenerated?: boolean;
     }
   ): Promise<Document> {
     const [updatedDocument] = await db
@@ -209,7 +212,7 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(documents)
-      .where(and(eq(documents.caseId, caseId), eq(documents.category, category)))
+      .where(and(eq(documents.caseId, caseId), eq(documents.category, category as any)))
       .orderBy(desc(documents.createdAt));
   }
 }

@@ -86,6 +86,11 @@ export const documents = pgTable("documents", {
   // Processing status
   aiProcessed: boolean("ai_processed").default(false),
   processingError: text("processing_error"),
+  
+  // CSV generation information
+  csvPath: varchar("csv_path", { length: 255 }), // Path to generated CSV file
+  csvRowCount: integer("csv_row_count").default(0),
+  csvGenerated: boolean("csv_generated").default(false),
 });
 
 // Relations

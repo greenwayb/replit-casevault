@@ -7,6 +7,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF } from "./aiService";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -178,7 +179,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           const documentNumber = generateDocumentNumber('BANKING', accountGroupNumber, documentSequence);
           
-          // Update document with AI analysis
+          // Generate CSV from PDF content
+          let csvInfo = { csvPath: '', csvRowCount: 0, csvGenerated: false };
+          try {
+            const csvResult = await generateCSVFromPDF(filePath, document.id);
+            csvInfo = {
+              csvPath: csvResult.csvPath,
+              csvRowCount: csvResult.rowCount,
+              csvGenerated: !!csvResult.csvContent
+            };
+          } catch (csvError) {
+            console.error("CSV generation failed:", csvError);
+            // Continue without CSV - this is non-critical
+          }
+
+          // Update document with AI analysis and CSV info
           const updatedDocument = await storage.updateDocumentWithAIAnalysis(document.id, {
             accountName: analysis.accountName,
             financialInstitution: analysis.financialInstitution,
@@ -189,6 +204,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             documentNumber,
             accountGroupNumber,
             aiProcessed: true,
+            csvPath: csvInfo.csvPath,
+            csvRowCount: csvInfo.csvRowCount,
+            csvGenerated: csvInfo.csvGenerated,
           });
           
           res.json(updatedDocument);
@@ -300,6 +318,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error viewing document:", error);
       res.status(500).json({ message: "Failed to view document" });
+    }
+  });
+
+  // Download CSV endpoint
+  app.get('/api/documents/:id/csv', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const documentId = parseInt(req.params.id);
+
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check if user has access to the case
+      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
+      if (!userRole) {
+        return res.status(403).json({ message: "Access denied to this document" });
+      }
+
+      if (!document.csvPath || !document.csvGenerated) {
+        return res.status(404).json({ message: "CSV file not available for this document" });
+      }
+
+      const csvFilePath = path.join(uploadDir, document.csvPath);
+      
+      // Check if CSV file exists
+      if (!fs.existsSync(csvFilePath)) {
+        return res.status(404).json({ message: "CSV file not found" });
+      }
+
+      // Set headers for CSV download
+      const csvFileName = `${document.originalName.replace('.pdf', '')}_data.csv`;
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${csvFileName}"`);
+      
+      // Stream the CSV file
+      const fileStream = fs.createReadStream(csvFilePath);
+      fileStream.pipe(res);
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+      res.status(500).json({ message: "Failed to download CSV" });
     }
   });
 
