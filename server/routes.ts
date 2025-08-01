@@ -814,7 +814,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/disclosure-pdfs/:filename', isAuthenticated, async (req: any, res) => {
     try {
       const filename = req.params.filename;
-      const filePath = path.join(process.cwd(), 'uploads', filename);
+      
+      // Extract case number from filename to find the correct subdirectory
+      // filename format: disclosure-{caseNumber}-{timestamp}.pdf
+      const match = filename.match(/^disclosure-(.+?)-\d{4}-\d{2}-\d{2}-\d{6}\.pdf$/);
+      if (!match) {
+        return res.status(400).json({ message: 'Invalid filename format' });
+      }
+      
+      const sanitizedCaseNumber = match[1];
+      const caseDir = path.join(process.cwd(), 'uploads', `disclosure-${sanitizedCaseNumber}`);
+      const filePath = path.join(caseDir, filename);
 
       // Check if file exists
       if (!fs.existsSync(filePath)) {
