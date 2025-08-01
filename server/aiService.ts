@@ -78,7 +78,7 @@ ${pdfText}`
     
     // Validate and normalize the response
     return {
-      accountHolderName: analysisResult.accountHolderName || 'Unknown Holder',
+      accountHolderName: normalizeAccountHolderName(analysisResult.accountHolderName || 'Unknown Holder'),
       accountName: analysisResult.accountName || 'Unknown Account',
       financialInstitution: analysisResult.financialInstitution || 'Unknown Institution',
       accountNumber: analysisResult.accountNumber || undefined,
@@ -100,6 +100,27 @@ export function generateDocumentNumber(
 ): string {
   const prefix = category === 'BANKING' ? 'B' : 'RP';
   return `${prefix}${accountGroupNumber}.${documentSequence}`;
+}
+
+// Helper function to normalize account holder names
+function normalizeAccountHolderName(name: string): string {
+  // Remove common titles (case insensitive)
+  const titles = ['mr', 'mrs', 'miss', 'ms', 'dr', 'prof', 'professor', 'sir', 'madam', 'lord', 'lady'];
+  
+  let normalized = name.trim();
+  
+  // Remove titles from the beginning of the name
+  for (const title of titles) {
+    const regex = new RegExp(`^${title}\\.?\\s+`, 'i');
+    normalized = normalized.replace(regex, '');
+  }
+  
+  // Convert to title case
+  return normalized
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 export function generateAccountGroupNumber(existingGroups: string[], accountName: string): string {

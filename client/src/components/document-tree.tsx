@@ -253,17 +253,15 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                                 <span className="text-sm font-bold text-slate-900">
                                   B{groupNumber}: {accountHolderName}
                                 </span>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-6 w-6 p-0 hover:bg-slate-100"
+                                <div
+                                  className="h-6 w-6 p-0 hover:bg-slate-100 rounded cursor-pointer flex items-center justify-center"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setEditingDocument(firstDoc);
                                   }}
                                 >
                                   <Edit className="h-3 w-3 text-slate-400" />
-                                </Button>
+                                </div>
                               </div>
                               <div className="text-xs text-slate-500">
                                 {firstDoc.financialInstitution && (

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import BankingConfirmationModal from "./banking-confirmation-modal";
 import {
   Dialog,
   DialogContent,
@@ -58,6 +59,8 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
   const [aiProgress, setAiProgress] = useState(0);
   const [uploadPhase, setUploadPhase] = useState<'upload' | 'ai' | 'complete'>('upload');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showBankingConfirmation, setShowBankingConfirmation] = useState(false);
+  const [pendingBankingData, setPendingBankingData] = useState<any>(null);
   
   const form = useForm<UploadDocumentFormData>({
     resolver: zodResolver(uploadDocumentSchema),
@@ -124,24 +127,34 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
         setAiProgress(100);
         setUploadPhase('complete');
         
+        // Check if this is a banking document with extracted info that needs confirmation
+        if (result.extractedBankingInfo) {
+          setPendingBankingData(result);
+          setShowBankingConfirmation(true);
+          return result; // Don't close modal yet, wait for confirmation
+        }
+        
         return result;
       }
 
       setUploadPhase('complete');
       return response.json();
     },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Document uploaded and processed successfully!",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
-      form.reset();
-      setSelectedFile(null);
-      setUploadProgress(0);
-      setAiProgress(0);
-      setUploadPhase('upload');
-      onOpenChange(false);
+    onSuccess: (result) => {
+      // Only show success and close modal if not waiting for banking confirmation
+      if (!result.extractedBankingInfo) {
+        toast({
+          title: "Success",
+          description: "Document uploaded and processed successfully!",
+        });
+        queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+        form.reset();
+        setSelectedFile(null);
+        setUploadProgress(0);
+        setAiProgress(0);
+        setUploadPhase('upload');
+        onOpenChange(false);
+      }
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -174,6 +187,75 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
       setSelectedFile(file);
       form.setValue("file", file);
       form.clearErrors("file");
+    }
+  };
+
+  const handleBankingConfirm = async (confirmedInfo: any) => {
+    try {
+      await fetch(`/api/documents/${pendingBankingData.id}/confirm-banking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          bankingInfo: {
+            ...confirmedInfo,
+            documentNumber: pendingBankingData.extractedBankingInfo.documentNumber,
+            accountGroupNumber: pendingBankingData.extractedBankingInfo.accountGroupNumber,
+          },
+          csvInfo: pendingBankingData.extractedBankingInfo.csvInfo
+        })
+      });
+
+      toast({
+        title: "Success",
+        description: "Banking document confirmed and saved successfully!",
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+      form.reset();
+      setSelectedFile(null);
+      setUploadProgress(0);
+      setAiProgress(0);
+      setUploadPhase('upload');
+      setPendingBankingData(null);
+      setShowBankingConfirmation(false);
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to confirm banking information",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBankingReject = async () => {
+    try {
+      await fetch(`/api/documents/${pendingBankingData.id}/reject-banking`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      toast({
+        title: "Success",
+        description: "Document uploaded without banking information extraction",
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+      form.reset();
+      setSelectedFile(null);
+      setUploadProgress(0);
+      setAiProgress(0);
+      setUploadPhase('upload');
+      setPendingBankingData(null);
+      setShowBankingConfirmation(false);
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        title: "Error", 
+        description: "Failed to process document rejection",
+        variant: "destructive",
+      });
     }
   };
 
@@ -300,6 +382,17 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
           </form>
         </Form>
       </DialogContent>
+      
+      {/* Banking Confirmation Modal */}
+      {pendingBankingData && (
+        <BankingConfirmationModal
+          open={showBankingConfirmation}
+          onOpenChange={setShowBankingConfirmation}
+          bankingInfo={pendingBankingData.extractedBankingInfo}
+          onConfirm={handleBankingConfirm}
+          onReject={handleBankingReject}
+        />
+      )}
     </Dialog>
   );
 }

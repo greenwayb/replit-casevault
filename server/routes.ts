@@ -193,24 +193,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Continue without CSV - this is non-critical
           }
 
-          // Update document with AI analysis and CSV info
-          const updatedDocument = await storage.updateDocumentWithAIAnalysis(document.id, {
-            accountHolderName: analysis.accountHolderName,
-            accountName: analysis.accountName,
-            financialInstitution: analysis.financialInstitution,
-            accountNumber: analysis.accountNumber,
-            bsbSortCode: analysis.bsbSortCode,
-            transactionDateFrom: analysis.transactionDateFrom ? new Date(analysis.transactionDateFrom) : undefined,
-            transactionDateTo: analysis.transactionDateTo ? new Date(analysis.transactionDateTo) : undefined,
-            documentNumber,
-            accountGroupNumber,
-            aiProcessed: true,
-            csvPath: csvInfo.csvPath,
-            csvRowCount: csvInfo.csvRowCount,
-            csvGenerated: csvInfo.csvGenerated,
-          });
+          // Return document with extracted AI analysis for confirmation
+          const documentWithAnalysis = {
+            ...document,
+            extractedBankingInfo: {
+              accountHolderName: analysis.accountHolderName,
+              accountName: analysis.accountName,
+              financialInstitution: analysis.financialInstitution,
+              accountNumber: analysis.accountNumber,
+              bsbSortCode: analysis.bsbSortCode,
+              transactionDateFrom: analysis.transactionDateFrom,
+              transactionDateTo: analysis.transactionDateTo,
+              documentNumber,
+              accountGroupNumber,
+              csvInfo
+            }
+          };
           
-          res.json(updatedDocument);
+          res.json(documentWithAnalysis);
         } catch (aiError) {
           console.error("AI analysis failed:", aiError);
           // Update document with error status but still return it
@@ -290,6 +290,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting document:", error);
       res.status(500).json({ message: "Failed to delete document" });
+    }
+  });
+
+  // Confirm banking document analysis
+  app.post("/api/documents/:id/confirm-banking", isAuthenticated, async (req, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+      const { bankingInfo, csvInfo } = req.body;
+
+      // Update document with confirmed banking analysis
+      const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, {
+        accountHolderName: bankingInfo.accountHolderName,
+        accountName: bankingInfo.accountName,
+        financialInstitution: bankingInfo.financialInstitution,
+        accountNumber: bankingInfo.accountNumber,
+        bsbSortCode: bankingInfo.bsbSortCode,
+        transactionDateFrom: bankingInfo.transactionDateFrom ? new Date(bankingInfo.transactionDateFrom) : undefined,
+        transactionDateTo: bankingInfo.transactionDateTo ? new Date(bankingInfo.transactionDateTo) : undefined,
+        documentNumber: bankingInfo.documentNumber,
+        accountGroupNumber: bankingInfo.accountGroupNumber,
+        aiProcessed: true,
+        csvPath: csvInfo?.csvPath,
+        csvRowCount: csvInfo?.csvRowCount,
+        csvGenerated: csvInfo?.csvGenerated || false,
+      });
+
+      res.json(updatedDocument);
+    } catch (error) {
+      console.error("Error confirming banking document:", error);
+      res.status(500).json({ message: "Failed to confirm banking document" });
+    }
+  });
+
+  // Reject banking document analysis
+  app.post("/api/documents/:id/reject-banking", isAuthenticated, async (req, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+
+      // Mark document as processed but without banking info
+      const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, {
+        aiProcessed: false,
+        processingError: "Banking information extraction was rejected by user",
+      });
+
+      res.json(updatedDocument);
+    } catch (error) {
+      console.error("Error rejecting banking document:", error);
+      res.status(500).json({ message: "Failed to reject banking document" });
     }
   });
 

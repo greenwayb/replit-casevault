@@ -1,0 +1,242 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Building, User, CreditCard, Calendar } from "lucide-react";
+
+const bankingConfirmationSchema = z.object({
+  accountHolderName: z.string().min(1, "Account holder name is required"),
+  accountName: z.string().min(1, "Account name is required"),
+  financialInstitution: z.string().min(1, "Financial institution is required"),
+  accountNumber: z.string().optional(),
+  bsbSortCode: z.string().optional(),
+  transactionDateFrom: z.string().optional(),
+  transactionDateTo: z.string().optional(),
+});
+
+type BankingConfirmationFormData = z.infer<typeof bankingConfirmationSchema>;
+
+interface BankingInfo {
+  accountHolderName: string;
+  accountName: string;
+  financialInstitution: string;
+  accountNumber?: string;
+  bsbSortCode?: string;
+  transactionDateFrom?: string;
+  transactionDateTo?: string;
+}
+
+interface BankingConfirmationModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  bankingInfo: BankingInfo;
+  onConfirm: (confirmedInfo: BankingInfo) => void;
+  onReject: () => void;
+}
+
+export default function BankingConfirmationModal({
+  open,
+  onOpenChange,
+  bankingInfo,
+  onConfirm,
+  onReject
+}: BankingConfirmationModalProps) {
+  const form = useForm<BankingConfirmationFormData>({
+    resolver: zodResolver(bankingConfirmationSchema),
+    defaultValues: {
+      accountHolderName: bankingInfo.accountHolderName || '',
+      accountName: bankingInfo.accountName || '',
+      financialInstitution: bankingInfo.financialInstitution || '',
+      accountNumber: bankingInfo.accountNumber || '',
+      bsbSortCode: bankingInfo.bsbSortCode || '',
+      transactionDateFrom: bankingInfo.transactionDateFrom || '',
+      transactionDateTo: bankingInfo.transactionDateTo || '',
+    },
+  });
+
+  const onSubmit = (data: BankingConfirmationFormData) => {
+    onConfirm({
+      accountHolderName: data.accountHolderName,
+      accountName: data.accountName,
+      financialInstitution: data.financialInstitution,
+      accountNumber: data.accountNumber || undefined,
+      bsbSortCode: data.bsbSortCode || undefined,
+      transactionDateFrom: data.transactionDateFrom || undefined,
+      transactionDateTo: data.transactionDateTo || undefined,
+    });
+    onOpenChange(false);
+  };
+
+  const handleReject = () => {
+    onReject();
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Building className="h-5 w-5 text-blue-600" />
+            Confirm Banking Information
+          </DialogTitle>
+          <DialogDescription>
+            Please review and confirm the extracted banking information. You can edit any field if needed.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="accountHolderName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Account Holder Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., John Smith" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="accountName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Account Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., Business Transaction Account" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="financialInstitution"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Building className="h-4 w-4" />
+                      Financial Institution
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., Commonwealth Bank" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="accountNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account Number</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., 1234567890" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="bsbSortCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>BSB/Sort Code</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., 063-000" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="transactionDateFrom"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Period From
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} type="date" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="transactionDateTo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Period To
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} type="date" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleReject}
+              >
+                Reject & Continue
+              </Button>
+              <Button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Confirm & Save
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
