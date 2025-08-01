@@ -11,6 +11,7 @@ import DocumentViewer from "@/components/document-viewer";
 import DocumentUploadModal from "@/components/document-upload-modal";
 import { DisclosurePdfManager } from "@/components/disclosure-pdf-manager";
 import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose } from "lucide-react";
+import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
 export default function CaseDetail() {
   const { id } = useParams();

@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Briefcase, FileText, Upload, Eye, Calendar, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
+import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();

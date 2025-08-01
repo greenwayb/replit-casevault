@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Shield, Users, Upload } from "lucide-react";
+import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
 export default function Landing() {
   return (
@@ -8,9 +9,16 @@ export default function Landing() {
       {/* Header */}
       <header className="legal-header px-6 py-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">DocuFlow</h1>
-            <p className="text-sm text-blue-100 mt-1 font-medium">Professional Document Management</p>
+          <div className="flex items-center gap-4">
+            <img 
+              src={logoPath} 
+              alt="Family Court Doco" 
+              className="h-12 w-12 object-contain"
+            />
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Family Court Doco</h1>
+              <p className="text-sm text-blue-100 mt-1 font-medium">Professional Document Management</p>
+            </div>
           </div>
           <Button 
             onClick={() => window.location.href = '/api/login'}

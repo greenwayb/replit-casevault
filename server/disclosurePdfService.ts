@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Document, User, Case, DisclosurePdf } from '@shared/schema';
 import { format } from 'date-fns';
@@ -219,11 +219,28 @@ export class DisclosurePdfService {
     const pdf = new jsPDF();
     const currentDate = format(new Date(), 'dd MMMM yyyy');
     
+    // Add logo in top right corner
+    try {
+      const logoPath = path.join(process.cwd(), 'attached_assets', 'FamilyCourtDoco-Asset_1754059270273.png');
+      const logoExists = await fs.access(logoPath).then(() => true).catch(() => false);
+      
+      if (logoExists) {
+        const logoBuffer = await fs.readFile(logoPath);
+        const logoBase64 = logoBuffer.toString('base64');
+        const logoDataUrl = `data:image/png;base64,${logoBase64}`;
+        
+        // Add logo in top right corner
+        pdf.addImage(logoDataUrl, 'PNG', 160, 10, 30, 30);
+      }
+    } catch (error) {
+      console.warn('Could not load logo for PDF:', error);
+    }
+    
     // Set up colors and fonts
     const navyBlue = [41, 59, 100];
     const lightGray = [245, 245, 245];
     
-    // Header
+    // Header with Family Court Doco branding
     pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
     pdf.text(`List of Disclosure Documents - ${caseData.createdBy.firstName?.toUpperCase()} ${caseData.createdBy.lastName?.toUpperCase()}`, 20, 30);

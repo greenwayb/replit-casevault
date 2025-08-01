@@ -10,6 +10,7 @@ import {
   X
 } from "lucide-react";
 import { useState } from "react";
+import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
 interface SidebarProps {
   user: any;
@@ -69,9 +70,16 @@ export default function Sidebar({ user }: SidebarProps) {
       `}>
         <div className="p-4 md:p-6 border-b border-slate-300">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">DocuFlow</h1>
-              <p className="text-xs md:text-sm text-slate-600 mt-1 font-medium">Legal Document System</p>
+            <div className="flex items-center gap-3">
+              <img 
+                src={logoPath} 
+                alt="Family Court Doco" 
+                className="h-8 w-8 md:h-10 md:w-10 object-contain flex-shrink-0"
+              />
+              <div>
+                <h1 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Family Court Doco</h1>
+                <p className="text-xs text-slate-600 mt-1 font-medium">Legal Document System</p>
+              </div>
             </div>
             {/* Close button for mobile */}
             <Button
