@@ -188,8 +188,8 @@ export default function Dashboard() {
                   key={caseItem.id}
                   containerHeight="320px"
                   containerWidth="100%"
-                  rotateAmplitude={8}
-                  scaleOnHover={1.08}
+                  rotateAmplitude={2}
+                  scaleOnHover={1.1}
                   onClick={() => setLocation(`/cases/${caseItem.id}`)}
                   className="w-full"
                 >
