@@ -506,9 +506,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/google-drive/auth', isAuthenticated, (req: any, res) => {
     try {
       const redirectUri = `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+      console.log('Using redirect URI:', redirectUri); // Debug log
       googleDriveService.configureOAuth(redirectUri);
       const authUrl = googleDriveService.getAuthUrl();
-      res.json({ authUrl });
+      res.json({ authUrl, redirectUri }); // Include redirect URI in response for debugging
     } catch (error) {
       console.error('Error generating auth URL:', error);
       res.status(500).json({ 
