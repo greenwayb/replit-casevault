@@ -110,38 +110,53 @@ export default function CaseDetail() {
   }
 
   return (
-    <div className="h-screen flex bg-white">
+    <div className="h-screen flex flex-col md:flex-row bg-white">
       {/* Case Navigation & Tree View */}
-      <div className={`${navExpanded ? 'w-full' : 'w-80'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
+      <div className={`
+        ${navExpanded ? 'w-full md:w-full' : 'w-full md:w-80'} 
+        bg-white border-r-0 md:border-r border-gray-200 flex flex-col transition-all duration-300
+        ${!navExpanded && selectedDocument ? 'hidden md:flex' : 'flex'}
+      `}>
         {/* Case Header */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-4 md:p-6 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 md:space-x-3 min-w-0 flex-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setLocation('/')}
-                className="p-2 hover:bg-gray-100"
+                className="p-2 hover:bg-gray-100 touch-manipulation flex-shrink-0"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">{caseData.caseNumber}</h2>
-                <p className="text-sm text-gray-600">{getStatusDisplay(caseData.status)}</p>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg md:text-xl font-semibold text-gray-900 truncate">{caseData.caseNumber}</h2>
+                <p className="text-xs md:text-sm text-gray-600 truncate">{getStatusDisplay(caseData.status)}</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setNavExpanded(!navExpanded)}
-              className="p-2 hover:bg-gray-100"
+              className="p-2 hover:bg-gray-100 touch-manipulation flex-shrink-0 hidden md:flex"
             >
               {navExpanded ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
             </Button>
+            {/* Mobile back button when document is selected */}
+            {selectedDocument && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedDocument(null)}
+                className="p-2 hover:bg-gray-100 touch-manipulation flex-shrink-0 md:hidden"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
           </div>
           <Button 
             onClick={() => setShowUploadModal(true)}
-            className="w-full bg-primary hover:bg-blue-700"
+            className="w-full bg-primary hover:bg-blue-700 touch-manipulation text-sm md:text-base py-2 md:py-2.5"
           >
             <Upload className="h-4 w-4 mr-2" />
             Upload Document
@@ -149,7 +164,7 @@ export default function CaseDetail() {
         </div>
 
         {/* Document Tree */}
-        <div className="flex-1 p-4 overflow-auto">
+        <div className="flex-1 p-3 md:p-4 overflow-auto">
           <DocumentTree 
             documents={caseData.documents || []} 
             onDocumentSelect={setSelectedDocument}
@@ -159,12 +174,13 @@ export default function CaseDetail() {
         </div>
       </div>
 
-      {/* Document Viewer Area */}
-      {!navExpanded && (
-        <div className="flex-1 flex flex-col bg-gray-50">
-          <DocumentViewer document={selectedDocument} />
-        </div>
-      )}
+      {/* Document Viewer */}
+      <div className={`
+        flex-1 bg-gray-50 
+        ${!selectedDocument ? 'hidden md:block' : 'block'}
+      `}>
+        <DocumentViewer document={selectedDocument} />
+      </div>
 
       <DocumentUploadModal 
         open={showUploadModal} 
