@@ -156,11 +156,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Get existing account groups for this case
           const existingGroups = await storage.getExistingAccountGroups(caseId, 'BANKING');
           
-          // Check if account name already exists
+          // Check if account holder name already exists
           const allCaseDocuments = await storage.getDocumentsByCase(caseId);
           const existingAccount = allCaseDocuments.find(doc => 
             doc.category === 'BANKING' && 
-            doc.accountName?.toLowerCase() === analysis.accountName.toLowerCase()
+            doc.accountHolderName?.toLowerCase() === analysis.accountHolderName.toLowerCase()
           );
           
           let accountGroupNumber: string;
@@ -173,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             documentSequence = groupDocuments.length + 1;
           } else {
             // Create new account group
-            accountGroupNumber = generateAccountGroupNumber(existingGroups, analysis.accountName);
+            accountGroupNumber = generateAccountGroupNumber(existingGroups, analysis.accountHolderName);
             documentSequence = 1;
           }
           
@@ -195,6 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           // Update document with AI analysis and CSV info
           const updatedDocument = await storage.updateDocumentWithAIAnalysis(document.id, {
+            accountHolderName: analysis.accountHolderName,
             accountName: analysis.accountName,
             financialInstitution: analysis.financialInstitution,
             accountNumber: analysis.accountNumber,

@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import DocumentTree from "@/components/document-tree";
 import DocumentViewer from "@/components/document-viewer";
 import DocumentUploadModal from "@/components/document-upload-modal";
-import { ArrowLeft, Upload, Briefcase } from "lucide-react";
+import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose } from "lucide-react";
 
 export default function CaseDetail() {
   const { id } = useParams();
@@ -18,6 +18,7 @@ export default function CaseDetail() {
   const { toast } = useToast();
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
+  const [navExpanded, setNavExpanded] = useState(false);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -111,22 +112,32 @@ export default function CaseDetail() {
   return (
     <div className="h-screen flex bg-white">
       {/* Case Navigation & Tree View */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+      <div className={`${navExpanded ? 'w-full' : 'w-80'} bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
         {/* Case Header */}
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3 mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation('/')}
+                className="p-2 hover:bg-gray-100"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">{caseData.caseNumber}</h2>
+                <p className="text-sm text-gray-600">{getStatusDisplay(caseData.status)}</p>
+              </div>
+            </div>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLocation('/')}
+              onClick={() => setNavExpanded(!navExpanded)}
               className="p-2 hover:bg-gray-100"
             >
-              <ArrowLeft className="h-4 w-4" />
+              {navExpanded ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
             </Button>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">{caseData.caseNumber}</h2>
-              <p className="text-sm text-gray-600">{getStatusDisplay(caseData.status)}</p>
-            </div>
           </div>
           <Button 
             onClick={() => setShowUploadModal(true)}
@@ -149,9 +160,11 @@ export default function CaseDetail() {
       </div>
 
       {/* Document Viewer Area */}
-      <div className="flex-1 flex flex-col bg-gray-50">
-        <DocumentViewer document={selectedDocument} />
-      </div>
+      {!navExpanded && (
+        <div className="flex-1 flex flex-col bg-gray-50">
+          <DocumentViewer document={selectedDocument} />
+        </div>
+      )}
 
       <DocumentUploadModal 
         open={showUploadModal} 

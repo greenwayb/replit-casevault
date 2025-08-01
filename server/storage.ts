@@ -142,6 +142,7 @@ export class DatabaseStorage implements IStorage {
   async updateDocumentWithAIAnalysis(
     documentId: number, 
     analysis: {
+      accountHolderName?: string;
       accountName?: string;
       financialInstitution?: string;
       accountNumber?: string;

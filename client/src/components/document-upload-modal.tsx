@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import {
   Dialog,
@@ -53,6 +54,9 @@ interface DocumentUploadModalProps {
 export default function DocumentUploadModal({ open, onOpenChange, caseId }: DocumentUploadModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [aiProgress, setAiProgress] = useState(0);
+  const [uploadPhase, setUploadPhase] = useState<'upload' | 'ai' | 'complete'>('upload');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
   const form = useForm<UploadDocumentFormData>({
@@ -65,9 +69,25 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
 
   const uploadDocumentMutation = useMutation({
     mutationFn: async (data: UploadDocumentFormData) => {
+      // Reset progress states
+      setUploadProgress(0);
+      setAiProgress(0);
+      setUploadPhase('upload');
+
       const formData = new FormData();
       formData.append("file", data.file);
       formData.append("category", data.category);
+
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(progressInterval);
+            return 95;
+          }
+          return prev + Math.random() * 10;
+        });
+      }, 100);
 
       const response = await fetch(`/api/cases/${caseId}/documents`, {
         method: "POST",
@@ -75,21 +95,52 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
         credentials: "include",
       });
 
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`${response.status}: ${errorText}`);
       }
 
+      // Start AI processing phase for Banking documents
+      if (data.category === 'BANKING') {
+        setUploadPhase('ai');
+        
+        // Simulate AI processing progress
+        const aiInterval = setInterval(() => {
+          setAiProgress(prev => {
+            if (prev >= 95) {
+              clearInterval(aiInterval);
+              return 95;
+            }
+            return prev + Math.random() * 8;
+          });
+        }, 200);
+
+        const result = await response.json();
+        
+        clearInterval(aiInterval);
+        setAiProgress(100);
+        setUploadPhase('complete');
+        
+        return result;
+      }
+
+      setUploadPhase('complete');
       return response.json();
     },
     onSuccess: () => {
       toast({
         title: "Success",
-        description: "Document uploaded successfully!",
+        description: "Document uploaded and processed successfully!",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
       form.reset();
       setSelectedFile(null);
+      setUploadProgress(0);
+      setAiProgress(0);
+      setUploadPhase('upload');
       onOpenChange(false);
     },
     onError: (error) => {
@@ -191,6 +242,40 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
               )}
             />
 
+            {/* Progress Bars */}
+            {uploadDocumentMutation.isPending && (
+              <div className="space-y-4">
+                {/* File Upload Progress */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">File Upload</span>
+                    <span>{Math.round(uploadProgress)}%</span>
+                  </div>
+                  <Progress value={uploadProgress} className="h-2" />
+                </div>
+
+                {/* AI Processing Progress */}
+                {uploadPhase === 'ai' && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">AI Processing</span>
+                      <span>{Math.round(aiProgress)}%</span>
+                    </div>
+                    <Progress value={aiProgress} className="h-2" />
+                    <p className="text-xs text-gray-500">
+                      Extracting metadata and generating CSV from Banking document...
+                    </p>
+                  </div>
+                )}
+
+                {uploadPhase === 'complete' && (
+                  <div className="text-sm text-green-600 font-medium">
+                    ✓ Upload and processing complete!
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex space-x-3 pt-4">
               <Button 
                 type="button" 
@@ -206,7 +291,10 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
                 className="flex-1 bg-primary hover:bg-blue-700"
                 disabled={uploadDocumentMutation.isPending}
               >
-                {uploadDocumentMutation.isPending ? "Uploading..." : "Upload Document"}
+                {uploadDocumentMutation.isPending ? (
+                  uploadPhase === 'upload' ? "Uploading..." : 
+                  uploadPhase === 'ai' ? "Processing..." : "Finalizing..."
+                ) : "Upload Document"}
               </Button>
             </div>
           </form>

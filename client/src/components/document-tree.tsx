@@ -16,6 +16,7 @@ interface Document {
   mimeType: string;
   createdAt: string;
   // AI-extracted banking information
+  accountHolderName?: string;
   accountName?: string;
   financialInstitution?: string;
   accountNumber?: string;
@@ -107,8 +108,8 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
     const accountGroups: Record<string, Document[]> = {};
     
     bankingDocs.forEach(doc => {
-      if (doc.accountName && doc.accountGroupNumber) {
-        const key = `${doc.accountGroupNumber}-${doc.accountName}`;
+      if (doc.accountHolderName && doc.accountGroupNumber) {
+        const key = `${doc.accountGroupNumber}-${doc.accountHolderName}`;
         if (!accountGroups[key]) {
           accountGroups[key] = [];
         }
@@ -230,7 +231,7 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                       }
 
                       // Parse account info
-                      const [groupNumber, accountName] = accountKey.split('-');
+                      const [groupNumber, accountHolderName] = accountKey.split('-');
                       const firstDoc = accountDocs[0];
 
                       return (
@@ -250,7 +251,7 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-bold text-slate-900">
-                                  B{groupNumber}: {accountName}
+                                  B{groupNumber}: {accountHolderName}
                                 </span>
                                 <Button
                                   variant="ghost"
@@ -312,15 +313,12 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                                       </div>
                                     </div>
                                   </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-1 top-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-600"
+                                  <div
+                                    className="absolute right-1 top-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-600 rounded cursor-pointer flex items-center justify-center"
                                     onClick={(e) => handleDeleteDocument(doc, e)}
-                                    disabled={deleteDocumentMutation.isPending}
                                   >
                                     <Trash2 className="h-3 w-3" />
-                                  </Button>
+                                  </div>
                                 </div>
                               ))}
                             </div>
@@ -353,15 +351,12 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                             </div>
                           </div>
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-1 top-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-600"
+                        <div
+                          className="absolute right-1 top-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-600 rounded cursor-pointer flex items-center justify-center"
                           onClick={(e) => handleDeleteDocument(doc, e)}
-                          disabled={deleteDocumentMutation.isPending}
                         >
                           <Trash2 className="h-3 w-3" />
-                        </Button>
+                        </div>
                       </div>
                     ))
                   ) : (

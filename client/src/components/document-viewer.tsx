@@ -11,6 +11,7 @@ interface Document {
   mimeType: string;
   createdAt: string;
   // AI-extracted banking information
+  accountHolderName?: string;
   accountName?: string;
   financialInstitution?: string;
   accountNumber?: string;
@@ -47,13 +48,13 @@ export default function DocumentViewer({ document }: DocumentViewerProps) {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = window.document.createElement('a');
       a.href = url;
       a.download = document.originalName;
-      document.body.appendChild(a);
+      window.document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      window.document.body.removeChild(a);
 
       toast({
         title: "Success",
@@ -82,13 +83,13 @@ export default function DocumentViewer({ document }: DocumentViewerProps) {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = window.document.createElement('a');
       a.href = url;
       a.download = `${document.originalName.replace('.pdf', '')}_data.csv`;
-      document.body.appendChild(a);
+      window.document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      window.document.body.removeChild(a);
 
       toast({
         title: "Success",
@@ -159,6 +160,9 @@ export default function DocumentViewer({ document }: DocumentViewerProps) {
                   <span className="font-medium text-blue-900">Banking Information</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
+                  {document.accountHolderName && (
+                    <div><span className="font-medium text-slate-700">Account Holder:</span> {document.accountHolderName}</div>
+                  )}
                   {document.accountName && (
                     <div><span className="font-medium text-slate-700">Account:</span> {document.accountName}</div>
                   )}
@@ -202,7 +206,7 @@ export default function DocumentViewer({ document }: DocumentViewerProps) {
               Download PDF
             </Button>
             
-            {/* CSV Download Button for Banking documents */}
+            {/* CSV Download Button - only show for Banking documents with CSV data */}
             {document.category === 'BANKING' && document.csvGenerated && (
               <Button 
                 variant="outline"

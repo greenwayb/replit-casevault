@@ -12,6 +12,7 @@ if (!process.env.OPENAI_API_KEY) {
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export interface BankingDocumentAnalysis {
+  accountHolderName: string;
   accountName: string;
   financialInstitution: string;
   accountNumber?: string;
@@ -45,9 +46,12 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
           role: "system",
           content: `You are a financial document analysis expert. Analyze banking documents and extract key information. 
           
+          IMPORTANT: Extract the account holder's actual name (person or company name), not the account type.
+          
           Return a JSON response with the following structure:
           {
-            "accountName": "string - A descriptive name for the account (e.g., 'Main Business Account', 'Savings Account', 'Transaction Account')",
+            "accountHolderName": "string - The actual name of the person/company who owns the account",
+            "accountName": "string - A descriptive name for the account type (e.g., 'Main Business Account', 'Savings Account', 'Transaction Account')",
             "financialInstitution": "string - Name of the bank or financial institution",
             "accountNumber": "string - Account number if visible (partial masking is ok)",
             "bsbSortCode": "string - BSB, sort code, or routing number if visible",
@@ -74,6 +78,7 @@ ${pdfText}`
     
     // Validate and normalize the response
     return {
+      accountHolderName: analysisResult.accountHolderName || 'Unknown Holder',
       accountName: analysisResult.accountName || 'Unknown Account',
       financialInstitution: analysisResult.financialInstitution || 'Unknown Institution',
       accountNumber: analysisResult.accountNumber || undefined,
@@ -158,7 +163,18 @@ ${pdfText}`
       max_tokens: 4000,
     });
 
-    const extractionResult = JSON.parse(response.choices[0].message.content || '{}');
+    let extractionResult;
+    try {
+      const content = response.choices[0].message.content || '{}';
+      // Clean up potential JSON formatting issues
+      const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      extractionResult = JSON.parse(cleanedContent);
+    } catch (parseError) {
+      console.error('JSON parsing error:', parseError);
+      console.error('Raw content:', response.choices[0].message.content);
+      // Fallback to empty result
+      extractionResult = { csvContent: '', rowCount: 0, dataType: 'parsing_error' };
+    }
     
     // Generate CSV file path
     const uploadsDir = path.join(process.cwd(), 'uploads');

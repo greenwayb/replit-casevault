@@ -72,6 +72,7 @@ export const documents = pgTable("documents", {
   createdAt: timestamp("created_at").defaultNow(),
   
   // AI-extracted banking information
+  accountHolderName: varchar("account_holder_name", { length: 255 }),
   accountName: varchar("account_name", { length: 255 }),
   financialInstitution: varchar("financial_institution", { length: 255 }),
   accountNumber: varchar("account_number", { length: 100 }),
