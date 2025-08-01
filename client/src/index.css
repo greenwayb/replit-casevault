@@ -3,49 +3,49 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(20, 14.3%, 4.1%);
-  --muted: hsl(60, 4.8%, 95.9%);
-  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --background: hsl(0, 0%, 99%);
+  --foreground: hsl(215, 25%, 15%);
+  --muted: hsl(210, 25%, 97%);
+  --muted-foreground: hsl(215, 15%, 50%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --popover-foreground: hsl(215, 25%, 15%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(20, 14.3%, 4.1%);
-  --border: hsl(20, 5.9%, 90%);
-  --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(60, 4.8%, 95.9%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
+  --card-foreground: hsl(215, 25%, 15%);
+  --border: hsl(210, 20%, 90%);
+  --input: hsl(210, 20%, 95%);
+  --primary: hsl(215, 85%, 25%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(210, 25%, 96%);
+  --secondary-foreground: hsl(215, 25%, 20%);
+  --accent: hsl(210, 25%, 96%);
+  --accent-foreground: hsl(215, 25%, 20%);
+  --destructive: hsl(0, 75%, 50%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(215, 85%, 25%);
+  --radius: 0.375rem;
 }
 
 .dark {
-  --background: hsl(240, 10%, 3.9%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(240, 3.7%, 15.9%);
-  --muted-foreground: hsl(240, 5%, 64.9%);
-  --popover: hsl(240, 10%, 3.9%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 3.9%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 3.7%, 15.9%);
-  --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(240, 3.7%, 15.9%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(240, 3.7%, 15.9%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
+  --background: hsl(215, 30%, 8%);
+  --foreground: hsl(210, 15%, 95%);
+  --muted: hsl(215, 25%, 12%);
+  --muted-foreground: hsl(215, 10%, 65%);
+  --popover: hsl(215, 30%, 10%);
+  --popover-foreground: hsl(210, 15%, 95%);
+  --card: hsl(215, 30%, 10%);
+  --card-foreground: hsl(210, 15%, 95%);
+  --border: hsl(215, 20%, 18%);
+  --input: hsl(215, 20%, 15%);
+  --primary: hsl(210, 80%, 60%);
+  --primary-foreground: hsl(215, 30%, 8%);
+  --secondary: hsl(215, 25%, 15%);
+  --secondary-foreground: hsl(210, 15%, 90%);
+  --accent: hsl(215, 25%, 15%);
+  --accent-foreground: hsl(210, 15%, 90%);
+  --destructive: hsl(0, 75%, 55%);
+  --destructive-foreground: hsl(210, 15%, 95%);
+  --ring: hsl(210, 80%, 60%);
+  --radius: 0.375rem;
 }
 
 @layer base {
@@ -55,11 +55,29 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    letter-spacing: -0.01em;
   }
 }
 
-/* Custom styles for the document management system */
+/* Legal-themed styling for the document management system */
+.legal-header {
+  background: linear-gradient(135deg, hsl(215, 85%, 25%) 0%, hsl(215, 85%, 20%) 100%);
+  box-shadow: 0 2px 8px hsla(215, 25%, 15%, 0.12);
+}
+
+.legal-card {
+  background: white;
+  border: 1px solid hsl(210, 20%, 90%);
+  box-shadow: 0 1px 3px hsla(215, 25%, 15%, 0.08);
+  transition: all 0.2s ease;
+}
+
+.legal-card:hover {
+  box-shadow: 0 4px 12px hsla(215, 25%, 15%, 0.15);
+  border-color: hsl(210, 20%, 85%);
+}
+
 .tree-node {
   @apply select-none;
 }
@@ -74,40 +92,88 @@
 
 .document-viewer {
   @apply h-full w-full bg-white;
+  border: 1px solid hsl(210, 20%, 90%);
+  box-shadow: inset 0 1px 3px hsla(215, 25%, 15%, 0.05);
 }
 
+/* Legal-themed status badges */
 .status-active {
-  @apply bg-green-100 text-green-800;
+  @apply bg-emerald-50 text-emerald-700 border border-emerald-200;
+  font-weight: 500;
 }
 
 .status-under-review {
-  @apply bg-yellow-100 text-yellow-800;
+  @apply bg-amber-50 text-amber-700 border border-amber-200;
+  font-weight: 500;
 }
 
 .status-in-progress {
-  @apply bg-blue-100 text-blue-800;
+  @apply bg-blue-50 text-blue-700 border border-blue-200;
+  font-weight: 500;
 }
 
 .status-completed {
-  @apply bg-gray-100 text-gray-800;
+  @apply bg-slate-50 text-slate-700 border border-slate-200;
+  font-weight: 500;
 }
 
 .status-archived {
-  @apply bg-red-100 text-red-800;
+  @apply bg-gray-50 text-gray-600 border border-gray-200;
+  font-weight: 500;
 }
 
+/* Legal-themed role badges */
 .role-caseadmin {
-  @apply bg-blue-100 text-blue-800;
+  @apply bg-indigo-50 text-indigo-700 border border-indigo-200;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.025em;
 }
 
 .role-reviewer {
-  @apply bg-green-100 text-green-800;
+  @apply bg-teal-50 text-teal-700 border border-teal-200;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.025em;
 }
 
 .role-discloser {
-  @apply bg-purple-100 text-purple-800;
+  @apply bg-purple-50 text-purple-700 border border-purple-200;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.025em;
 }
 
 .role-disclosee {
-  @apply bg-orange-100 text-orange-800;
+  @apply bg-orange-50 text-orange-700 border border-orange-200;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.025em;
+}
+
+/* Legal document styling */
+.legal-document-section {
+  border-left: 4px solid hsl(215, 85%, 25%);
+  background: linear-gradient(to right, hsl(210, 25%, 98%), white);
+}
+
+/* Professional buttons */
+.legal-button-primary {
+  background: linear-gradient(135deg, hsl(215, 85%, 25%) 0%, hsl(215, 85%, 20%) 100%);
+  border: 1px solid hsl(215, 85%, 20%);
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  transition: all 0.2s ease;
+}
+
+.legal-button-primary:hover {
+  background: linear-gradient(135deg, hsl(215, 85%, 20%) 0%, hsl(215, 85%, 15%) 100%);
+  box-shadow: 0 2px 8px hsla(215, 85%, 25%, 0.3);
+}
+
+/* Sidebar styling */
+.legal-sidebar {
+  background: linear-gradient(180deg, hsl(215, 25%, 97%) 0%, hsl(210, 25%, 95%) 100%);
+  border-right: 2px solid hsl(210, 20%, 88%);
 }

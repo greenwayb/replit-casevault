@@ -83,20 +83,20 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-slate-50">
       <Sidebar user={user} />
       
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <header className="bg-white border-b-2 border-slate-200 px-6 py-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">Dashboard</h2>
-              <p className="text-gray-600 mt-1">Manage your cases and documents</p>
+              <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Case Dashboard</h2>
+              <p className="text-slate-600 mt-2 font-medium">Manage your legal cases and documents</p>
             </div>
             <Button 
               onClick={() => setShowCreateModal(true)}
-              className="bg-primary hover:bg-blue-700"
+              className="legal-button-primary px-6 py-3"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Case
@@ -105,26 +105,26 @@ export default function Dashboard() {
         </header>
 
         {/* Content Area */}
-        <div className="flex-1 p-6 overflow-auto">
+        <div className="flex-1 p-8 overflow-auto">
           {/* Cases Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {casesLoading ? (
               // Loading skeletons
               Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="p-6 animate-pulse">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                <Card key={i} className="legal-card p-8 animate-pulse">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-14 h-14 bg-slate-200 rounded-lg"></div>
                       <div>
-                        <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-32"></div>
+                        <div className="h-5 bg-slate-200 rounded w-28 mb-3"></div>
+                        <div className="h-4 bg-slate-200 rounded w-36"></div>
                       </div>
                     </div>
-                    <div className="h-6 bg-gray-200 rounded w-16"></div>
+                    <div className="h-6 bg-slate-200 rounded w-20"></div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="space-y-3">
+                    <div className="h-4 bg-slate-200 rounded"></div>
+                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
                   </div>
                 </Card>
               ))
@@ -132,34 +132,34 @@ export default function Dashboard() {
               cases.map((caseItem: any) => (
                 <Card 
                   key={caseItem.id} 
-                  className="p-6 hover:shadow-md transition-shadow cursor-pointer"
+                  className="legal-card p-8 cursor-pointer transition-all duration-200"
                   onClick={() => setLocation(`/cases/${caseItem.id}`)}
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Briefcase className="h-6 w-6 text-primary" />
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center ring-2 ring-primary/20">
+                        <Briefcase className="h-7 w-7 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{caseItem.caseNumber}</h3>
-                        <p className="text-sm text-gray-600 flex items-center">
+                        <h3 className="font-bold text-slate-900 text-lg tracking-tight">{caseItem.caseNumber}</h3>
+                        <p className="text-sm text-slate-600 flex items-center font-medium mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
                           Created: {formatDate(caseItem.createdAt)}
                         </p>
                       </div>
                     </div>
-                    <Badge className={`text-xs font-medium ${getStatusBadgeClass(caseItem.status)}`}>
+                    <Badge className={`${getStatusBadgeClass(caseItem.status)} px-3 py-1`}>
                       {caseItem.status?.replace('_', ' ')}
                     </Badge>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3 border-t border-slate-100 pt-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Documents:</span>
-                      <span className="font-medium">{caseItem.documentCount || 0}</span>
+                      <span className="text-slate-600 font-medium">Documents:</span>
+                      <span className="font-bold text-slate-900">{caseItem.documentCount || 0}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Role:</span>
-                      <Badge className={`text-xs font-medium ${getRoleBadgeClass(caseItem.role)}`}>
+                      <span className="text-slate-600 font-medium">Role:</span>
+                      <Badge className={`${getRoleBadgeClass(caseItem.role)} px-2 py-1`}>
                         {caseItem.role}
                       </Badge>
                     </div>
@@ -167,13 +167,13 @@ export default function Dashboard() {
                 </Card>
               ))
             ) : (
-              <div className="col-span-full text-center py-12">
-                <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No cases yet</h3>
-                <p className="text-gray-600 mb-4">Create your first case to get started with document management.</p>
+              <div className="col-span-full text-center py-16">
+                <Briefcase className="h-16 w-16 text-slate-400 mx-auto mb-6" />
+                <h3 className="text-xl font-bold text-slate-900 mb-3">No cases yet</h3>
+                <p className="text-slate-600 mb-6 max-w-md mx-auto">Create your first case to begin managing legal documents and case files.</p>
                 <Button 
                   onClick={() => setShowCreateModal(true)}
-                  className="bg-primary hover:bg-blue-700"
+                  className="legal-button-primary px-8 py-3"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Case
@@ -183,15 +183,15 @@ export default function Dashboard() {
           </div>
 
           {/* Recent Activity */}
-          <Card>
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
+          <Card className="legal-card">
+            <div className="p-6 border-b border-slate-200 legal-document-section">
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight">Recent Activity</h3>
             </div>
-            <div className="p-6">
-              <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No recent activity to display</p>
-                <p className="text-sm text-gray-500 mt-1">
+            <div className="p-8">
+              <div className="text-center py-12">
+                <FileText className="h-16 w-16 text-slate-400 mx-auto mb-6" />
+                <p className="text-slate-600 font-medium mb-2">No recent activity to display</p>
+                <p className="text-sm text-slate-500">
                   Activity will appear here when you start uploading documents and managing cases.
                 </p>
               </div>
