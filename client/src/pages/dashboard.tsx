@@ -42,9 +42,17 @@ export default function Dashboard() {
 
   const deleteCaseMutation = useMutation({
     mutationFn: async (caseId: number) => {
-      await apiRequest(`/api/cases/${caseId}`, {
+      const response = await fetch(`/api/cases/${caseId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete case');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       toast({
