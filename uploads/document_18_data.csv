@@ -1,0 +1,33 @@
+Date,Description,Reference/Transaction_ID,Debit,Credit,Balance,Category
+2025-01-03,Transfer to Revolut user,"To Evelyn G",1,002.84,,0.00,Transfer
+2025-01-03,Payment from Ben Greenway,"BEN GREENWAY, 11372992",,2,000.00,2,000.00,Payment
+2025-01-03,Transfer to Revolut user,"To Evelyn G",2,000.00,,0.00,Transfer
+2025-01-03,Payment from Ben Greenway,"BEN GREENWAY, 11372992",,3,400.00,3,400.00,Payment
+2025-01-03,Transfer to Revolut user,"To Evelyn G, Fee: AU$16.72",3,361.69,,38.31,Transfer
+2025-01-04,Payment from Ben Greenway,"BEN GREENWAY, 11372992",,100.00,138.31,Payment
+2025-01-06,Radhe Krishna Venture,"Radhe Krishna Venture, Booragoon, Card: 421604******1229",31.00,,107.31,Purchase
+2025-01-08,Payment from Ben Greenway,"BEN GREENWAY, 11372992",,2,000.00,2,107.31,Payment
+2025-01-24,Transfer from Revolut user,"GRANT PORTER LITTLE",,80.00,2,187.31,Transfer
+2025-02-10,Square,"Sq *perth Festival Casa M, Crawley, Card: 421604******1229",24.38,,2,162.93,Purchase
+2025-02-10,Square,"Sq *perth Festival Casa M, Crawley, Card: 421604******1229",36.58,,2,126.35,Purchase
+2025-02-10,Square,"Sq *perth Festival Casa M, Crawley, Card: 421604******1229",24.38,,2,101.97,Purchase
+2025-02-10,Square,"Sq *perth Festival Casa M, Crawley, Card: 421604******1229",24.38,,2,077.59,Purchase
+2025-02-13,Google Call Recorder,"Google*call Recorder, G.co/helppay#, Card: 421604******1229",18.99,,2,058.60,Purchase
+2025-02-23,Exchanged to AUD,"Fee: AU$0.03",2.68,,2,061.28,Exchange
+2025-02-23,Exchanged to AUD,"Fee: AU$0.27",26.65,,2,087.93,Exchange
+2025-03-03,IKEA,"Ikea Perth, Innaloo, Card: 421604******1229",300.00,,1,787.93,Purchase
+2025-03-04,Coles,"Coles 0340, E Victoria Pk, Card: 421604******1229",258.84,,1,529.09,Grocery
+2025-03-05,Pinto Thai Restaurant,"Pinto Thai Restaurant, Kensington, Card: 421604******1229",42.26,,1,486.83,Restaurant
+2025-03-05,Kmart East Victoria Park,"Kmart 1278, E Victoria Pk, Card: 421604******1229",18.90,,1,467.93,Shopping
+2025-03-06,Coles,"Coles 0340, E Victoria Pk, Card: 421604******1229",17.90,,1,450.03,Grocery
+2025-03-08,Farmer Jacks Como,"Farmer Jacks Como, Como, Card: 421604******1229",53.44,,1,396.59,Grocery
+2025-03-08,Coles,"Coles 0296, Angelo Street, Card: 421604******1229",23.45,,1,373.14,Grocery
+2025-03-10,Coles,"Coles 0296, Angelo Street, Card: 421604******1229",92.02,,1,281.12,Grocery
+2025-03-12,Coles,"Coles 0296, Angelo Street, Card: 421604******1229",15.35,,1,265.77,Grocery
+2025-03-13,Tucker Fresh Carine,"Tucker Fresh Exchang, Bentley, Card: 421604******1229",16.90,,1,248.87,Grocery
+2025-03-13,Coles,"Coles 0296, Angelo Street, Card: 421604******1229",86.95,,1,161.92,Grocery
+2025-03-18,Coles,"Coles 0296, Angelo Street, Card: 421604******1229",14.67,,1,147.25,Grocery
+2025-03-19,Coles,"Coles 0296, Angelo Street, Card: 421604******1229",18.60,,1,128.65,Grocery
+2025-03-19,Coles,"Coles 0296, Angelo Street, Card: 421604******1229",19.35,,1,109.30,Grocery
+2025-03-19,Payment from Ben Greenway,"BEN GREENWAY, 15770802",,500.00,1,609.30,Payment
+2025-03-21,Coles,"Coles 0296, Angelo Street, Card: 421604******1229",41.44,,1,567.86,Grocery

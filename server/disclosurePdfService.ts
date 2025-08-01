@@ -350,10 +350,19 @@ export class DisclosurePdfService {
     }
     
     // Save PDF
-    const filename = `disclosure-${caseData.caseNumber}-${format(new Date(), 'yyyy-MM-dd-HHmmss')}.pdf`;
+    // Sanitize case number for file system (replace / with -)
+    const sanitizedCaseNumber = caseData.caseNumber.replace(/\//g, '-');
+    const filename = `disclosure-${sanitizedCaseNumber}-${format(new Date(), 'yyyy-MM-dd-HHmmss')}.pdf`;
+    
+    // Create uploads directory if it doesn't exist
     const uploadsDir = path.join(process.cwd(), 'uploads');
     await fs.mkdir(uploadsDir, { recursive: true });
-    const filePath = path.join(uploadsDir, filename);
+    
+    // Create case-specific directory with sanitized case number
+    const caseDir = path.join(uploadsDir, `disclosure-${sanitizedCaseNumber}`);
+    await fs.mkdir(caseDir, { recursive: true });
+    
+    const filePath = path.join(caseDir, filename);
     
     // Write PDF to file
     const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
