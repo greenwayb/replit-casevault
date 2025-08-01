@@ -52,6 +52,14 @@ Preferred communication style: Simple, everyday language.
 - **User Association**: Many-to-many relationship between users and cases with role assignments
 - **Document Association**: One-to-many relationship between cases and documents
 
+# Recent Changes
+
+## August 1, 2025
+- **Fixed Case Number Validation**: Updated case number validation to allow forward slashes (/) in case numbers like "12222/2025"
+- **Enhanced UI Layout**: Moved disclosure PDF manager to right-hand panel with navigation controls to preserve document tree functionality
+- **Logo Integration**: Added Family Court Doco logo throughout application (landing page, sidebar, PDF documents)
+- **PDF Generation**: Fixed jsPDF constructor issues and integrated logo into generated disclosure PDFs
+
 # External Dependencies
 
 ## Database Services

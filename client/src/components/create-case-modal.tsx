@@ -28,7 +28,7 @@ const createCaseSchema = z.object({
   caseNumber: z
     .string()
     .min(1, "Case number is required")
-    .regex(/^[A-Z0-9-_]+$/, "Case number must contain only uppercase letters, numbers, hyphens, and underscores"),
+    .regex(/^[A-Z0-9-_/]+$/, "Case number must contain only uppercase letters, numbers, hyphens, underscores, and forward slashes"),
 });
 
 type CreateCaseFormData = z.infer<typeof createCaseSchema>;
@@ -112,7 +112,7 @@ export default function CreateCaseModal({ open, onOpenChange }: CreateCaseModalP
                   <FormLabel>Case Number</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="e.g., CASE-2024-004"
+                      placeholder="e.g., 12222/2025 or CASE-2024-004"
                       {...field}
                       value={field.value.toUpperCase()}
                       onChange={(e) => field.onChange(e.target.value.toUpperCase())}
