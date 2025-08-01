@@ -132,6 +132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied to this case" });
       }
 
+      // Create the document first
       const document = await storage.createDocument({
         caseId,
         filename: req.file.filename,
@@ -142,10 +143,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
         uploadedById: userId,
       });
 
-      res.json(document);
+      // Process Banking documents with AI
+      if (category.toUpperCase() === 'BANKING') {
+        try {
+          const { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber } = await import('./aiService');
+          const filePath = path.join(uploadDir, req.file.filename);
+          
+          // Analyze the document with AI
+          const analysis = await analyzeBankingDocument(filePath);
+          
+          // Get existing account groups for this case
+          const existingGroups = await storage.getExistingAccountGroups(caseId, 'BANKING');
+          
+          // Check if account name already exists
+          const allCaseDocuments = await storage.getDocumentsByCase(caseId);
+          const existingAccount = allCaseDocuments.find(doc => 
+            doc.category === 'BANKING' && 
+            doc.accountName?.toLowerCase() === analysis.accountName.toLowerCase()
+          );
+          
+          let accountGroupNumber: string;
+          let documentSequence: number;
+          
+          if (existingAccount && existingAccount.accountGroupNumber) {
+            // Use existing account group
+            accountGroupNumber = existingAccount.accountGroupNumber;
+            const groupDocuments = await storage.getDocumentsByAccountGroup(caseId, accountGroupNumber);
+            documentSequence = groupDocuments.length + 1;
+          } else {
+            // Create new account group
+            accountGroupNumber = generateAccountGroupNumber(existingGroups, analysis.accountName);
+            documentSequence = 1;
+          }
+          
+          const documentNumber = generateDocumentNumber('BANKING', accountGroupNumber, documentSequence);
+          
+          // Update document with AI analysis
+          const updatedDocument = await storage.updateDocumentWithAIAnalysis(document.id, {
+            accountName: analysis.accountName,
+            financialInstitution: analysis.financialInstitution,
+            accountNumber: analysis.accountNumber,
+            bsbSortCode: analysis.bsbSortCode,
+            transactionDateFrom: analysis.transactionDateFrom ? new Date(analysis.transactionDateFrom) : undefined,
+            transactionDateTo: analysis.transactionDateTo ? new Date(analysis.transactionDateTo) : undefined,
+            documentNumber,
+            accountGroupNumber,
+            aiProcessed: true,
+          });
+          
+          res.json(updatedDocument);
+        } catch (aiError) {
+          console.error("AI analysis failed:", aiError);
+          // Update document with error status but still return it
+          await storage.updateDocumentWithAIAnalysis(document.id, {
+            aiProcessed: false,
+            processingError: aiError instanceof Error ? aiError.message : 'AI processing failed',
+          });
+          res.json(document);
+        }
+      } else {
+        res.json(document);
+      }
     } catch (error) {
       console.error("Error uploading document:", error);
       res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  // Update account name for banking documents
+  app.patch('/api/documents/:id/account', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const documentId = parseInt(req.params.id);
+      const { accountName } = req.body;
+
+      if (!accountName) {
+        return res.status(400).json({ message: "Account name is required" });
+      }
+
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check if user has access to the case
+      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
+      if (!userRole) {
+        return res.status(403).json({ message: "Access denied to this document" });
+      }
+
+      // Update the account name
+      const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, {
+        accountName: accountName.trim(),
+      });
+
+      res.json(updatedDocument);
+    } catch (error) {
+      console.error("Error updating account name:", error);
+      res.status(500).json({ message: "Failed to update account name" });
     }
   });
 

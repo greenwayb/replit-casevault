@@ -9,6 +9,7 @@ import {
   pgEnum,
   integer,
   serial,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -69,6 +70,22 @@ export const documents = pgTable("documents", {
   mimeType: varchar("mime_type").notNull(),
   uploadedById: varchar("uploaded_by_id").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
+  
+  // AI-extracted banking information
+  accountName: varchar("account_name", { length: 255 }),
+  financialInstitution: varchar("financial_institution", { length: 255 }),
+  accountNumber: varchar("account_number", { length: 100 }),
+  bsbSortCode: varchar("bsb_sort_code", { length: 20 }),
+  transactionDateFrom: timestamp("transaction_date_from"),
+  transactionDateTo: timestamp("transaction_date_to"),
+  
+  // Hierarchical numbering
+  documentNumber: varchar("document_number", { length: 50 }), // e.g., "B1.1", "B1.2", "RP1.1"
+  accountGroupNumber: varchar("account_group_number", { length: 20 }), // e.g., "B1", "B2"
+  
+  // Processing status
+  aiProcessed: boolean("ai_processed").default(false),
+  processingError: text("processing_error"),
 });
 
 // Relations

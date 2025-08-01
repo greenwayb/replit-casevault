@@ -14,7 +14,7 @@ import {
   type Role,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, isNotNull } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -37,6 +37,9 @@ export interface IStorage {
   getDocumentsByCase(caseId: number): Promise<Document[]>;
   getDocumentById(id: number): Promise<Document | undefined>;
   getDocumentsByCategory(caseId: number, category: string): Promise<Document[]>;
+  updateDocumentWithAIAnalysis(documentId: number, analysis: any): Promise<Document>;
+  getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]>;
+  getExistingAccountGroups(caseId: number, category: 'BANKING' | 'REAL_PROPERTY'): Promise<string[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -133,6 +136,57 @@ export class DatabaseStorage implements IStorage {
       .values(document)
       .returning();
     return newDocument;
+  }
+
+  async updateDocumentWithAIAnalysis(
+    documentId: number, 
+    analysis: {
+      accountName?: string;
+      financialInstitution?: string;
+      accountNumber?: string;
+      bsbSortCode?: string;
+      transactionDateFrom?: Date;
+      transactionDateTo?: Date;
+      documentNumber?: string;
+      accountGroupNumber?: string;
+      aiProcessed?: boolean;
+      processingError?: string;
+    }
+  ): Promise<Document> {
+    const [updatedDocument] = await db
+      .update(documents)
+      .set(analysis)
+      .where(eq(documents.id, documentId))
+      .returning();
+    return updatedDocument;
+  }
+
+  async getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]> {
+    return await db
+      .select()
+      .from(documents)
+      .where(
+        and(
+          eq(documents.caseId, caseId),
+          eq(documents.accountGroupNumber, accountGroupNumber)
+        )
+      )
+      .orderBy(documents.documentNumber);
+  }
+
+  async getExistingAccountGroups(caseId: number, category: 'BANKING' | 'REAL_PROPERTY'): Promise<string[]> {
+    const results = await db
+      .selectDistinct({ accountGroupNumber: documents.accountGroupNumber })
+      .from(documents)
+      .where(
+        and(
+          eq(documents.caseId, caseId),
+          eq(documents.category, category as any),
+          isNotNull(documents.accountGroupNumber)
+        )
+      );
+    
+    return results.map(r => r.accountGroupNumber).filter(Boolean) as string[];
   }
 
   async getDocumentsByCase(caseId: number): Promise<Document[]> {
