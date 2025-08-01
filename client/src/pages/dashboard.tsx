@@ -206,9 +206,7 @@ export default function Dashboard() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <h3 className="font-bold text-slate-900 text-base md:text-lg tracking-tight truncate">{caseItem.caseNumber}</h3>
-                          {caseItem.title && (
-                            <p className="text-xs md:text-sm text-primary font-semibold truncate mt-1">{caseItem.title}</p>
-                          )}
+                          <p className="text-xs md:text-sm text-primary font-semibold truncate mt-1">{caseItem.title || 'Untitled Case'}</p>
                           <p className="text-xs md:text-sm text-slate-600 flex items-center font-medium mt-1">
                             <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
                             <span className="truncate">Created: {formatDate(caseItem.createdAt)}</span>

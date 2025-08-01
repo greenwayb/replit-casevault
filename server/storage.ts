@@ -38,6 +38,7 @@ export interface IStorage {
   
   // Case user operations
   addUserToCase(caseUser: InsertCaseUser): Promise<CaseUser>;
+  updateCaseTitle(caseId: number, title: string): Promise<Case>;
   
   // Document operations
   createDocument(document: InsertDocument): Promise<Document>;
@@ -95,6 +96,7 @@ export class DatabaseStorage implements IStorage {
       .select({
         id: cases.id,
         caseNumber: cases.caseNumber,
+        title: cases.title,
         createdById: cases.createdById,
         status: cases.status,
         createdAt: cases.createdAt,
@@ -109,6 +111,7 @@ export class DatabaseStorage implements IStorage {
 
     return result.map(row => ({
       ...row,
+      title: row.title || 'Untitled Case', // Provide default for old cases
       documentCount: Number(row.documentCount) || 0,
     }));
   }
@@ -138,6 +141,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Case user operations
+  async updateCaseTitle(caseId: number, title: string): Promise<Case> {
+    const [updatedCase] = await db
+      .update(cases)
+      .set({ title, updatedAt: new Date() })
+      .where(eq(cases.id, caseId))
+      .returning();
+    return updatedCase;
+  }
+
   async addUserToCase(caseUser: InsertCaseUser): Promise<CaseUser> {
     const [newCaseUser] = await db
       .insert(caseUsers)

@@ -30,10 +30,12 @@ export default function BankingBalanceChart({ csvData, documentName, accountName
 
       const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
       
-      // Find balance and date columns
-      const balanceColumnIndex = headers.findIndex(h => 
-        h.includes('balance') || h.includes('amount') || h.includes('total')
-      );
+      // Find balance and date columns - prioritize exact "Balance" column match
+      let balanceColumnIndex = headers.findIndex(h => h.toLowerCase() === 'balance');
+      if (balanceColumnIndex === -1) {
+        balanceColumnIndex = headers.findIndex(h => h.includes('balance') || h.includes('amount') || h.includes('total'));
+      }
+      
       const dateColumnIndex = headers.findIndex(h => 
         h.includes('date') || h.includes('time')
       );

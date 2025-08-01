@@ -10,6 +10,7 @@ import DocumentTree from "@/components/document-tree";
 import DocumentViewer from "@/components/document-viewer";
 import DocumentUploadModal from "@/components/document-upload-modal";
 import { DisclosurePdfManager } from "@/components/disclosure-pdf-manager";
+import EditableCaseTitle from "@/components/editable-case-title";
 import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose, FileText, X } from "lucide-react";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
@@ -134,6 +135,12 @@ export default function CaseDetail() {
               </Button>
               <div className="min-w-0 flex-1">
                 <h2 className="text-lg md:text-xl font-semibold text-gray-900 truncate">{caseData.caseNumber}</h2>
+                <EditableCaseTitle 
+                  caseId={caseData.id}
+                  currentTitle={caseData.title || 'Untitled Case'}
+                  userRole={caseData.role}
+                  className="text-xs md:text-sm text-primary font-semibold truncate"
+                />
                 <p className="text-xs md:text-sm text-gray-600 truncate">{getStatusDisplay(caseData.status)}</p>
               </div>
             </div>

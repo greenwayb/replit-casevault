@@ -976,6 +976,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update case title
+  app.put('/api/cases/:id/title', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const caseId = parseInt(req.params.id);
+      const { title } = req.body;
+
+      if (!title || title.trim().length === 0) {
+        return res.status(400).json({ message: "Title is required" });
+      }
+
+      // Check if user has CASEADMIN role for this case
+      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      if (userRole !== 'CASEADMIN') {
+        return res.status(403).json({ message: "Only case administrators can edit case titles" });
+      }
+
+      const updatedCase = await storage.updateCaseTitle(caseId, title.trim());
+      res.json(updatedCase);
+    } catch (error) {
+      console.error("Error updating case title:", error);
+      res.status(500).json({ message: "Failed to update case title" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
