@@ -10,7 +10,7 @@ import DocumentTree from "@/components/document-tree";
 import DocumentViewer from "@/components/document-viewer";
 import DocumentUploadModal from "@/components/document-upload-modal";
 import { DisclosurePdfManager } from "@/components/disclosure-pdf-manager";
-import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose } from "lucide-react";
+import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose, FileText, X } from "lucide-react";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
 export default function CaseDetail() {
@@ -21,6 +21,7 @@ export default function CaseDetail() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [navExpanded, setNavExpanded] = useState(false);
+  const [showDisclosurePdfs, setShowDisclosurePdfs] = useState(false);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -165,28 +166,77 @@ export default function CaseDetail() {
           </Button>
         </div>
 
-        {/* Disclosure PDF Manager */}
+        {/* Navigation Controls */}
         <div className="p-3 md:p-4 border-b border-gray-200">
-          <DisclosurePdfManager caseId={parseInt(id!)} />
+          <div className="flex gap-2">
+            <Button
+              variant={!showDisclosurePdfs ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setShowDisclosurePdfs(false);
+                setSelectedDocument(null);
+              }}
+              className="flex-1 text-xs"
+            >
+              Documents
+            </Button>
+            <Button
+              variant={showDisclosurePdfs ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setShowDisclosurePdfs(true);
+                setSelectedDocument(null);
+              }}
+              className="flex-1 text-xs"
+            >
+              <FileText className="h-3 w-3 mr-1" />
+              Disclosure PDFs
+            </Button>
+          </div>
         </div>
 
         {/* Document Tree */}
         <div className="flex-1 p-3 md:p-4 overflow-auto">
           <DocumentTree 
             documents={caseData.documents || []} 
-            onDocumentSelect={setSelectedDocument}
+            onDocumentSelect={(doc) => {
+              setSelectedDocument(doc);
+              setShowDisclosurePdfs(false);
+            }}
             selectedDocument={selectedDocument}
             caseId={parseInt(id!)}
           />
         </div>
       </div>
 
-      {/* Document Viewer */}
+      {/* Right Panel - Document Viewer or Disclosure PDFs */}
       <div className={`
         flex-1 bg-gray-50 
-        ${!selectedDocument ? 'hidden md:block' : 'block'}
+        ${!selectedDocument && !showDisclosurePdfs ? 'hidden md:block' : 'block'}
       `}>
-        <DocumentViewer document={selectedDocument} />
+        {showDisclosurePdfs ? (
+          <div className="h-full flex flex-col">
+            {/* Disclosure PDF Header */}
+            <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Disclosure PDFs</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowDisclosurePdfs(false)}
+                className="md:hidden"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {/* Disclosure PDF Manager */}
+            <div className="flex-1 p-4 overflow-auto">
+              <DisclosurePdfManager caseId={parseInt(id!)} />
+            </div>
+          </div>
+        ) : (
+          <DocumentViewer document={selectedDocument} />
+        )}
       </div>
 
       <DocumentUploadModal 
