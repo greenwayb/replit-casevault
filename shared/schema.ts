@@ -54,6 +54,7 @@ export const categoryEnum = pgEnum('category', ['REAL_PROPERTY', 'BANKING', 'TAX
 export const cases = pgTable("cases", {
   id: serial("id").primaryKey(),
   caseNumber: varchar("case_number").notNull().unique(),
+  title: varchar("title").default('Untitled Case'), // Case title like "Smith J & Smith M"
   createdById: varchar("created_by_id").notNull().references(() => users.id),
   status: caseStatusEnum("status").default('ACTIVE'),
   createdAt: timestamp("created_at").defaultNow(),
@@ -116,6 +117,17 @@ export const disclosurePdfs = pgTable("disclosure_pdfs", {
   lastGeneratedAt: timestamp("last_generated_at"),
 });
 
+// Activity log table
+export const activityLog = pgTable("activity_log", {
+  id: serial("id").primaryKey(),
+  caseId: integer("case_id").notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  action: varchar("action").notNull(), // 'document_uploaded', 'document_deleted', 'case_created', etc.
+  description: text("description").notNull(),
+  metadata: jsonb("metadata"), // Store additional data like document info
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   createdCases: many(cases),
@@ -151,7 +163,8 @@ export const insertCaseSchema = createInsertSchema(cases).omit({
   createdAt: true,
   updatedAt: true,
 }).extend({
-  caseNumber: z.string().min(1, "Case number is required").max(100, "Case number too long")
+  caseNumber: z.string().min(1, "Case number is required").max(100, "Case number too long"),
+  title: z.string().min(1, "Case title is required").max(200, "Case title too long")
 });
 
 export const insertDocumentSchema = createInsertSchema(documents).omit({
@@ -169,6 +182,11 @@ export const insertDisclosurePdfSchema = createInsertSchema(disclosurePdfs).omit
   generatedAt: true,
 });
 
+export const insertActivityLogSchema = createInsertSchema(activityLog).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -183,6 +201,8 @@ export type CaseUser = typeof caseUsers.$inferSelect;
 export type InsertCaseUser = z.infer<typeof insertCaseUserSchema>;
 export type DisclosurePdf = typeof disclosurePdfs.$inferSelect;
 export type InsertDisclosurePdf = z.infer<typeof insertDisclosurePdfSchema>;
+export type ActivityLog = typeof activityLog.$inferSelect;
+export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 export type Role = 'DISCLOSER' | 'REVIEWER' | 'DISCLOSEE' | 'CASEADMIN';
 export type CaseStatus = 'ACTIVE' | 'UNDER_REVIEW' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
-export type Category = 'REAL_PROPERTY' | 'BANKING';
+export type Category = 'REAL_PROPERTY' | 'BANKING' | 'TAXATION' | 'SUPERANNUATION' | 'EMPLOYMENT' | 'SHARES_INVESTMENTS' | 'VEHICLES';

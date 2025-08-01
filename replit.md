@@ -68,6 +68,8 @@ Preferred communication style: Simple, everyday language.
 - **PDF Generation**: Fixed jsPDF constructor issues and integrated logo into generated disclosure PDFs
 - **Enhanced Case Cards**: Installed framer-motion dependency and implemented TiltedCard component for interactive case cards with 3D tilt effects and hover animations
 - **Expanded Disclosure Tree**: Extended document categorization system to include 7 categories: Real Property (A), Banking (B), Taxation (C), Superannuation (D), Employment (E), Shares/Investments (F), and Vehicles (G) with hierarchical numbering system
+- **Case Title Field**: Added required case title field during case creation (e.g., "Smith J & Smith M") with database schema updates and form validation
+- **Activity Tracking System**: Implemented comprehensive activity logging with database storage for case creation, document uploads, and user actions. Real-time activity feed displays recent user actions across all accessible cases on the dashboard
 
 # External Dependencies
 

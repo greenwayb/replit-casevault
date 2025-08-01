@@ -42,6 +42,11 @@ export default function Dashboard() {
     enabled: isAuthenticated,
   });
 
+  const { data: recentActivity, isLoading: activityLoading } = useQuery({
+    queryKey: ["/api/activity/recent"],
+    enabled: isAuthenticated,
+  });
+
   const deleteCaseMutation = useMutation({
     mutationFn: async (caseId: number) => {
       const response = await fetch(`/api/cases/${caseId}`, {
@@ -284,13 +289,54 @@ export default function Dashboard() {
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">Recent Activity</h3>
             </div>
             <div className="p-8">
-              <div className="text-center py-12">
-                <FileText className="h-16 w-16 text-slate-400 mx-auto mb-6" />
-                <p className="text-slate-600 font-medium mb-2">No recent activity to display</p>
-                <p className="text-sm text-slate-500">
-                  Activity will appear here when you start uploading documents and managing cases.
-                </p>
-              </div>
+              {activityLoading ? (
+                // Loading skeleton
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg animate-pulse">
+                      <div className="w-8 h-8 bg-slate-200 rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-3 bg-slate-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-2 bg-slate-200 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : recentActivity && recentActivity.length > 0 ? (
+                <div className="space-y-4">
+                  {recentActivity.map((activity: any) => (
+                    <div key={activity.id} className="flex items-start space-x-3 p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        {activity.action === 'case_created' ? (
+                          <Briefcase className="h-5 w-5 text-primary" />
+                        ) : activity.action === 'document_uploaded' ? (
+                          <Upload className="h-5 w-5 text-primary" />
+                        ) : (
+                          <FileText className="h-5 w-5 text-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-900">
+                          <span className="font-semibold">{activity.user.firstName || activity.user.email.split('@')[0]}</span> {activity.description}
+                        </p>
+                        <div className="flex items-center space-x-2 text-xs text-slate-500 mt-1">
+                          <span>Case: {activity.case.title || activity.case.caseNumber}</span>
+                          <span>•</span>
+                          <span>{new Date(activity.createdAt).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <FileText className="h-16 w-16 text-slate-400 mx-auto mb-6" />
+                  <p className="text-slate-600 font-medium mb-2">No recent activity to display</p>
+                  <p className="text-sm text-slate-500">
+                    Activity will appear here when you start uploading documents and managing cases.
+                  </p>
+                </div>
+              )}
             </div>
           </Card>
         </div>

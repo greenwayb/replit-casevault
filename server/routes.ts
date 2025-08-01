@@ -69,6 +69,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: 'CASEADMIN',
       });
 
+      // Log the activity
+      await storage.createActivityLog({
+        caseId: newCase.id,
+        userId: userId,
+        action: 'case_created',
+        description: `created case "${newCase.title}" (${newCase.caseNumber})`,
+        metadata: {
+          caseNumber: newCase.caseNumber,
+          title: newCase.title,
+        }
+      });
+
       res.json(newCase);
     } catch (error) {
       console.error("Error creating case:", error);
@@ -212,6 +224,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           };
           
+          // Log the document upload activity
+          await storage.createActivityLog({
+            caseId: document.caseId,
+            userId: userId,
+            action: 'document_uploaded',
+            description: `uploaded banking document "${document.originalName}" for ${analysis.accountHolderName}`,
+            metadata: {
+              documentId: document.id,
+              filename: document.filename,
+              originalName: document.originalName,
+              category: document.category,
+              accountHolderName: analysis.accountHolderName,
+              documentNumber,
+              fileSize: document.fileSize,
+            }
+          });
+
           res.json(documentWithAnalysis);
         } catch (aiError) {
           console.error("AI analysis failed:", aiError);
@@ -233,9 +262,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
               csvInfo: null
             }
           };
+          // Log the document upload activity even with error
+          await storage.createActivityLog({
+            caseId: document.caseId,
+            userId: userId,
+            action: 'document_uploaded',
+            description: `uploaded document "${document.originalName}" (AI processing failed)`,
+            metadata: {
+              documentId: document.id,
+              filename: document.filename,
+              originalName: document.originalName,
+              category: document.category,
+              fileSize: document.fileSize,
+              aiProcessingError: true,
+            }
+          });
+
           res.json(documentWithError);
         }
       } else {
+        // Log the document upload activity for non-banking documents
+        await storage.createActivityLog({
+          caseId: document.caseId,
+          userId: userId,
+          action: 'document_uploaded',
+          description: `uploaded ${document.category.toLowerCase()} document "${document.originalName}"`,
+          metadata: {
+            documentId: document.id,
+            filename: document.filename,
+            originalName: document.originalName,
+            category: document.category,
+            fileSize: document.fileSize,
+          }
+        });
+
         res.json(document);
       }
     } catch (error) {
@@ -853,6 +913,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error downloading disclosure PDF:', error);
       res.status(500).json({ message: 'Failed to download disclosure PDF' });
+    }
+  });
+
+  // Recent activity endpoint
+  app.get('/api/activity/recent', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      // Get recent activity across all cases the user has access to
+      const activities = await storage.getRecentActivity(limit);
+      
+      // Filter activities to only show cases the user has access to
+      const filteredActivities = [];
+      for (const activity of activities) {
+        const userRole = await storage.getUserRoleInCase(userId, activity.caseId);
+        if (userRole) {
+          filteredActivities.push(activity);
+        }
+      }
+      
+      res.json(filteredActivities);
+    } catch (error) {
+      console.error("Error fetching recent activity:", error);
+      res.status(500).json({ message: "Failed to fetch recent activity" });
     }
   });
 

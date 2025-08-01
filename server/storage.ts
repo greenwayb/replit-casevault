@@ -4,6 +4,7 @@ import {
   documents,
   caseUsers,
   disclosurePdfs,
+  activityLog,
   type User,
   type UpsertUser,
   type Case,
@@ -14,6 +15,8 @@ import {
   type InsertCaseUser,
   type DisclosurePdf,
   type InsertDisclosurePdf,
+  type ActivityLog,
+  type InsertActivityLog,
   type Role,
 } from "@shared/schema";
 import { db } from "./db";
@@ -50,6 +53,10 @@ export interface IStorage {
   createDisclosurePdf(disclosurePdf: InsertDisclosurePdf): Promise<DisclosurePdf>;
   getDisclosurePdfsByCase(caseId: number): Promise<DisclosurePdf[]>;
   getLatestDisclosurePdf(caseId: number): Promise<DisclosurePdf | undefined>;
+  
+  // Activity log operations
+  createActivityLog(activity: InsertActivityLog): Promise<ActivityLog>;
+  getRecentActivity(limit?: number): Promise<(ActivityLog & { user: User; case: Case })[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -274,6 +281,51 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(disclosurePdfs.generatedAt))
       .limit(1);
     return latestPdf;
+  }
+
+  // Activity log operations
+  async createActivityLog(activity: InsertActivityLog): Promise<ActivityLog> {
+    const [newActivity] = await db
+      .insert(activityLog)
+      .values(activity)
+      .returning();
+    return newActivity;
+  }
+
+  async getRecentActivity(limit: number = 10): Promise<(ActivityLog & { user: User; case: Case })[]> {
+    const activities = await db
+      .select({
+        id: activityLog.id,
+        caseId: activityLog.caseId,
+        userId: activityLog.userId,
+        action: activityLog.action,
+        description: activityLog.description,
+        metadata: activityLog.metadata,
+        createdAt: activityLog.createdAt,
+        user: {
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImageUrl: users.profileImageUrl,
+        },
+        case: {
+          id: cases.id,
+          caseNumber: cases.caseNumber,
+          title: cases.title,
+          createdById: cases.createdById,
+          status: cases.status,
+          createdAt: cases.createdAt,
+          updatedAt: cases.updatedAt,
+        }
+      })
+      .from(activityLog)
+      .innerJoin(users, eq(activityLog.userId, users.id))
+      .innerJoin(cases, eq(activityLog.caseId, cases.id))
+      .orderBy(desc(activityLog.createdAt))
+      .limit(limit);
+
+    return activities as (ActivityLog & { user: User; case: Case })[];
   }
 }
 

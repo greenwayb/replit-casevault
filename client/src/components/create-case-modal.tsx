@@ -29,6 +29,10 @@ const createCaseSchema = z.object({
     .string()
     .min(1, "Case number is required")
     .regex(/^[A-Z0-9-_/]+$/, "Case number must contain only uppercase letters, numbers, hyphens, underscores, and forward slashes"),
+  title: z
+    .string()
+    .min(1, "Case title is required")
+    .max(200, "Case title too long"),
 });
 
 type CreateCaseFormData = z.infer<typeof createCaseSchema>;
@@ -46,6 +50,7 @@ export default function CreateCaseModal({ open, onOpenChange }: CreateCaseModalP
     resolver: zodResolver(createCaseSchema),
     defaultValues: {
       caseNumber: "",
+      title: "",
     },
   });
 
@@ -98,7 +103,7 @@ export default function CreateCaseModal({ open, onOpenChange }: CreateCaseModalP
         <DialogHeader>
           <DialogTitle>Create New Case</DialogTitle>
           <DialogDescription>
-            Enter a unique case number to get started
+            Enter a case number and title to get started
           </DialogDescription>
         </DialogHeader>
         
@@ -120,6 +125,26 @@ export default function CreateCaseModal({ open, onOpenChange }: CreateCaseModalP
                   </FormControl>
                   <p className="text-xs text-gray-500">
                     This will be your case identifier
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Case Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., Smith J & Smith M"
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    A descriptive title for this case
                   </p>
                   <FormMessage />
                 </FormItem>
