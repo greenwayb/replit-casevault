@@ -213,12 +213,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.json(documentWithAnalysis);
         } catch (aiError) {
           console.error("AI analysis failed:", aiError);
-          // Update document with error status but still return it
-          await storage.updateDocumentWithAIAnalysis(document.id, {
-            aiProcessed: false,
+          // Return document with error status for manual review
+          const documentWithError = {
+            ...document,
+            aiProcessingFailed: true,
             processingError: aiError instanceof Error ? aiError.message : 'AI processing failed',
-          });
-          res.json(document);
+            extractedBankingInfo: {
+              accountHolderName: '',
+              accountName: '',
+              financialInstitution: '',
+              accountNumber: '',
+              bsbSortCode: '',
+              transactionDateFrom: '',
+              transactionDateTo: '',
+              documentNumber: '',
+              accountGroupNumber: '',
+              csvInfo: null
+            }
+          };
+          res.json(documentWithError);
         }
       } else {
         res.json(document);
@@ -294,10 +307,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Confirm banking document analysis
-  app.post("/api/documents/:id/confirm-banking", isAuthenticated, async (req, res) => {
+  app.post("/api/documents/:id/confirm-banking", isAuthenticated, async (req: any, res) => {
     try {
       const documentId = parseInt(req.params.id);
-      const { bankingInfo, csvInfo } = req.body;
+      const { bankingInfo, csvInfo, isManualReview } = req.body;
+
+      // For manual review, generate document numbers
+      let documentNumber = bankingInfo.documentNumber;
+      let accountGroupNumber = bankingInfo.accountGroupNumber;
+      
+      if (isManualReview) {
+        // Get existing documents to generate proper numbering
+        const document = await storage.getDocumentById(documentId);
+        const caseDocuments = await storage.getDocumentsByCase(document!.caseId);
+        const bankingDocs = caseDocuments.filter(doc => doc.category === 'BANKING' && doc.accountGroupNumber);
+        
+        // Generate account group number and document number
+        accountGroupNumber = '1'; // Simple for now, can be enhanced
+        documentNumber = `B${accountGroupNumber}.1`; // Simple for now
+      }
 
       // Update document with confirmed banking analysis
       const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, {
@@ -308,8 +336,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bsbSortCode: bankingInfo.bsbSortCode,
         transactionDateFrom: bankingInfo.transactionDateFrom ? new Date(bankingInfo.transactionDateFrom) : undefined,
         transactionDateTo: bankingInfo.transactionDateTo ? new Date(bankingInfo.transactionDateTo) : undefined,
-        documentNumber: bankingInfo.documentNumber,
-        accountGroupNumber: bankingInfo.accountGroupNumber,
+        documentNumber,
+        accountGroupNumber,
         aiProcessed: true,
         csvPath: csvInfo?.csvPath,
         csvRowCount: csvInfo?.csvRowCount,

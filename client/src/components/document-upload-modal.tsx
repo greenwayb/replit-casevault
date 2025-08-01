@@ -128,6 +128,7 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
         setUploadPhase('complete');
         
         // Check if this is a banking document with extracted info that needs confirmation
+        // OR if AI processing failed and needs manual review
         if (result.extractedBankingInfo) {
           setPendingBankingData(result);
           setShowBankingConfirmation(true);
@@ -192,6 +193,9 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
 
   const handleBankingConfirm = async (confirmedInfo: any) => {
     try {
+      // For manual review, we need to generate document numbers
+      const isManual = pendingBankingData.aiProcessingFailed;
+      
       await fetch(`/api/documents/${pendingBankingData.id}/confirm-banking`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -199,10 +203,11 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
         body: JSON.stringify({
           bankingInfo: {
             ...confirmedInfo,
-            documentNumber: pendingBankingData.extractedBankingInfo.documentNumber,
-            accountGroupNumber: pendingBankingData.extractedBankingInfo.accountGroupNumber,
+            documentNumber: isManual ? 'B1.1' : pendingBankingData.extractedBankingInfo.documentNumber,
+            accountGroupNumber: isManual ? '1' : pendingBankingData.extractedBankingInfo.accountGroupNumber,
           },
-          csvInfo: pendingBankingData.extractedBankingInfo.csvInfo
+          csvInfo: pendingBankingData.extractedBankingInfo.csvInfo,
+          isManualReview: isManual
         })
       });
 
@@ -391,6 +396,8 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
           bankingInfo={pendingBankingData.extractedBankingInfo}
           onConfirm={handleBankingConfirm}
           onReject={handleBankingReject}
+          documentId={pendingBankingData.id}
+          isManualReview={pendingBankingData.aiProcessingFailed}
         />
       )}
     </Dialog>

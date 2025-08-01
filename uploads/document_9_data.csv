@@ -1,0 +1,34 @@
+Date,Description,Reference/Transaction_ID,Debit,Credit,Balance,Category
+2025-03-20,Angelo Street Market,,4.53,,,
+2025-01-03,Transfer to Revolut user,To Evelyn G,1002.84,,,Transfer
+2025-01-03,Payment from Ben Greenway,BEN GREENWAY,,-2000.00,2000.00,Payment
+2025-01-03,Transfer to Revolut user,To Evelyn G,2000.00,,,Transfer
+2025-01-03,Payment from Ben Greenway,BEN GREENWAY,,-3400.00,3400.00,Payment
+2025-01-03,Transfer to Revolut user,To Evelyn G,3361.69,,,Transfer
+2025-01-04,Payment from Ben Greenway,BEN GREENWAY,,-100.00,138.31,Payment
+2025-01-06,Radhe Krishna Venture,,31.00,,,Entertainment
+2025-01-08,Payment from Ben Greenway,BEN GREENWAY,,-2000.00,2107.31,Payment
+2025-01-24,Transfer from Revolut user,GRANT PORTER LITTLE,,-80.00,2187.31,Transfer
+2025-02-10,Square,,24.38,,,Entertainment
+2025-02-10,Square,,36.58,,,Entertainment
+2025-02-10,Square,,24.38,,,Entertainment
+2025-02-10,Square,,24.38,,,Entertainment
+2025-02-13,Google Call Recorder,,18.99,,,Personal
+2025-02-23,Exchanged to AUD,,2.68,,,Currency Exchange
+2025-02-23,Exchanged to AUD,,26.65,,,Currency Exchange
+2025-03-03,IKEA,,300.00,,,Shopping
+2025-03-04,Coles,,258.84,,,Groceries
+2025-03-05,Pinto Thai Restaurant,,42.26,,,Dining
+2025-03-05,Kmart East Victoria Park,,18.90,,,Shopping
+2025-03-06,Coles,,17.90,,,Groceries
+2025-03-08,Farmer Jacks Como,,53.44,,,Groceries
+2025-03-08,Coles,,23.45,,,Groceries
+2025-03-10,Coles,,92.02,,,Groceries
+2025-03-12,Coles,,15.35,,,Groceries
+2025-03-13,Tucker Fresh Carine,,16.90,,,Groceries
+2025-03-13,Coles,,86.95,,,Groceries
+2025-03-18,Coles,,14.67,,,Groceries
+2025-03-19,Coles,,18.60,,,Groceries
+2025-03-19,Coles,,19.35,,,Groceries
+2025-03-19,Payment from Ben Greenway,BEN GREENWAY,,-500.00,1609.30,Payment
+2025-03-21,Coles,,41.44,,,Groceries
