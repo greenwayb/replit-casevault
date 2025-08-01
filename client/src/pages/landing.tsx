@@ -73,11 +73,11 @@ export default function Landing() {
             <Card className="p-6">
               <CardHeader className="pb-4">
                 <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle className="text-lg">Team Collaboration</CardTitle>
+                <CardTitle className="text-lg">Case Members</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 text-sm">
-                  Collaborate with team members with appropriate access levels and document sharing.
+                  Manage case members with appropriate access levels and secure document sharing.
                 </p>
               </CardContent>
             </Card>
