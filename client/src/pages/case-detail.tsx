@@ -143,6 +143,7 @@ export default function CaseDetail() {
             documents={caseData.documents || []} 
             onDocumentSelect={setSelectedDocument}
             selectedDocument={selectedDocument}
+            caseId={parseInt(id!)}
           />
         </div>
       </div>

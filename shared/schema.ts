@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { z } from 'zod';
 import {
   index,
   jsonb,
@@ -13,7 +14,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
 
 // Session storage table.
 // (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
@@ -121,6 +121,8 @@ export const insertCaseSchema = createInsertSchema(cases).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  caseNumber: z.string().min(1, "Case number is required").max(100, "Case number too long")
 });
 
 export const insertDocumentSchema = createInsertSchema(documents).omit({

@@ -37,6 +37,7 @@ export interface IStorage {
   getDocumentsByCase(caseId: number): Promise<Document[]>;
   getDocumentById(id: number): Promise<Document | undefined>;
   getDocumentsByCategory(caseId: number, category: string): Promise<Document[]>;
+  deleteDocument(id: number): Promise<void>;
   updateDocumentWithAIAnalysis(documentId: number, analysis: any): Promise<Document>;
   getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]>;
   getExistingAccountGroups(caseId: number, category: 'BANKING' | 'REAL_PROPERTY'): Promise<string[]>;
@@ -214,6 +215,12 @@ export class DatabaseStorage implements IStorage {
       .from(documents)
       .where(and(eq(documents.caseId, caseId), eq(documents.category, category as any)))
       .orderBy(desc(documents.createdAt));
+  }
+
+  async deleteDocument(id: number): Promise<void> {
+    await db
+      .delete(documents)
+      .where(eq(documents.id, id));
   }
 }
 

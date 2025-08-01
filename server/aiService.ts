@@ -1,6 +1,9 @@
 import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require("pdf-parse");
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("OPENAI_API_KEY environment variable is required");
@@ -26,9 +29,14 @@ export interface CSVGenerationResult {
 
 export async function analyzeBankingDocument(filePath: string): Promise<BankingDocumentAnalysis> {
   try {
-    // Read the PDF file as base64
+    // Read and parse the PDF file to extract text
     const fileBuffer = fs.readFileSync(filePath);
-    const base64File = fileBuffer.toString('base64');
+    const pdfData = await pdfParse(fileBuffer);
+    const pdfText = pdfData.text;
+
+    if (!pdfText || pdfText.trim().length === 0) {
+      throw new Error("Could not extract text from PDF");
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -53,18 +61,9 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
         },
         {
           role: "user",
-          content: [
-            {
-              type: "text",
-              text: "Please analyze this banking document and extract the key information according to the schema provided."
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:application/pdf;base64,${base64File}`
-              }
-            }
-          ]
+          content: `Please analyze this banking document text and extract the key information according to the schema provided. Here is the document text:
+
+${pdfText}`
         }
       ],
       response_format: { type: "json_object" },
@@ -112,9 +111,14 @@ export function generateAccountGroupNumber(existingGroups: string[], accountName
 
 export async function generateCSVFromPDF(filePath: string, documentId: number): Promise<CSVGenerationResult> {
   try {
-    // Read the PDF file as base64
+    // Read and parse the PDF file to extract text
     const fileBuffer = fs.readFileSync(filePath);
-    const base64File = fileBuffer.toString('base64');
+    const pdfData = await pdfParse(fileBuffer);
+    const pdfText = pdfData.text;
+
+    if (!pdfText || pdfText.trim().length === 0) {
+      throw new Error("Could not extract text from PDF");
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -145,18 +149,9 @@ export async function generateCSVFromPDF(filePath: string, documentId: number): 
         },
         {
           role: "user",
-          content: [
-            {
-              type: "text",
-              text: "Please extract tabular data from this financial document and convert it to CSV format."
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:application/pdf;base64,${base64File}`
-              }
-            }
-          ]
+          content: `Please extract tabular data from this financial document text and convert it to CSV format. Here is the document text:
+
+${pdfText}`
         }
       ],
       response_format: { type: "json_object" },

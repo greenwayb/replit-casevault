@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, Folder, FileText, Edit, Building, Calendar, Hash, Download, FileSpreadsheet } from "lucide-react";
+import { ChevronDown, ChevronRight, Folder, FileText, Edit, Building, Calendar, Hash, Download, FileSpreadsheet, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AccountEditDialog } from "./account-edit-dialog";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface Document {
   id: number;
@@ -32,12 +35,44 @@ interface DocumentTreeProps {
   documents: Document[];
   onDocumentSelect: (document: Document) => void;
   selectedDocument?: Document | null;
+  caseId: number;
 }
 
-export default function DocumentTree({ documents, onDocumentSelect, selectedDocument }: DocumentTreeProps) {
+export default function DocumentTree({ documents, onDocumentSelect, selectedDocument, caseId }: DocumentTreeProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['REAL_PROPERTY', 'BANKING']));
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const deleteDocumentMutation = useMutation({
+    mutationFn: async (documentId: number) => {
+      return await apiRequest(`/api/documents/${documentId}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId] });
+      toast({
+        title: "Success",
+        description: "Document deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete document. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteDocument = (doc: Document, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm(`Are you sure you want to delete "${doc.originalName}"? This action cannot be undone.`)) {
+      deleteDocumentMutation.mutate(doc.id);
+    }
+  };
 
   const toggleCategory = (category: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -241,42 +276,52 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                           {isAccountExpanded && (
                             <div className="tree-children ml-6 space-y-1 mt-1">
                               {accountDocs.map((doc) => (
-                                <Button
-                                  key={doc.id}
-                                  variant="ghost"
-                                  size="sm"
-                                  className={cn(
-                                    "w-full justify-start p-2 h-auto text-left",
-                                    selectedDocument?.id === doc.id && "bg-primary/10 text-primary border border-primary/20"
-                                  )}
-                                  onClick={() => onDocumentSelect(doc)}
-                                >
-                                  <div className="flex items-center gap-2 mr-2">
-                                    <Hash className="h-3 w-3 text-slate-400" />
-                                    <span className="text-xs font-mono text-slate-600">
-                                      {doc.documentNumber}
-                                    </span>
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-medium text-slate-900 truncate">
-                                      {doc.originalName}
+                                <div key={doc.id} className="group relative">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={cn(
+                                      "w-full justify-start p-2 h-auto text-left pr-8",
+                                      selectedDocument?.id === doc.id && "bg-primary/10 text-primary border border-primary/20"
+                                    )}
+                                    onClick={() => onDocumentSelect(doc)}
+                                  >
+                                    <div className="flex items-center gap-2 mr-2">
+                                      <Hash className="h-3 w-3 text-slate-400" />
+                                      <span className="text-xs font-mono text-slate-600">
+                                        {doc.documentNumber}
+                                      </span>
                                     </div>
-                                    <div className="text-xs text-slate-500 flex items-center gap-1">
-                                      <Calendar className="h-3 w-3" />
-                                      {doc.transactionDateFrom && doc.transactionDateTo ? (
-                                        <span>
-                                          {formatDate(doc.transactionDateFrom)} - {formatDate(doc.transactionDateTo)}
-                                        </span>
-                                      ) : (
-                                        <span>{formatDate(doc.createdAt)}</span>
-                                      )}
-                                      <span>• {formatFileSize(doc.fileSize)}</span>
-                                      {doc.csvGenerated && doc.csvRowCount && (
-                                        <span>• CSV: {doc.csvRowCount} rows</span>
-                                      )}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-sm font-medium text-slate-900 truncate">
+                                        {doc.originalName}
+                                      </div>
+                                      <div className="text-xs text-slate-500 flex items-center gap-1">
+                                        <Calendar className="h-3 w-3" />
+                                        {doc.transactionDateFrom && doc.transactionDateTo ? (
+                                          <span>
+                                            {formatDate(doc.transactionDateFrom)} - {formatDate(doc.transactionDateTo)}
+                                          </span>
+                                        ) : (
+                                          <span>{formatDate(doc.createdAt)}</span>
+                                        )}
+                                        <span>• {formatFileSize(doc.fileSize)}</span>
+                                        {doc.csvGenerated && doc.csvRowCount && (
+                                          <span>• CSV: {doc.csvRowCount} rows</span>
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
-                                </Button>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-1 top-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-600"
+                                    onClick={(e) => handleDeleteDocument(doc, e)}
+                                    disabled={deleteDocumentMutation.isPending}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
                               ))}
                             </div>
                           )}
@@ -288,26 +333,36 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                   // Render other categories normally
                   categoryDocs.length > 0 ? (
                     categoryDocs.map((doc) => (
-                      <Button
-                        key={doc.id}
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                          "w-full justify-start p-2 h-auto text-left",
-                          selectedDocument?.id === doc.id && "bg-primary/10 text-primary border border-primary/20"
-                        )}
-                        onClick={() => onDocumentSelect(doc)}
-                      >
-                        <FileText className="h-4 w-4 mr-2 text-slate-400" />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-slate-900 truncate">
-                            {doc.originalName}
+                      <div key={doc.id} className="group relative">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={cn(
+                            "w-full justify-start p-2 h-auto text-left pr-8",
+                            selectedDocument?.id === doc.id && "bg-primary/10 text-primary border border-primary/20"
+                          )}
+                          onClick={() => onDocumentSelect(doc)}
+                        >
+                          <FileText className="h-4 w-4 mr-2 text-slate-400" />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-slate-900 truncate">
+                              {doc.originalName}
+                            </div>
+                            <div className="text-xs text-slate-500">
+                              {formatDate(doc.createdAt)} • {formatFileSize(doc.fileSize)}
+                            </div>
                           </div>
-                          <div className="text-xs text-slate-500">
-                            {formatDate(doc.createdAt)} • {formatFileSize(doc.fileSize)}
-                          </div>
-                        </div>
-                      </Button>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-1 top-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-600"
+                          onClick={(e) => handleDeleteDocument(doc, e)}
+                          disabled={deleteDocumentMutation.isPending}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     ))
                   ) : (
                     <div className="pl-6 py-2 text-xs text-slate-500">

@@ -262,6 +262,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete document
+  app.delete('/api/documents/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const documentId = parseInt(req.params.id);
+      
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check if user has access to the case
+      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
+      if (!userRole) {
+        return res.status(403).json({ message: "Access denied to this document" });
+      }
+
+      // Check if user has permission to delete (CASEADMIN or DISCLOSER)
+      if (userRole !== 'CASEADMIN' && userRole !== 'DISCLOSER') {
+        return res.status(403).json({ message: "Insufficient permissions to delete document" });
+      }
+
+      await storage.deleteDocument(documentId);
+      res.json({ message: "Document deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      res.status(500).json({ message: "Failed to delete document" });
+    }
+  });
+
   app.get('/api/documents/:id/download', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
