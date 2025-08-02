@@ -259,7 +259,13 @@ export default function AuthPage() {
                 <div className="mt-6 grid grid-cols-3 gap-3">
                   <Button
                     variant="outline"
-                    onClick={() => window.location.href = '/auth/google'}
+                    onClick={() => {
+                      toast({
+                        title: "OAuth Not Configured",
+                        description: "Google OAuth requires API keys to be configured.",
+                        variant: "destructive",
+                      });
+                    }}
                     className="w-full"
                     title="Continue with Google"
                   >
@@ -273,7 +279,13 @@ export default function AuthPage() {
                   
                   <Button
                     variant="outline"
-                    onClick={() => window.location.href = '/auth/facebook'}
+                    onClick={() => {
+                      toast({
+                        title: "OAuth Not Configured",
+                        description: "Facebook OAuth requires API keys to be configured.",
+                        variant: "destructive",
+                      });
+                    }}
                     className="w-full"
                     title="Continue with Facebook"
                   >
@@ -284,7 +296,13 @@ export default function AuthPage() {
                   
                   <Button
                     variant="outline"
-                    onClick={() => window.location.href = '/auth/github'}
+                    onClick={() => {
+                      toast({
+                        title: "OAuth Not Configured",
+                        description: "GitHub OAuth requires API keys to be configured.",
+                        variant: "destructive",
+                      });
+                    }}
                     className="w-full"
                     title="Continue with GitHub"
                   >
