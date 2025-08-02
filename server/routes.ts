@@ -45,6 +45,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User management routes
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { firstName, lastName, email, password, legalOrganizationId } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User with this email already exists" });
+      }
+      
+      // Hash password
+      const bcrypt = await import("bcrypt");
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create user
+      const user = await storage.createUser({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        legalOrganizationId: legalOrganizationId || null,
+        authProvider: "local",
+      });
+      
+      res.status(201).json({ message: "User created successfully", userId: user.id });
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
+  // Legal organization routes
+  app.get("/api/legal-organizations", async (req, res) => {
+    try {
+      const organizations = await storage.getLegalOrganizations();
+      res.json(organizations);
+    } catch (error) {
+      console.error("Error fetching legal organizations:", error);
+      res.status(500).json({ message: "Failed to fetch legal organizations" });
+    }
+  });
+
+  app.get("/api/legal-organizations/search", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query) {
+        return res.status(400).json({ message: "Query parameter 'q' is required" });
+      }
+      
+      const organizations = await storage.searchLegalOrganizations(query);
+      res.json(organizations);
+    } catch (error) {
+      console.error("Error searching legal organizations:", error);
+      res.status(500).json({ message: "Failed to search legal organizations" });
+    }
+  });
+
+  app.post("/api/legal-organizations", async (req, res) => {
+    try {
+      const { name, location } = req.body;
+      
+      const organization = await storage.createLegalOrganization({
+        name,
+        location: location || "Perth, WA",
+      });
+      
+      res.status(201).json(organization);
+    } catch (error) {
+      console.error("Error creating legal organization:", error);
+      res.status(500).json({ message: "Failed to create legal organization" });
+    }
+  });
+
+  // Seed data endpoint (for development)
+  app.post("/api/seed", async (req, res) => {
+    try {
+      const { runSeed } = await import("./seedData");
+      await runSeed();
+      res.json({ message: "Seed data inserted successfully" });
+    } catch (error) {
+      console.error("Error seeding data:", error);
+      res.status(500).json({ message: "Failed to seed data" });
+    }
+  });
+
   // Case routes
   app.post('/api/cases', isAuthenticated, async (req: any, res) => {
     try {

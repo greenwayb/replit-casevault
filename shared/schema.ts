@@ -27,6 +27,15 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
+// Legal organizations lookup table
+export const legalOrganizations = pgTable("legal_organizations", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  location: varchar("location", { length: 255 }).default("Perth, WA"),
+  isBuiltIn: boolean("is_built_in").default(false), // For pre-seeded organizations
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // User storage table.
 // (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
 export const users = pgTable("users", {
@@ -35,6 +44,10 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  password: varchar("password"), // For local signup users
+  legalOrganizationId: integer("legal_organization_id").references(() => legalOrganizations.id),
+  authProvider: varchar("auth_provider").default("local"), // 'local', 'google', 'facebook', 'github', 'replit'
+  authProviderId: varchar("auth_provider_id"), // External auth provider user ID
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -129,10 +142,18 @@ export const activityLog = pgTable("activity_log", {
 });
 
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
+  legalOrganization: one(legalOrganizations, {
+    fields: [users.legalOrganizationId],
+    references: [legalOrganizations.id],
+  }),
   createdCases: many(cases),
   caseUsers: many(caseUsers),
   uploadedDocuments: many(documents),
+}));
+
+export const legalOrganizationsRelations = relations(legalOrganizations, ({ many }) => ({
+  users: many(users),
 }));
 
 export const casesRelations = relations(cases, ({ one, many }) => ({
@@ -188,8 +209,36 @@ export const insertActivityLogSchema = createInsertSchema(activityLog).omit({
 });
 
 // Types
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type LegalOrganization = typeof legalOrganizations.$inferSelect;
+export type InsertLegalOrganization = typeof legalOrganizations.$inferInsert;
+
+// Create insert schemas for forms
+export const insertUserSchema = createInsertSchema(users, {
+  email: z.string().email("Please enter a valid email address"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  authProvider: true,
+  authProviderId: true,
+});
+
+export const insertLegalOrganizationSchema = createInsertSchema(legalOrganizations, {
+  name: z.string().min(1, "Organization name is required"),
+}).omit({
+  id: true,
+  createdAt: true,
+  isBuiltIn: true,
+});
+
+export type InsertUserForm = z.infer<typeof insertUserSchema>;
+export type InsertLegalOrganizationForm = z.infer<typeof insertLegalOrganizationSchema>;
 
 export type BankAbbreviation = typeof bankAbbreviations.$inferSelect;
 export type InsertBankAbbreviation = typeof bankAbbreviations.$inferInsert;

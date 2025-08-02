@@ -91,13 +91,23 @@ export default function Landing() {
             </Card>
           </div>
 
-          <Button 
-            size="lg"
-            onClick={() => window.location.href = '/api/login'}
-            className="legal-button-primary px-10 py-4 text-lg"
-          >
-            Get Started
-          </Button>
+          <div className="flex gap-4 justify-center">
+            <Button 
+              size="lg"
+              onClick={() => window.location.href = '/api/login'}
+              className="legal-button-primary px-10 py-4 text-lg"
+            >
+              Sign In
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              onClick={() => window.location.href = '/signup'}
+              className="border-blue-600 text-blue-600 hover:bg-blue-50 px-10 py-4 text-lg"
+            >
+              Create Account
+            </Button>
+          </div>
         </div>
       </main>
 

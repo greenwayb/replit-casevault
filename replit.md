@@ -61,6 +61,15 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes
 
+## August 2, 2025
+- **User Management System**: Implemented comprehensive user signup with first name, surname, email, password collection
+- **Legal Organizations**: Created 30 WA family law firms database including Hickman Family Law, plus "Self Represented" and "Not Applicable" options
+- **Autocomplete Organization Selector**: Built intelligent autocomplete component allowing search of existing organizations or creation of new ones
+- **Sample User Creation**: Seeded 30 sample users with 10 tied to legal organizations and varying authentication providers
+- **OAuth Integration Framework**: Added support infrastructure for Google, Facebook, and GitHub OAuth authentication
+- **Database Schema Enhancement**: Extended users table with legal organization relationships and authentication provider tracking
+- **Signup UI Components**: Created responsive signup form with legal organization selector and oauth buttons
+
 ## August 1, 2025
 - **Fixed Case Number Validation**: Updated case number validation to allow forward slashes (/) in case numbers like "12222/2025"
 - **Enhanced UI Layout**: Moved disclosure PDF manager to right-hand panel with navigation controls to preserve document tree functionality
