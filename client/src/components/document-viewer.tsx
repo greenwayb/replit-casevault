@@ -3,6 +3,8 @@ import { Download, Maximize2, FileText, Calendar, FileSpreadsheet, Building } fr
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import BankingBalanceChart from "./banking-balance-chart";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { StatusSelect } from "@/components/ui/status-select";
 
 interface Document {
   id: number;
@@ -12,6 +14,8 @@ interface Document {
   fileSize: number;
   mimeType: string;
   createdAt: string;
+  status: string;
+  caseId: number;
   // AI-extracted banking information
   accountHolderName?: string;
   accountName?: string;
@@ -31,9 +35,10 @@ interface Document {
 
 interface DocumentViewerProps {
   document?: Document | null;
+  userRole?: string;
 }
 
-export default function DocumentViewer({ document }: DocumentViewerProps) {
+export default function DocumentViewer({ document, userRole }: DocumentViewerProps) {
   const { toast } = useToast();
 
   // Fetch CSV data for banking documents to show balance chart
@@ -143,6 +148,29 @@ export default function DocumentViewer({ document }: DocumentViewerProps) {
 
   return (
     <div className="flex-1 flex flex-col">
+      {/* Document Status Panel */}
+      <div className="p-4 bg-slate-50 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-slate-700">Document Status:</span>
+              <StatusBadge status={document.status} />
+            </div>
+          </div>
+          {userRole !== 'DISCLOSEE' && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-600">Change Status:</span>
+              <StatusSelect
+                documentId={document.id}
+                currentStatus={document.status}
+                userRole={userRole || 'DISCLOSEE'}
+                caseId={document.caseId}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Document Header */}
       <div className="p-6 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between">
@@ -248,7 +276,7 @@ export default function DocumentViewer({ document }: DocumentViewerProps) {
         {/* Banking Balance Chart for Banking Documents */}
         {document.category === 'BANKING' && document.csvGenerated && (
           <BankingBalanceChart 
-            csvData={csvData?.csvData}
+            csvData={(csvData as any)?.csvData}
             documentName={document.originalName}
             accountName={document.accountName}
           />

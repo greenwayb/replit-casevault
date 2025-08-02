@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, Folder, FileText, Edit, Building, Calendar, Hash, Download, FileSpreadsheet, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AccountEditDialog } from "./account-edit-dialog";
-import { StatusBadge } from "@/components/ui/status-badge";
-import { StatusSelect } from "@/components/ui/status-select";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -174,6 +173,21 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
     return `${mb.toFixed(1)}MB`;
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'UPLOADED':
+        return 'text-blue-700';
+      case 'READYFORREVIEW':
+        return 'text-yellow-700';
+      case 'REVIEWED':
+        return 'text-green-700';
+      case 'WITHDRAWN':
+        return 'text-red-700';
+      default:
+        return 'text-slate-900';
+    }
+  };
+
   return (
     <div className="space-y-2">
       {categories.map((category) => {
@@ -234,26 +248,13 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                           >
                             <FileText className="h-4 w-4 mr-2 text-slate-400" />
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <div className="text-sm font-medium text-slate-900 truncate">
-                                  {doc.originalName}
-                                </div>
-                                <StatusBadge status={doc.status} className="shrink-0" />
+                              <div className={`text-sm font-medium truncate ${getStatusColor(doc.status)}`}>
+                                {doc.originalName}
                               </div>
                               <div className="text-xs text-slate-500">
                                 {formatDate(doc.createdAt)} • {formatFileSize(doc.fileSize)}
                                 {doc.processingError && <span className="text-amber-600 ml-1">• AI Processing Failed</span>}
                               </div>
-                              {userRole !== 'DISCLOSEE' && (
-                                <div className="mt-1">
-                                  <StatusSelect
-                                    documentId={doc.id}
-                                    currentStatus={doc.status}
-                                    userRole={userRole}
-                                    caseId={caseId}
-                                  />
-                                </div>
-                              )}
                             </div>
                           </Button>
                         ));
@@ -321,11 +322,8 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                                       </span>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <div className="text-sm font-medium text-slate-900 truncate">
-                                          {doc.displayName || doc.originalName}
-                                        </div>
-                                        <StatusBadge status={doc.status} className="shrink-0" />
+                                      <div className={`text-sm font-medium truncate ${getStatusColor(doc.status)}`}>
+                                        {doc.displayName || doc.originalName}
                                       </div>
                                       <div className="text-xs text-slate-500 flex items-center gap-1">
                                         <Calendar className="h-3 w-3" />
@@ -341,16 +339,6 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                                           <span>• CSV: {doc.csvRowCount} rows</span>
                                         )}
                                       </div>
-                                      {userRole !== 'DISCLOSEE' && (
-                                        <div className="mt-1">
-                                          <StatusSelect
-                                            documentId={doc.id}
-                                            currentStatus={doc.status}
-                                            userRole={userRole}
-                                            caseId={caseId}
-                                          />
-                                        </div>
-                                      )}
                                     </div>
                                   </Button>
                                   <div
@@ -383,25 +371,12 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                         >
                           <FileText className="h-4 w-4 mr-2 text-slate-400" />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <div className="text-sm font-medium text-slate-900 truncate">
-                                {doc.displayName || doc.originalName}
-                              </div>
-                              <StatusBadge status={doc.status} className="shrink-0" />
+                            <div className={`text-sm font-medium truncate ${getStatusColor(doc.status)}`}>
+                              {doc.displayName || doc.originalName}
                             </div>
                             <div className="text-xs text-slate-500">
                               {formatDate(doc.createdAt)} • {formatFileSize(doc.fileSize)}
                             </div>
-                            {userRole !== 'DISCLOSEE' && (
-                              <div className="mt-1">
-                                <StatusSelect
-                                  documentId={doc.id}
-                                  currentStatus={doc.status}
-                                  userRole={userRole}
-                                  caseId={caseId}
-                                />
-                              </div>
-                            )}
                           </div>
                         </Button>
                         <div

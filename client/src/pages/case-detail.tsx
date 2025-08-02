@@ -266,7 +266,10 @@ export default function CaseDetail() {
             </div>
           </div>
         ) : (
-          <DocumentViewer document={selectedDocument} />
+          <DocumentViewer 
+            document={selectedDocument} 
+            userRole={caseData?.role || caseData?.userRole}
+          />
         )}
       </div>
 
