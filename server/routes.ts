@@ -31,25 +31,30 @@ const upload = multer({
 });
 
 // Helper function to validate document status transitions
-function validateStatusTransition(currentStatus: string, newStatus: string, userRole: Role): boolean {
-  // DISCLOSER/CASEADMIN can mark UPLOADED as READYFORREVIEW
+function validateStatusTransition(currentStatus: string, newStatus: string, userRoles: Role[]): boolean {
+  // CASEADMIN can change any status to any other status
+  if (userRoles.includes('CASEADMIN')) {
+    return true;
+  }
+  
+  // DISCLOSER can mark UPLOADED as READYFORREVIEW
   if (currentStatus === 'UPLOADED' && newStatus === 'READYFORREVIEW') {
-    return ['DISCLOSER', 'CASEADMIN'].includes(userRole);
+    return userRoles.some(role => ['DISCLOSER'].includes(role));
   }
   
-  // REVIEWER/DISCLOSER/CASEADMIN can mark READYFORREVIEW as REVIEWED
+  // REVIEWER/DISCLOSER can mark READYFORREVIEW as REVIEWED
   if (currentStatus === 'READYFORREVIEW' && newStatus === 'REVIEWED') {
-    return ['REVIEWER', 'DISCLOSER', 'CASEADMIN'].includes(userRole);
+    return userRoles.some(role => ['REVIEWER', 'DISCLOSER'].includes(role));
   }
   
-  // REVIEWER/DISCLOSER/CASEADMIN can mark REVIEWED as WITHDRAWN
+  // REVIEWER/DISCLOSER can mark REVIEWED as WITHDRAWN
   if (currentStatus === 'REVIEWED' && newStatus === 'WITHDRAWN') {
-    return ['REVIEWER', 'DISCLOSER', 'CASEADMIN'].includes(userRole);
+    return userRoles.some(role => ['REVIEWER', 'DISCLOSER'].includes(role));
   }
   
-  // DISCLOSER/CASEADMIN/REVIEWER can mark WITHDRAWN as REVIEWED again
+  // DISCLOSER/REVIEWER can mark WITHDRAWN as REVIEWED again
   if (currentStatus === 'WITHDRAWN' && newStatus === 'REVIEWED') {
-    return ['DISCLOSER', 'CASEADMIN', 'REVIEWER'].includes(userRole);
+    return userRoles.some(role => ['DISCLOSER', 'REVIEWER'].includes(role));
   }
   
   return false;
@@ -1270,10 +1275,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check permissions based on current status and target status
-      const canUpdateStatus = validateStatusTransition(document.status, status, userRole);
+      const canUpdateStatus = validateStatusTransition(document.status, status, userRoles);
       if (!canUpdateStatus) {
         return res.status(403).json({ 
-          message: `You cannot change document status from ${document.status} to ${status} with role ${userRole}` 
+          message: `You cannot change document status from ${document.status} to ${status} with roles ${userRoles.join(', ')}` 
         });
       }
 
