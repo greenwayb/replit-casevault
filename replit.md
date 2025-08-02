@@ -62,6 +62,9 @@ Preferred communication style: Simple, everyday language.
 # Recent Changes
 
 ## August 2, 2025 (Latest Updates)
+- **Enhanced Banking Document Upload Process**: Implemented dual progress bars showing separate upload and AI processing phases with visual status indicators, animated progress feedback, and colored status dots to clearly communicate each stage of the workflow
+- **Always-On PDF Preview**: Modified banking confirmation dialog to always display PDF preview side-by-side with extracted information form, allowing users to visually verify AI-extracted data against the original document for both uploaded files and processed documents
+- **Improved Upload UI**: Enhanced progress display with better styling, status animations, and clearer phase indicators during file upload and AI processing stages
 - **Fixed Document Status Update UI Issue**: Resolved issue where document status changes weren't reflected in the UI immediately. Added onDocumentUpdate callback to DocumentViewer component to properly update local state when status changes occur, ensuring the UI displays the current status after successful updates.
 - **Enhanced Status Update Cache Invalidation**: Improved cache invalidation strategy in StatusSelect component to ensure all related queries are refreshed when document status is updated.
 - **Persistent SignOut Button**: Added TopNav component that appears in the top right corner of all authenticated pages, displaying user information and sign out functionality

@@ -362,33 +362,50 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
 
             {/* Progress Bars */}
             {uploadDocumentMutation.isPending && (
-              <div className="space-y-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
                 {/* File Upload Progress */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">File Upload</span>
-                    <span>{Math.round(uploadProgress)}%</span>
+                  <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${uploadProgress === 100 ? 'bg-green-500' : 'bg-blue-500 animate-pulse'}`} />
+                      <span className="font-medium">File Upload</span>
+                    </div>
+                    <span className="text-slate-600">{Math.round(uploadProgress)}%</span>
                   </div>
-                  <Progress value={uploadProgress} className="h-2" />
+                  <Progress 
+                    value={uploadProgress} 
+                    className="h-3 bg-slate-200" 
+                  />
+                  {uploadProgress === 100 && uploadPhase === 'upload' && (
+                    <p className="text-xs text-green-600 font-medium">✓ File uploaded successfully</p>
+                  )}
                 </div>
 
                 {/* AI Processing Progress */}
                 {uploadPhase === 'ai' && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium">AI Processing</span>
-                      <span>{Math.round(aiProgress)}%</span>
+                  <div className="space-y-2 border-t border-slate-200 pt-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-orange-500 animate-pulse" />
+                        <span className="font-medium">AI Processing</span>
+                      </div>
+                      <span className="text-slate-600">{Math.round(aiProgress)}%</span>
                     </div>
-                    <Progress value={aiProgress} className="h-2" />
-                    <p className="text-xs text-gray-500">
-                      Extracting metadata and generating CSV from Banking document...
+                    <Progress 
+                      value={aiProgress} 
+                      className="h-3 bg-slate-200"
+                    />
+                    <p className="text-xs text-slate-600 flex items-center gap-1">
+                      <span className="animate-spin">⚡</span>
+                      Extracting banking metadata and generating CSV data...
                     </p>
                   </div>
                 )}
 
                 {uploadPhase === 'complete' && (
-                  <div className="text-sm text-green-600 font-medium">
-                    ✓ Upload and processing complete!
+                  <div className="text-sm text-green-600 font-medium flex items-center gap-2 border-t border-slate-200 pt-3">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    Upload and AI processing complete!
                   </div>
                 )}
               </div>
@@ -444,6 +461,7 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
             onReject={handleBankingReject}
             documentId={pendingBankingData.id}
             isManualReview={pendingBankingData.aiProcessingFailed}
+            selectedFile={selectedFile}
           />
         )}
       </Dialog>

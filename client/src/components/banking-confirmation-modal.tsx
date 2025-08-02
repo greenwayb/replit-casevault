@@ -52,6 +52,7 @@ interface BankingConfirmationModalProps {
   onReject: () => void;
   documentId?: number;
   isManualReview?: boolean;
+  selectedFile?: File | null;
 }
 
 export default function BankingConfirmationModal({
@@ -61,7 +62,8 @@ export default function BankingConfirmationModal({
   onConfirm,
   onReject,
   documentId,
-  isManualReview = false
+  isManualReview = false,
+  selectedFile = null
 }: BankingConfirmationModalProps) {
   const form = useForm<BankingConfirmationFormData>({
     resolver: zodResolver(bankingConfirmationSchema),
@@ -109,7 +111,7 @@ export default function BankingConfirmationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`${isManualReview ? 'max-w-6xl h-[90vh]' : 'max-w-2xl'}`}>
+      <DialogContent className="max-w-6xl h-[90vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building className="h-5 w-5 text-blue-600" />
@@ -123,9 +125,9 @@ export default function BankingConfirmationModal({
           </DialogDescription>
         </DialogHeader>
         
-        <div className={`${isManualReview ? 'grid grid-cols-2 gap-6 flex-1 overflow-hidden' : ''}`}>
+        <div className="grid grid-cols-2 gap-6 flex-1 overflow-hidden">
           {/* Form Section */}
-          <div className={`${isManualReview ? 'overflow-y-auto' : 'w-full'}`}>
+          <div className="overflow-y-auto">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -262,19 +264,29 @@ export default function BankingConfirmationModal({
             </Form>
           </div>
 
-          {/* PDF Preview Section - only show for manual review */}
-          {isManualReview && documentId && (
-            <div className="border-l border-gray-200 pl-6 overflow-hidden">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Document Preview</h3>
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
+          {/* PDF Preview Section - always show */}
+          <div className="border-l border-gray-200 pl-6 overflow-hidden">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Document Preview</h3>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full">
+              {documentId ? (
                 <iframe
                   src={`/api/documents/${documentId}/view`}
                   className="w-full h-full rounded-lg min-h-[600px]"
                   title="Document Preview"
                 />
-              </div>
+              ) : selectedFile ? (
+                <iframe
+                  src={URL.createObjectURL(selectedFile)}
+                  className="w-full h-full rounded-lg min-h-[600px]"
+                  title="Document Preview"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-gray-500">No document available for preview</p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
