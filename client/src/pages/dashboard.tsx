@@ -9,11 +9,13 @@ import CreateCaseModal from "@/components/create-case-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Briefcase, FileText, Upload, Eye, Calendar, Trash2, HardDrive } from "lucide-react";
+import { Plus, FileText, Upload, Eye, Calendar, Trash2, HardDrive, Briefcase } from "lucide-react";
+import { FilesIcon } from "@/components/ui/files-icon";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 import TiltedCard from "@/components/TiltedCard";
+
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -37,12 +39,12 @@ export default function Dashboard() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: cases, isLoading: casesLoading } = useQuery({
+  const { data: cases = [], isLoading: casesLoading } = useQuery<any[]>({
     queryKey: ["/api/cases"],
     enabled: isAuthenticated,
   });
 
-  const { data: recentActivity, isLoading: activityLoading } = useQuery({
+  const { data: recentActivity = [], isLoading: activityLoading } = useQuery<any[]>({
     queryKey: ["/api/activity/recent"],
     enabled: isAuthenticated,
   });
@@ -210,7 +212,7 @@ export default function Dashboard() {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-4 sm:gap-0">
                       <div className="flex items-center space-x-3 md:space-x-4 w-full sm:w-auto">
                         <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/10 rounded-lg flex items-center justify-center ring-2 ring-primary/20 flex-shrink-0">
-                          <Briefcase className="h-6 w-6 md:h-7 md:w-7 text-primary" />
+                          <FilesIcon className="h-6 w-6 md:h-7 md:w-7 text-primary" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <h3 className="font-bold text-slate-900 text-base md:text-lg tracking-tight truncate">{caseItem.caseNumber}</h3>
@@ -236,14 +238,22 @@ export default function Dashboard() {
                       </div>
                       <div className="flex items-center justify-between text-xs md:text-sm">
                         <span className="text-slate-600 font-medium">Role:</span>
-                        <Badge className={`${getRoleBadgeClass(caseItem.role)} px-2 py-1 text-xs`}>
-                          {caseItem.role}
-                        </Badge>
+                        <div className="flex flex-wrap gap-1">
+                          {Array.isArray(caseItem.roles) ? caseItem.roles.map((role: string, index: number) => (
+                            <Badge key={index} className={`${getRoleBadgeClass(role)} px-2 py-1 text-xs`}>
+                              {role}
+                            </Badge>
+                          )) : (
+                            <Badge className={`${getRoleBadgeClass(caseItem.roles)} px-2 py-1 text-xs`}>
+                              {caseItem.roles}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                   
                     {/* Action buttons for CASEADMIN */}
-                    {caseItem.role === 'CASEADMIN' && (
+                    {(Array.isArray(caseItem.roles) ? caseItem.roles.includes('CASEADMIN') : caseItem.roles === 'CASEADMIN') && (
                       <div className="absolute top-2 md:top-4 right-2 md:right-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"

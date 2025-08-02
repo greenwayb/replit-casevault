@@ -21,7 +21,7 @@ export default function Landing() {
             </div>
           </div>
           <Button 
-            onClick={() => window.location.href = '/auth'}
+            onClick={() => window.location.href = '/login'}
             className="legal-button-primary px-6 py-2"
           >
             Sign In
@@ -94,7 +94,7 @@ export default function Landing() {
           <div className="flex gap-4 justify-center">
             <Button 
               size="lg"
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/login'}
               className="legal-button-primary px-10 py-4 text-lg"
             >
               Sign In
@@ -102,7 +102,7 @@ export default function Landing() {
             <Button 
               size="lg"
               variant="outline"
-              onClick={() => window.location.href = '/signup'}
+              onClick={() => window.location.href = '/auth'}
               className="border-blue-600 text-blue-600 hover:bg-blue-50 px-10 py-4 text-lg"
             >
               Create Account

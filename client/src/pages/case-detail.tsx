@@ -175,8 +175,8 @@ export default function CaseDetail() {
               Upload Document
             </Button>
             
-            {/* Case Member Management Button - Use userRole as fallback */}
-            {(caseData?.role === 'CASEADMIN' || caseData?.userRole === 'CASEADMIN') && (
+            {/* Case Member Management Button - Check if user has CASEADMIN role */}
+            {(caseData?.roles?.includes('CASEADMIN') || caseData?.role === 'CASEADMIN' || caseData?.userRole === 'CASEADMIN') && (
               <Button 
                 onClick={() => {
                   setShowDisclosurePdfs(true);
@@ -231,7 +231,7 @@ export default function CaseDetail() {
             }}
             selectedDocument={selectedDocument}
             caseId={parseInt(id!)}
-            userRole={caseData.role || caseData.userRole}
+            userRole={caseData?.roles?.includes('CASEADMIN') ? 'CASEADMIN' : (caseData?.roles?.[0] || caseData?.role || caseData?.userRole)}
           />
         </div>
       </div>
@@ -260,7 +260,7 @@ export default function CaseDetail() {
             <div className="flex-1 p-4 overflow-auto space-y-6">
               <CaseMemberManagement 
                 caseId={parseInt(id!)} 
-                currentUserRole={caseData?.role as any}
+                currentUserRole={caseData?.roles?.includes('CASEADMIN') ? 'CASEADMIN' : (caseData?.roles?.[0] || caseData?.role)}
               />
               <DisclosurePdfManager caseId={parseInt(id!)} />
             </div>
@@ -268,7 +268,10 @@ export default function CaseDetail() {
         ) : (
           <DocumentViewer 
             document={selectedDocument} 
-            userRole={caseData?.role || caseData?.userRole}
+            userRole={caseData?.roles?.includes('CASEADMIN') ? 'CASEADMIN' : (caseData?.roles?.[0] || caseData?.role || caseData?.userRole)}
+            onDocumentUpdate={(updatedDocument) => {
+              setSelectedDocument(updatedDocument);
+            }}
           />
         )}
       </div>

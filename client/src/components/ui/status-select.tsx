@@ -30,23 +30,29 @@ export function StatusSelect({
   const getAvailableStatuses = (current: string, role: string) => {
     const statuses = [];
     
-    // DISCLOSER/CASEADMIN can mark UPLOADED as READYFORREVIEW
-    if (current === 'UPLOADED' && ['DISCLOSER', 'CASEADMIN'].includes(role)) {
+    // CASEADMIN can change any status to any other status
+    if (role === 'CASEADMIN') {
+      const allStatuses = ['UPLOADED', 'READYFORREVIEW', 'REVIEWED', 'WITHDRAWN'];
+      return allStatuses.filter(status => status !== current);
+    }
+    
+    // DISCLOSER can mark UPLOADED as READYFORREVIEW
+    if (current === 'UPLOADED' && ['DISCLOSER'].includes(role)) {
       statuses.push('READYFORREVIEW');
     }
     
-    // REVIEWER/DISCLOSER/CASEADMIN can mark READYFORREVIEW as REVIEWED
-    if (current === 'READYFORREVIEW' && ['REVIEWER', 'DISCLOSER', 'CASEADMIN'].includes(role)) {
+    // REVIEWER/DISCLOSER can mark READYFORREVIEW as REVIEWED
+    if (current === 'READYFORREVIEW' && ['REVIEWER', 'DISCLOSER'].includes(role)) {
       statuses.push('REVIEWED');
     }
     
-    // REVIEWER/DISCLOSER/CASEADMIN can mark REVIEWED as WITHDRAWN
-    if (current === 'REVIEWED' && ['REVIEWER', 'DISCLOSER', 'CASEADMIN'].includes(role)) {
+    // REVIEWER/DISCLOSER can mark REVIEWED as WITHDRAWN
+    if (current === 'REVIEWED' && ['REVIEWER', 'DISCLOSER'].includes(role)) {
       statuses.push('WITHDRAWN');
     }
     
-    // DISCLOSER/CASEADMIN/REVIEWER can mark WITHDRAWN as REVIEWED again
-    if (current === 'WITHDRAWN' && ['DISCLOSER', 'CASEADMIN', 'REVIEWER'].includes(role)) {
+    // DISCLOSER/REVIEWER can mark WITHDRAWN as REVIEWED again
+    if (current === 'WITHDRAWN' && ['DISCLOSER', 'REVIEWER'].includes(role)) {
       statuses.push('REVIEWED');
     }
     
@@ -63,7 +69,11 @@ export function StatusSelect({
       return response.json();
     },
     onSuccess: (data) => {
+      // Invalidate multiple related queries to ensure UI updates
       queryClient.invalidateQueries({ queryKey: ['/api/cases', caseId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
+      
       toast({
         title: "Status Updated",
         description: `Document status changed to ${data.status}`,

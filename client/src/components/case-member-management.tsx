@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Mail, Users, Shield, Trash2, UserPlus } from "lucide-react";
+import { Plus, Mail, Users, Shield, Trash2, UserPlus, Edit } from "lucide-react";
+import { MultiRoleSelector } from "@/components/multi-role-selector";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,16 +60,22 @@ const roleColors: Record<Role, string> = {
 
 const inviteUserSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  role: z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"]),
+  roles: z.array(z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"])).min(1, "Please select at least one role"),
 });
 
 const addExistingUserSchema = z.object({
   userId: z.string().min(1, "Please select a user"),
-  role: z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"]),
+  roles: z.array(z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"])).min(1, "Please select at least one role"),
+});
+
+const modifyUserSchema = z.object({
+  userId: z.string().min(1, "Please select a user"),
+  roles: z.array(z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"])).min(1, "Please select at least one role"),
 });
 
 type InviteUserForm = z.infer<typeof inviteUserSchema>;
 type AddExistingUserForm = z.infer<typeof addExistingUserSchema>;
+type ModifyUserForm = z.infer<typeof modifyUserSchema>;
 
 interface CaseMemberManagementProps {
   caseId: number;
@@ -78,6 +85,8 @@ interface CaseMemberManagementProps {
 export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberManagementProps) {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+  const [modifyUserDialogOpen, setModifyUserDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -105,7 +114,7 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
     resolver: zodResolver(inviteUserSchema),
     defaultValues: {
       email: "",
-      role: "REVIEWER",
+      roles: ["REVIEWER"],
     },
   });
 
@@ -113,7 +122,15 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
     resolver: zodResolver(addExistingUserSchema),
     defaultValues: {
       userId: "",
-      role: "REVIEWER",
+      roles: ["REVIEWER"],
+    },
+  });
+
+  const modifyUserForm = useForm<ModifyUserForm>({
+    resolver: zodResolver(modifyUserSchema),
+    defaultValues: {
+      userId: "",
+      roles: ["REVIEWER"],
     },
   });
 
@@ -181,6 +198,39 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
     },
   });
 
+  // Mutation to modify user roles
+  const modifyUserMutation = useMutation({
+    mutationFn: async (data: ModifyUserForm) => {
+      const response = await fetch(`/api/cases/${caseId}/members/${data.userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roles: data.roles }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to modify user roles");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "User roles updated",
+        description: "The user's roles have been successfully updated.",
+      });
+      setModifyUserDialogOpen(false);
+      modifyUserForm.reset();
+      setSelectedUser(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId, "members"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to update user roles",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Mutation to remove user
   const removeUserMutation = useMutation({
     mutationFn: async (userId: string) => {
@@ -207,6 +257,16 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
       });
     },
   });
+
+  const handleModifyUser = (member: any) => {
+    setSelectedUser(member);
+    const userRoles = Array.isArray(member.roles) ? member.roles : [member.role];
+    modifyUserForm.reset({
+      userId: member.userId,
+      roles: userRoles,
+    });
+    setModifyUserDialogOpen(true);
+  };
 
   const existingUserIds = members.map((member: any) => member.userId);
   const availableUsers = allUsers.filter((user: User) => !existingUserIds.includes(user.id));
@@ -270,23 +330,17 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                       
                       <FormField
                         control={addUserForm.control}
-                        name="role"
+                        name="roles"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="CASEADMIN">Case Admin</SelectItem>
-                                <SelectItem value="DISCLOSER">Discloser</SelectItem>
-                                <SelectItem value="DISCLOSEE">Disclosee</SelectItem>
-                                <SelectItem value="REVIEWER">Reviewer</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <FormLabel>Roles</FormLabel>
+                            <FormControl>
+                              <MultiRoleSelector
+                                selectedRoles={field.value}
+                                onRolesChange={field.onChange}
+                                placeholder="Select roles..."
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -335,23 +389,17 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                       
                       <FormField
                         control={inviteForm.control}
-                        name="role"
+                        name="roles"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="CASEADMIN">Case Admin</SelectItem>
-                                <SelectItem value="DISCLOSER">Discloser</SelectItem>
-                                <SelectItem value="DISCLOSEE">Disclosee</SelectItem>
-                                <SelectItem value="REVIEWER">Reviewer</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <FormLabel>Roles</FormLabel>
+                            <FormControl>
+                              <MultiRoleSelector
+                                selectedRoles={field.value}
+                                onRolesChange={field.onChange}
+                                placeholder="Select roles..."
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -370,13 +418,53 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
         )}
       </div>
 
+      {/* Modify User Dialog */}
+      <Dialog open={modifyUserDialogOpen} onOpenChange={setModifyUserDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modify User Roles</DialogTitle>
+            <DialogDescription>
+              Update the roles for {selectedUser?.user?.firstName} {selectedUser?.user?.lastName}.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...modifyUserForm}>
+            <form onSubmit={modifyUserForm.handleSubmit((data) => modifyUserMutation.mutate(data))}>
+              <div className="space-y-4">
+                <FormField
+                  control={modifyUserForm.control}
+                  name="roles"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Roles</FormLabel>
+                      <FormControl>
+                        <MultiRoleSelector
+                          selectedRoles={field.value}
+                          onRolesChange={field.onChange}
+                          placeholder="Select roles..."
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter className="mt-6">
+                <Button type="submit" disabled={modifyUserMutation.isPending}>
+                  {modifyUserMutation.isPending ? "Updating..." : "Update Roles"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
+              <TableHead>Roles</TableHead>
               <TableHead>Organization</TableHead>
               {canManageMembers && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
@@ -389,25 +477,39 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                 </TableCell>
                 <TableCell>{member.user.email}</TableCell>
                 <TableCell>
-                  <Badge variant="secondary" className={roleColors[member.role as Role]}>
-                    {roleLabels[member.role as Role]}
-                  </Badge>
+                  <div className="flex flex-wrap gap-1">
+                    {(Array.isArray(member.roles) ? member.roles : [member.role]).map((role: Role) => (
+                      <Badge key={role} variant="secondary" className={roleColors[role]}>
+                        {roleLabels[role]}
+                      </Badge>
+                    ))}
+                  </div>
                 </TableCell>
                 <TableCell>
                   {member.user.legalOrganization?.name || "Not specified"}
                 </TableCell>
                 {canManageMembers && (
                   <TableCell className="text-right">
-                    {member.role !== "CASEADMIN" && (
+                    <div className="flex justify-end gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeUserMutation.mutate(member.userId)}
-                        disabled={removeUserMutation.isPending}
+                        onClick={() => handleModifyUser(member)}
+                        disabled={modifyUserMutation.isPending}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Edit className="h-4 w-4" />
                       </Button>
-                    )}
+                      {!((Array.isArray(member.roles) ? member.roles : [member.role]).includes("CASEADMIN")) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeUserMutation.mutate(member.userId)}
+                          disabled={removeUserMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 )}
               </TableRow>
@@ -424,7 +526,7 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
               <TableHeader>
                 <TableRow>
                   <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
+                  <TableHead>Roles</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Invited</TableHead>
                 </TableRow>
@@ -434,9 +536,13 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                   <TableRow key={invitation.id}>
                     <TableCell>{invitation.email}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">
-                        {roleLabels[invitation.role as Role]}
-                      </Badge>
+                      <div className="flex flex-wrap gap-1">
+                        {(Array.isArray(invitation.roles) ? invitation.roles : [invitation.role]).map((role: Role) => (
+                          <Badge key={role} variant="outline">
+                            {roleLabels[role]}
+                          </Badge>
+                        ))}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant={invitation.status === 'pending' ? 'secondary' : 'default'}>

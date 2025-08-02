@@ -61,7 +61,19 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes
 
-## August 2, 2025
+## August 2, 2025 (Latest Updates)
+- **Fixed Document Status Update UI Issue**: Resolved issue where document status changes weren't reflected in the UI immediately. Added onDocumentUpdate callback to DocumentViewer component to properly update local state when status changes occur, ensuring the UI displays the current status after successful updates.
+- **Enhanced Status Update Cache Invalidation**: Improved cache invalidation strategy in StatusSelect component to ensure all related queries are refreshed when document status is updated.
+- **Persistent SignOut Button**: Added TopNav component that appears in the top right corner of all authenticated pages, displaying user information and sign out functionality
+- **Enhanced CASEADMIN Permissions**: Updated document status system so CASEADMIN users can change document status from any state to any other state, providing full administrative control over document workflow
+- **Multi-Role User System**: Implemented comprehensive multi-role assignment capability:
+  - Updated database schema to support arrays of roles per user per case
+  - Created new MultiRoleSelector component with searchable dropdown and badge display
+  - Updated case member management interface to show multiple roles as colored badges
+  - Users can now be assigned multiple roles simultaneously (e.g., both REVIEWER and DISCLOSER)
+  - Form validation ensures at least one role is selected when adding users or sending invitations
+
+## August 2, 2025 (Earlier Updates)
 - **Case Member Management System**: Implemented comprehensive case member management with user assignment and email invitation capabilities. Case admins can now add existing users to cases with specific roles or invite new users via email.
 - **Extended Database Schema**: Added caseInvitations table to support email-based user invitations to cases with token-based acceptance system. Extended storage interface with methods for managing case members, invitations, and role assignments.
 - **Case Member Management UI**: Created comprehensive case member management component with table-based user listing, role assignment, invitation system, and pending invitation tracking. Users can have multiple roles simultaneously.

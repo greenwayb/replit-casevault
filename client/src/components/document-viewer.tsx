@@ -36,9 +36,10 @@ interface Document {
 interface DocumentViewerProps {
   document?: Document | null;
   userRole?: string;
+  onDocumentUpdate?: (updatedDocument: Document) => void;
 }
 
-export default function DocumentViewer({ document, userRole }: DocumentViewerProps) {
+export default function DocumentViewer({ document, userRole, onDocumentUpdate }: DocumentViewerProps) {
   const { toast } = useToast();
 
   // Fetch CSV data for banking documents to show balance chart
@@ -165,6 +166,11 @@ export default function DocumentViewer({ document, userRole }: DocumentViewerPro
                 currentStatus={document.status}
                 userRole={userRole || 'DISCLOSEE'}
                 caseId={document.caseId}
+                onStatusChange={(newStatus) => {
+                  if (onDocumentUpdate && document) {
+                    onDocumentUpdate({ ...document, status: newStatus });
+                  }
+                }}
               />
             </div>
           )}

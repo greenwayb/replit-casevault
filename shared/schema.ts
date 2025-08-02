@@ -11,6 +11,7 @@ import {
   integer,
   serial,
   boolean,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -79,8 +80,12 @@ export const caseUsers = pgTable("case_users", {
   id: serial("id").primaryKey(),
   caseId: integer("case_id").notNull().references(() => cases.id, { onDelete: 'cascade' }),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  role: roleEnum("role").notNull(),
+  roles: roleEnum("roles").array().notNull(), // Array of roles for multiple role assignment
   createdAt: timestamp("created_at").defaultNow(),
+}, (table) => {
+  return {
+    uniqueCaseUser: unique().on(table.caseId, table.userId), // Ensure one record per user per case
+  };
 });
 
 export const documents = pgTable("documents", {
@@ -126,7 +131,7 @@ export const caseInvitations = pgTable("case_invitations", {
   id: serial("id").primaryKey(),
   caseId: integer("case_id").notNull().references(() => cases.id, { onDelete: 'cascade' }),
   email: varchar("email").notNull(),
-  role: roleEnum("role").notNull(),
+  roles: roleEnum("roles").array().notNull(), // Array of roles for multiple role assignment
   invitedById: varchar("invited_by_id").notNull().references(() => users.id),
   status: varchar("status").default("pending"), // pending, accepted, expired
   token: varchar("token").notNull().unique(), // Unique invitation token
