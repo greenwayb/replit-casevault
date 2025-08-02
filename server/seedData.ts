@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { legalOrganizations, users } from "@shared/schema";
 import bcrypt from "bcrypt";
+import { randomUUID } from "crypto";
 
 // WA Family Law Firms (Perth-based)
 const familyLawFirms = [
@@ -71,6 +72,45 @@ export async function seedLegalOrganizations() {
   }
 
   console.log("Legal organizations seeded successfully");
+}
+
+export async function seedSampleUsers() {
+  console.log("Seeding sample users...");
+  
+  // Hash the default password
+  const defaultPassword = await bcrypt.hash("password", 10);
+  
+  const sampleUsers = [
+    { firstName: "Ben", lastName: "Greenway", email: "bengreenway@gmail.com" },
+    { firstName: "Sarah", lastName: "Mitchell", email: "sarah.mitchell@hickmanfamilylaw.com.au" },
+    { firstName: "David", lastName: "Chen", email: "david.chen@example.com" },
+    { firstName: "Emily", lastName: "Johnson", email: "emily.johnson@example.com" },
+    { firstName: "Michael", lastName: "Brown", email: "michael.brown@example.com" },
+    { firstName: "Lisa", lastName: "Wilson", email: "lisa.wilson@example.com" },
+    { firstName: "James", lastName: "Taylor", email: "james.taylor@example.com" },
+    { firstName: "Emma", lastName: "Davis", email: "emma.davis@example.com" },
+    { firstName: "Robert", lastName: "Miller", email: "robert.miller@example.com" },
+    { firstName: "Jessica", lastName: "Garcia", email: "jessica.garcia@example.com" },
+  ];
+
+  for (const userData of sampleUsers) {
+    try {
+      await db.insert(users).values({
+        id: randomUUID(),
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        password: defaultPassword,
+        authProvider: "local",
+        legalOrganizationId: null,
+      }).onConflictDoNothing();
+      console.log(`Created user: ${userData.email}`);
+    } catch (error) {
+      console.log(`User ${userData.email} already exists`);
+    }
+  }
+
+  console.log("Sample users seeded successfully");
 }
 
 export async function seedSampleUsers() {

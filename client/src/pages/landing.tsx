@@ -21,7 +21,7 @@ export default function Landing() {
             </div>
           </div>
           <Button 
-            onClick={() => window.location.href = '/api/login'}
+            onClick={() => window.location.href = '/auth'}
             className="legal-button-primary px-6 py-2"
           >
             Sign In
