@@ -12,7 +12,7 @@ import DocumentUploadModal from "@/components/document-upload-modal";
 import { DisclosurePdfManager } from "@/components/disclosure-pdf-manager";
 import { CaseMemberManagement } from "@/components/case-member-management";
 import EditableCaseTitle from "@/components/editable-case-title";
-import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose, FileText, X } from "lucide-react";
+import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose, FileText, X, Users } from "lucide-react";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
 export default function CaseDetail() {
@@ -165,13 +165,30 @@ export default function CaseDetail() {
               </Button>
             )}
           </div>
-          <Button 
-            onClick={() => setShowUploadModal(true)}
-            className="w-full bg-primary hover:bg-blue-700 touch-manipulation text-sm md:text-base py-2 md:py-2.5"
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Upload Document
-          </Button>
+          <div className="space-y-2">
+            <Button 
+              onClick={() => setShowUploadModal(true)}
+              className="w-full bg-primary hover:bg-blue-700 touch-manipulation text-sm md:text-base py-2 md:py-2.5"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Upload Document
+            </Button>
+            
+            {/* Case Member Management Button - Only for CASEADMIN */}
+            {caseData?.role === 'CASEADMIN' && (
+              <Button 
+                onClick={() => {
+                  setShowDisclosurePdfs(true);
+                  setSelectedDocument(null);
+                }}
+                variant="outline"
+                className="w-full border-primary/20 text-primary hover:bg-primary/5 touch-manipulation text-sm md:text-base py-2 md:py-2.5"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Manage Members
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Navigation Controls */}
