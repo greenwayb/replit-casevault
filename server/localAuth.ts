@@ -5,6 +5,7 @@ import session from "express-session";
 import bcrypt from "bcrypt";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { randomUUID } from "crypto";
 import { User } from "@shared/schema";
 
 declare global {
@@ -78,7 +79,7 @@ export async function setupLocalAuth(app: Express) {
     )
   );
 
-  passport.serializeUser((user, done) => {
+  passport.serializeUser((user: any, done) => {
     done(null, user.id);
   });
 
@@ -92,8 +93,24 @@ export async function setupLocalAuth(app: Express) {
   });
 
   // Login route
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.json({ message: "Login successful", user: req.user });
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err: any, user: any, info: any) => {
+      if (err) {
+        return res.status(500).json({ message: "Authentication error" });
+      }
+      if (!user) {
+        return res.status(401).json({ message: info?.message || "Invalid credentials" });
+      }
+      
+      req.login(user, (loginErr) => {
+        if (loginErr) {
+          return res.status(500).json({ message: "Login failed" });
+        }
+        // Remove password from response for security
+        const { password, ...userWithoutPassword } = user;
+        res.json(userWithoutPassword);
+      });
+    })(req, res, next);
   });
 
   // Register route
@@ -112,6 +129,7 @@ export async function setupLocalAuth(app: Express) {
       
       // Create user
       const user = await storage.createUser({
+        id: randomUUID(),
         firstName,
         lastName,
         email,
@@ -125,7 +143,9 @@ export async function setupLocalAuth(app: Express) {
         if (err) {
           return res.status(500).json({ message: "Registration successful but login failed" });
         }
-        res.status(201).json({ message: "Registration successful", user });
+        // Remove password from response for security
+        const { password: _, ...userWithoutPassword } = user;
+        res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
       console.error("Error creating user:", error);
