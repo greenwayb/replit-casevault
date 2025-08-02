@@ -175,13 +175,8 @@ export default function CaseDetail() {
               Upload Document
             </Button>
             
-            {/* Case Member Management Button - Debug: showing role info */}
-            {caseData && (
-              <div className="text-xs text-gray-500 mb-2">
-                Role: {caseData?.role || 'undefined'} | UserRole: {caseData?.userRole || 'undefined'}
-              </div>
-            )}
-            {caseData?.role === 'CASEADMIN' && (
+            {/* Case Member Management Button - Use userRole as fallback */}
+            {(caseData?.role === 'CASEADMIN' || caseData?.userRole === 'CASEADMIN') && (
               <Button 
                 onClick={() => {
                   setShowDisclosurePdfs(true);

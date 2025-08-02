@@ -339,12 +339,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const documents = await storage.getDocumentsByCase(caseId);
       
-      res.json({
+      const response = {
         ...caseData,
         role: userRole,  // Frontend expects 'role' field
         userRole,        // Keep both for compatibility
         documents,
-      });
+      };
+      
+      console.log('Case API response for user', userId, ':', { role: userRole, userRole });
+      res.json(response);
     } catch (error) {
       console.error("Error fetching case:", error);
       res.status(500).json({ message: "Failed to fetch case" });
