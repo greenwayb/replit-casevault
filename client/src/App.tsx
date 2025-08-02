@@ -9,14 +9,14 @@ import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import CaseDetail from "@/pages/case-detail";
 import AuthPage from "@/pages/auth-page";
-import { TopNav } from "@/components/top-nav";
+import { TopBanner } from "@/components/ui/top-banner";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
     <>
-      {isAuthenticated && <TopNav />}
+      {isAuthenticated && <TopBanner />}
       <Switch>
         <Route path="/auth" component={AuthPage} />
         {isLoading || !isAuthenticated ? (

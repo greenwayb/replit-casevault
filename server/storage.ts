@@ -171,7 +171,7 @@ export class DatabaseStorage implements IStorage {
     return newCase;
   }
 
-  async getCasesByUserId(userId: string): Promise<(Case & { role: Role; documentCount: number; totalFileSize: number })[]> {
+  async getCasesByUserId(userId: string): Promise<(Case & { roles: Role[]; documentCount: number; totalFileSize: number })[]> {
     const result = await db
       .select({
         id: cases.id,
@@ -181,7 +181,7 @@ export class DatabaseStorage implements IStorage {
         status: cases.status,
         createdAt: cases.createdAt,
         updatedAt: cases.updatedAt,
-        role: caseUsers.role,
+        roles: caseUsers.roles,
         documentCount: sql<number>`COUNT(DISTINCT ${documents.id})`,
         totalFileSize: sql<number>`COALESCE(SUM(${documents.fileSize}), 0)`,
       })
@@ -189,7 +189,7 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(caseUsers, eq(caseUsers.caseId, cases.id))
       .leftJoin(documents, eq(documents.caseId, cases.id))
       .where(eq(caseUsers.userId, userId))
-      .groupBy(cases.id, caseUsers.role)
+      .groupBy(cases.id, caseUsers.roles)
       .orderBy(desc(cases.createdAt));
 
     return result.map(row => ({
@@ -216,12 +216,12 @@ export class DatabaseStorage implements IStorage {
     return caseResult;
   }
 
-  async getUserRoleInCase(userId: string, caseId: number): Promise<Role | undefined> {
+  async getUserRolesInCase(userId: string, caseId: number): Promise<Role[]> {
     const [result] = await db
-      .select({ role: caseUsers.role })
+      .select({ roles: caseUsers.roles })
       .from(caseUsers)
       .where(and(eq(caseUsers.userId, userId), eq(caseUsers.caseId, caseId)));
-    return result?.role;
+    return result?.roles || [];
   }
 
   // Case user operations
@@ -248,7 +248,7 @@ export class DatabaseStorage implements IStorage {
         id: caseUsers.id,
         caseId: caseUsers.caseId,
         userId: caseUsers.userId,
-        role: caseUsers.role,
+        roles: caseUsers.roles,
         createdAt: caseUsers.createdAt,
         user: users,
       })
@@ -264,10 +264,10 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(caseUsers.caseId, caseId), eq(caseUsers.userId, userId)));
   }
 
-  async updateUserRoleInCase(caseId: number, userId: string, role: Role): Promise<CaseUser> {
+  async updateUserRolesInCase(caseId: number, userId: string, roles: Role[]): Promise<CaseUser> {
     const [updatedCaseUser] = await db
       .update(caseUsers)
-      .set({ role })
+      .set({ roles })
       .where(and(eq(caseUsers.caseId, caseId), eq(caseUsers.userId, userId)))
       .returning();
     return updatedCaseUser;

@@ -148,8 +148,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       
       // Check if user has access to this case
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (!userRole) {
+      const userRoles = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied" });
       }
       
@@ -165,18 +165,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const caseId = parseInt(req.params.id);
       const userId = req.user.id;
-      const { userId: targetUserId, role } = req.body;
+      const { userId: targetUserId, roles } = req.body;
       
       // Check if user is case admin
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (userRole !== 'CASEADMIN') {
+      const userRoles = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles.includes('CASEADMIN')) {
         return res.status(403).json({ message: "Only case admins can add members" });
       }
       
       const caseUser = await storage.addUserToCase({
         caseId,
         userId: targetUserId,
-        role,
+        roles: roles,
       });
       
       res.json(caseUser);
