@@ -62,6 +62,8 @@ Preferred communication style: Simple, everyday language.
 # Recent Changes
 
 ## August 2, 2025 (Latest Updates)
+- **Fixed Document Status Update UI Issue**: Resolved issue where document status changes weren't reflected in the UI immediately. Added onDocumentUpdate callback to DocumentViewer component to properly update local state when status changes occur, ensuring the UI displays the current status after successful updates.
+- **Enhanced Status Update Cache Invalidation**: Improved cache invalidation strategy in StatusSelect component to ensure all related queries are refreshed when document status is updated.
 - **Persistent SignOut Button**: Added TopNav component that appears in the top right corner of all authenticated pages, displaying user information and sign out functionality
 - **Enhanced CASEADMIN Permissions**: Updated document status system so CASEADMIN users can change document status from any state to any other state, providing full administrative control over document workflow
 - **Multi-Role User System**: Implemented comprehensive multi-role assignment capability:

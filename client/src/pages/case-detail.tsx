@@ -269,6 +269,9 @@ export default function CaseDetail() {
           <DocumentViewer 
             document={selectedDocument} 
             userRole={caseData?.roles?.includes('CASEADMIN') ? 'CASEADMIN' : (caseData?.roles?.[0] || caseData?.role || caseData?.userRole)}
+            onDocumentUpdate={(updatedDocument) => {
+              setSelectedDocument(updatedDocument);
+            }}
           />
         )}
       </div>

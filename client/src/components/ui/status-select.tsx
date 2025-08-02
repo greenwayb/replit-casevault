@@ -69,7 +69,11 @@ export function StatusSelect({
       return response.json();
     },
     onSuccess: (data) => {
+      // Invalidate multiple related queries to ensure UI updates
       queryClient.invalidateQueries({ queryKey: ['/api/cases', caseId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/cases'] });
+      
       toast({
         title: "Status Updated",
         description: `Document status changed to ${data.status}`,
