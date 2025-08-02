@@ -84,19 +84,19 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
   const canManageMembers = currentUserRole === "CASEADMIN";
 
   // Fetch case members
-  const { data: members = [], isLoading: membersLoading } = useQuery({
+  const { data: members = [], isLoading: membersLoading } = useQuery<any[]>({
     queryKey: ["/api/cases", caseId, "members"],
     enabled: !!caseId,
   });
 
   // Fetch case invitations
-  const { data: invitations = [], isLoading: invitationsLoading } = useQuery({
+  const { data: invitations = [], isLoading: invitationsLoading } = useQuery<CaseInvitation[]>({
     queryKey: ["/api/cases", caseId, "invitations"],
     enabled: !!caseId && canManageMembers,
   });
 
   // Fetch all users for adding existing users
-  const { data: allUsers = [], isLoading: usersLoading } = useQuery({
+  const { data: allUsers = [], isLoading: usersLoading } = useQuery<User[]>({
     queryKey: ["/api/users"],
     enabled: canManageMembers,
   });
@@ -444,7 +444,7 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {new Date(invitation.createdAt).toLocaleDateString()}
+                      {invitation.createdAt ? new Date(invitation.createdAt).toLocaleDateString() : 'N/A'}
                     </TableCell>
                   </TableRow>
                 ))}
