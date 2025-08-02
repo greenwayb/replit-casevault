@@ -62,6 +62,7 @@ export const bankAbbreviations = pgTable("bank_abbreviations", {
 
 export const roleEnum = pgEnum('role', ['DISCLOSER', 'REVIEWER', 'DISCLOSEE', 'CASEADMIN']);
 export const caseStatusEnum = pgEnum('case_status', ['ACTIVE', 'UNDER_REVIEW', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED']);
+export const documentStatusEnum = pgEnum('document_status', ['UPLOADED', 'READYFORREVIEW', 'REVIEWED', 'WITHDRAWN']);
 export const categoryEnum = pgEnum('category', ['REAL_PROPERTY', 'BANKING', 'TAXATION', 'SUPERANNUATION', 'EMPLOYMENT', 'SHARES_INVESTMENTS', 'VEHICLES']);
 
 export const cases = pgTable("cases", {
@@ -88,10 +89,12 @@ export const documents = pgTable("documents", {
   filename: varchar("filename").notNull(),
   originalName: varchar("original_name").notNull(),
   category: categoryEnum("category").notNull(),
+  status: documentStatusEnum("status").default('UPLOADED'),
   fileSize: integer("file_size").notNull(),
   mimeType: varchar("mime_type").notNull(),
   uploadedById: varchar("uploaded_by_id").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
   
   // AI-extracted banking information
   accountHolderName: varchar("account_holder_name", { length: 255 }),
@@ -211,6 +214,7 @@ export const insertCaseSchema = createInsertSchema(cases).omit({
 export const insertDocumentSchema = createInsertSchema(documents).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export const insertCaseUserSchema = createInsertSchema(caseUsers).omit({
@@ -272,6 +276,8 @@ export type Case = typeof cases.$inferSelect;
 export type InsertCase = z.infer<typeof insertCaseSchema>;
 export type Document = typeof documents.$inferSelect;
 export type InsertDocument = z.infer<typeof insertDocumentSchema>;
+export type DocumentStatus = 'UPLOADED' | 'READYFORREVIEW' | 'REVIEWED' | 'WITHDRAWN';
+export type Role = 'DISCLOSER' | 'REVIEWER' | 'DISCLOSEE' | 'CASEADMIN';
 export type CaseUser = typeof caseUsers.$inferSelect;
 export type InsertCaseUser = z.infer<typeof insertCaseUserSchema>;
 export type DisclosurePdf = typeof disclosurePdfs.$inferSelect;
@@ -280,6 +286,5 @@ export type ActivityLog = typeof activityLog.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 export type CaseInvitation = typeof caseInvitations.$inferSelect;
 export type InsertCaseInvitation = z.infer<typeof insertCaseInvitationSchema>;
-export type Role = 'DISCLOSER' | 'REVIEWER' | 'DISCLOSEE' | 'CASEADMIN';
 export type CaseStatus = 'ACTIVE' | 'UNDER_REVIEW' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
 export type Category = 'REAL_PROPERTY' | 'BANKING' | 'TAXATION' | 'SUPERANNUATION' | 'EMPLOYMENT' | 'SHARES_INVESTMENTS' | 'VEHICLES';

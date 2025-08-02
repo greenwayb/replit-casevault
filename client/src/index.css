@@ -60,6 +60,23 @@
   }
 }
 
+/* Document Status Badge Styles */
+.status-uploaded {
+  @apply bg-blue-50 text-blue-700 border-blue-200;
+}
+
+.status-readyforreview {
+  @apply bg-yellow-50 text-yellow-700 border-yellow-200;
+}
+
+.status-reviewed {
+  @apply bg-green-50 text-green-700 border-green-200;
+}
+
+.status-withdrawn {
+  @apply bg-red-50 text-red-700 border-red-200;
+}
+
 /* Legal-themed styling for the document management system */
 .legal-header {
   background: linear-gradient(135deg, hsl(215, 85%, 25%) 0%, hsl(215, 85%, 20%) 100%);
@@ -119,6 +136,27 @@
 
 .status-archived {
   @apply bg-gray-50 text-gray-600 border border-gray-200;
+  font-weight: 500;
+}
+
+/* Document status styles */
+.status-uploaded {
+  @apply bg-blue-50 text-blue-700 border border-blue-200;
+  font-weight: 500;
+}
+
+.status-readyforreview {
+  @apply bg-yellow-50 text-yellow-700 border border-yellow-200;
+  font-weight: 500;
+}
+
+.status-reviewed {
+  @apply bg-green-50 text-green-700 border border-green-200;
+  font-weight: 500;
+}
+
+.status-withdrawn {
+  @apply bg-red-50 text-red-700 border border-red-200;
   font-weight: 500;
 }
 

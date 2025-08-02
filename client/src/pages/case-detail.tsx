@@ -231,6 +231,7 @@ export default function CaseDetail() {
             }}
             selectedDocument={selectedDocument}
             caseId={parseInt(id!)}
+            userRole={caseData.role || caseData.userRole}
           />
         </div>
       </div>

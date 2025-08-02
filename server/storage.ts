@@ -73,6 +73,8 @@ export interface IStorage {
   deleteDocument(id: number): Promise<void>;
   updateDocumentWithAIAnalysis(documentId: number, analysis: any): Promise<Document>;
   getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]>;
+  updateDocumentStatus(documentId: number, status: string): Promise<Document>;
+  getDocumentsForDisclosee(caseId: number): Promise<Document[]>;
   getExistingAccountGroups(caseId: number, category: 'BANKING' | 'REAL_PROPERTY'): Promise<string[]>;
   
   // Disclosure PDF operations
@@ -368,6 +370,31 @@ export class DatabaseStorage implements IStorage {
     return updatedDocument;
   }
 
+  async updateDocumentStatus(documentId: number, status: string): Promise<Document> {
+    const [updatedDocument] = await db
+      .update(documents)
+      .set({ 
+        status: status as any,
+        updatedAt: new Date()
+      })
+      .where(eq(documents.id, documentId))
+      .returning();
+    return updatedDocument;
+  }
+
+  async getDocumentsForDisclosee(caseId: number): Promise<Document[]> {
+    return await db
+      .select()
+      .from(documents)
+      .where(
+        and(
+          eq(documents.caseId, caseId),
+          eq(documents.status, 'REVIEWED')
+        )
+      )
+      .orderBy(desc(documents.createdAt));
+  }
+
   async getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]> {
     return await db
       .select()
@@ -510,6 +537,33 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
 
     return activities as (ActivityLog & { user: User; case: Case })[];
+  }
+
+  // Document status management methods
+  async updateDocumentStatus(documentId: number, status: string): Promise<Document> {
+    const [updatedDocument] = await db
+      .update(documents)
+      .set({ 
+        status: status as any,
+        updatedAt: new Date()
+      })
+      .where(eq(documents.id, documentId))
+      .returning();
+    return updatedDocument;
+  }
+
+  async getDocumentsForDisclosee(caseId: number): Promise<Document[]> {
+    // DISCLOSEE can only see documents with status 'REVIEWED'
+    return await db
+      .select()
+      .from(documents)
+      .where(
+        and(
+          eq(documents.caseId, caseId),
+          eq(documents.status, 'REVIEWED')
+        )
+      )
+      .orderBy(desc(documents.createdAt));
   }
 }
 

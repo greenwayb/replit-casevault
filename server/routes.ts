@@ -30,6 +30,31 @@ const upload = multer({
   },
 });
 
+// Helper function to validate document status transitions
+function validateStatusTransition(currentStatus: string, newStatus: string, userRole: Role): boolean {
+  // DISCLOSER/CASEADMIN can mark UPLOADED as READYFORREVIEW
+  if (currentStatus === 'UPLOADED' && newStatus === 'READYFORREVIEW') {
+    return ['DISCLOSER', 'CASEADMIN'].includes(userRole);
+  }
+  
+  // REVIEWER/DISCLOSER/CASEADMIN can mark READYFORREVIEW as REVIEWED
+  if (currentStatus === 'READYFORREVIEW' && newStatus === 'REVIEWED') {
+    return ['REVIEWER', 'DISCLOSER', 'CASEADMIN'].includes(userRole);
+  }
+  
+  // REVIEWER/DISCLOSER/CASEADMIN can mark REVIEWED as WITHDRAWN
+  if (currentStatus === 'REVIEWED' && newStatus === 'WITHDRAWN') {
+    return ['REVIEWER', 'DISCLOSER', 'CASEADMIN'].includes(userRole);
+  }
+  
+  // DISCLOSER/CASEADMIN/REVIEWER can mark WITHDRAWN as REVIEWED again
+  if (currentStatus === 'WITHDRAWN' && newStatus === 'REVIEWED') {
+    return ['DISCLOSER', 'CASEADMIN', 'REVIEWER'].includes(userRole);
+  }
+  
+  return false;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupLocalAuth(app);
@@ -321,7 +346,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied to this case" });
       }
 
-      const documents = await storage.getDocumentsByCase(caseId);
+      // Get documents based on user role
+      let documents;
+      if (userRole === 'DISCLOSEE') {
+        // DISCLOSEE can only see REVIEWED documents
+        documents = await storage.getDocumentsForDisclosee(caseId);
+      } else {
+        // Other roles can see all documents
+        documents = await storage.getDocumentsByCase(caseId);
+      }
       
       const response = {
         ...caseData,
@@ -1181,6 +1214,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recent activity:", error);
       res.status(500).json({ message: "Failed to fetch recent activity" });
+    }
+  });
+
+  // Document status management endpoints
+  app.patch('/api/documents/:id/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const documentId = parseInt(req.params.id);
+      const { status } = req.body;
+
+      // Validate status
+      const validStatuses = ['UPLOADED', 'READYFORREVIEW', 'REVIEWED', 'WITHDRAWN'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+
+      // Get document and check case access
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
+      if (!userRole) {
+        return res.status(403).json({ message: "Access denied to this case" });
+      }
+
+      // Check permissions based on current status and target status
+      const canUpdateStatus = validateStatusTransition(document.status, status, userRole);
+      if (!canUpdateStatus) {
+        return res.status(403).json({ 
+          message: `You cannot change document status from ${document.status} to ${status} with role ${userRole}` 
+        });
+      }
+
+      // Update the document status
+      const updatedDocument = await storage.updateDocumentStatus(documentId, status);
+
+      // Log the status change activity
+      await storage.createActivityLog({
+        caseId: document.caseId,
+        userId: userId,
+        action: 'document_status_changed',
+        description: `changed document "${document.originalName}" status from ${document.status} to ${status}`,
+        metadata: {
+          documentId: documentId,
+          originalName: document.originalName,
+          previousStatus: document.status,
+          newStatus: status,
+        }
+      });
+
+      res.json(updatedDocument);
+    } catch (error) {
+      console.error("Error updating document status:", error);
+      res.status(500).json({ message: "Failed to update document status" });
+    }
+  });
+
+  // Get documents filtered for DISCLOSEE role (only REVIEWED documents)
+  app.get('/api/cases/:id/documents/disclosee', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const caseId = parseInt(req.params.id);
+      
+      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      if (userRole !== 'DISCLOSEE') {
+        return res.status(403).json({ message: "This endpoint is only for DISCLOSEE users" });
+      }
+
+      const documents = await storage.getDocumentsForDisclosee(caseId);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents for disclosee:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
     }
   });
 
