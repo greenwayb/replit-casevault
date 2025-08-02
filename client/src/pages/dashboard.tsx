@@ -16,6 +16,7 @@ import { useLocation } from "wouter";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 import TiltedCard from "@/components/TiltedCard";
 
+
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
@@ -38,12 +39,12 @@ export default function Dashboard() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: cases, isLoading: casesLoading } = useQuery({
+  const { data: cases = [], isLoading: casesLoading } = useQuery<any[]>({
     queryKey: ["/api/cases"],
     enabled: isAuthenticated,
   });
 
-  const { data: recentActivity, isLoading: activityLoading } = useQuery({
+  const { data: recentActivity = [], isLoading: activityLoading } = useQuery<any[]>({
     queryKey: ["/api/activity/recent"],
     enabled: isAuthenticated,
   });
@@ -238,7 +239,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between text-xs md:text-sm">
                         <span className="text-slate-600 font-medium">Role:</span>
                         <div className="flex flex-wrap gap-1">
-                          {Array.isArray(caseItem.roles) ? caseItem.roles.map((role, index) => (
+                          {Array.isArray(caseItem.roles) ? caseItem.roles.map((role: string, index: number) => (
                             <Badge key={index} className={`${getRoleBadgeClass(role)} px-2 py-1 text-xs`}>
                               {role}
                             </Badge>
