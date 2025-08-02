@@ -80,7 +80,7 @@ export const caseUsers = pgTable("case_users", {
   id: serial("id").primaryKey(),
   caseId: integer("case_id").notNull().references(() => cases.id, { onDelete: 'cascade' }),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  roles: roleEnum("role").array().notNull(), // Array of roles for multiple role assignment
+  roles: roleEnum("roles").array().notNull(), // Array of roles for multiple role assignment
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => {
   return {
@@ -131,7 +131,7 @@ export const caseInvitations = pgTable("case_invitations", {
   id: serial("id").primaryKey(),
   caseId: integer("case_id").notNull().references(() => cases.id, { onDelete: 'cascade' }),
   email: varchar("email").notNull(),
-  roles: roleEnum("role").array().notNull(), // Array of roles for multiple role assignment
+  roles: roleEnum("roles").array().notNull(), // Array of roles for multiple role assignment
   invitedById: varchar("invited_by_id").notNull().references(() => users.id),
   status: varchar("status").default("pending"), // pending, accepted, expired
   token: varchar("token").notNull().unique(), // Unique invitation token
