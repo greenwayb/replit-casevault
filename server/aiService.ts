@@ -98,8 +98,8 @@ export function generateDocumentNumber(
   accountGroupNumber: string,
   documentSequence: number
 ): string {
-  const prefix = category === 'BANKING' ? 'B' : 'RP';
-  return `${prefix}${accountGroupNumber}.${documentSequence}`;
+  // accountGroupNumber already includes the prefix (e.g., "B1")
+  return `${accountGroupNumber}.${documentSequence}`;
 }
 
 // Helper function to normalize account holder names
@@ -132,7 +132,7 @@ export function generateAccountGroupNumber(existingGroups: string[], accountName
   });
   
   const nextNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
-  return `${nextNumber}`;
+  return `B${nextNumber}`;
 }
 
 export async function generateCSVFromPDF(filePath: string, documentId: number): Promise<CSVGenerationResult> {
