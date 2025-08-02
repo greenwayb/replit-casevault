@@ -9,7 +9,7 @@ import CreateCaseModal from "@/components/create-case-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, FileText, Upload, Eye, Calendar, Trash2, HardDrive } from "lucide-react";
+import { Plus, FileText, Upload, Eye, Calendar, Trash2, HardDrive, Briefcase } from "lucide-react";
 import { FilesIcon } from "@/components/ui/files-icon";
 import { useState } from "react";
 import { useLocation } from "wouter";
