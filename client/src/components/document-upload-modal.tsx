@@ -84,18 +84,19 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
       formData.append("file", data.file);
       formData.append("category", data.category);
 
-      // Simulate upload progress
+      // Simulate upload progress with more realistic timing
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
-          if (prev >= 95) {
+          if (prev >= 90) {
             clearInterval(progressInterval);
-            return 95;
+            return 90;
           }
-          return prev + Math.random() * 10;
+          return prev + Math.random() * 15;
         });
-      }, 100);
+      }, 50);
 
-      const response = await fetch(`/api/cases/${caseId}/documents`, {
+      // Step 1: Upload the file
+      const uploadResponse = await fetch(`/api/cases/${caseId}/documents`, {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -104,45 +105,57 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`${response.status}: ${errorText}`);
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        throw new Error(`${uploadResponse.status}: ${errorText}`);
       }
 
-      // Start AI processing phase for Banking documents
-      if (data.category === 'BANKING') {
+      const uploadResult = await uploadResponse.json();
+
+      // Step 2: AI processing for Banking documents
+      if (data.category === 'BANKING' && uploadResult.requiresAiProcessing) {
         setUploadPhase('ai');
         
         // Simulate AI processing progress
         const aiInterval = setInterval(() => {
           setAiProgress(prev => {
-            if (prev >= 95) {
+            if (prev >= 90) {
               clearInterval(aiInterval);
-              return 95;
+              return 90;
             }
-            return prev + Math.random() * 8;
+            return prev + Math.random() * 12;
           });
-        }, 200);
+        }, 150);
 
-        const result = await response.json();
+        // Call AI processing endpoint
+        const aiResponse = await fetch(`/api/documents/${uploadResult.id}/process-ai`, {
+          method: "POST",
+          credentials: "include",
+        });
         
         clearInterval(aiInterval);
         setAiProgress(100);
         setUploadPhase('complete');
+
+        if (!aiResponse.ok) {
+          throw new Error(`AI processing failed: ${aiResponse.statusText}`);
+        }
+
+        const aiResult = await aiResponse.json();
         
         // Check if this is a banking document with extracted info that needs confirmation
         // OR if AI processing failed and needs manual review
-        if (result.extractedBankingInfo) {
-          setPendingBankingData(result);
+        if (aiResult.extractedBankingInfo) {
+          setPendingBankingData(aiResult);
           setShowBankingConfirmation(true);
-          return result; // Don't close modal yet, wait for confirmation
+          return aiResult; // Don't close modal yet, wait for confirmation
         }
         
-        return result;
+        return aiResult;
       }
 
       setUploadPhase('complete');
-      return response.json();
+      return uploadResult;
     },
     onSuccess: (result) => {
       // Only show success and close modal if not waiting for banking confirmation
