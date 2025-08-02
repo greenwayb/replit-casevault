@@ -193,8 +193,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       
       // Check if user is case admin
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (userRole !== 'CASEADMIN') {
+      const userRoles = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles.includes('CASEADMIN')) {
         return res.status(403).json({ message: "Only case admins can remove members" });
       }
       
@@ -210,11 +210,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const caseId = parseInt(req.params.id);
       const userId = req.user.id;
-      const { email, role } = req.body;
+      const { email, roles } = req.body;
       
       // Check if user is case admin
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (userRole !== 'CASEADMIN') {
+      const userRoles = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles.includes('CASEADMIN')) {
         return res.status(403).json({ message: "Only case admins can invite users" });
       }
       
@@ -226,7 +226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const invitation = await storage.createCaseInvitation({
         caseId,
         email,
-        role,
+        roles,
         invitedById: userId,
         token,
         expiresAt,
@@ -251,8 +251,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       
       // Check if user is case admin
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (userRole !== 'CASEADMIN') {
+      const userRoles = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles.includes('CASEADMIN')) {
         return res.status(403).json({ message: "Only case admins can view invitations" });
       }
       
@@ -295,7 +295,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.addUserToCase({
         caseId: newCase.id,
         userId: userId,
-        role: 'CASEADMIN',
+        roles: ['CASEADMIN'],
       });
 
       // Log the activity
@@ -341,14 +341,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Case not found" });
       }
 
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (!userRole) {
+      const userRoles = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this case" });
       }
 
       // Get documents based on user role
       let documents;
-      if (userRole === 'DISCLOSEE') {
+      if (userRoles.includes('DISCLOSEE') && !userRoles.includes('REVIEWER') && !userRoles.includes('CASEADMIN')) {
         // DISCLOSEE can only see REVIEWED documents
         documents = await storage.getDocumentsForDisclosee(caseId);
       } else {
@@ -358,12 +358,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const response = {
         ...caseData,
-        role: userRole,  // Frontend expects 'role' field
-        userRole,        // Keep both for compatibility
+        roles: userRoles,  // Frontend expects 'roles' field
+        userRoles,        // Keep both for compatibility
         documents,
       };
       
-      console.log('Case API response for user', userId, ':', { role: userRole, userRole });
+      console.log('Case API response for user', userId, ':', { roles: userRoles });
       res.json(response);
     } catch (error) {
       console.error("Error fetching case:", error);
@@ -383,8 +383,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has access to this case
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (!userRole) {
+      const userRoles = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this case" });
       }
 
@@ -562,8 +562,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has access to the case
-      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this document" });
       }
 
@@ -591,13 +591,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has access to the case
-      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this document" });
       }
 
       // Check if user has permission to delete (CASEADMIN or DISCLOSER)
-      if (userRole !== 'CASEADMIN' && userRole !== 'DISCLOSER') {
+      if (!userRoles.includes('CASEADMIN') && userRole !== 'DISCLOSER') {
         return res.status(403).json({ message: "Insufficient permissions to delete document" });
       }
 
@@ -697,8 +697,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has access to the case and is a CASEADMIN
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (!userRole || userRole !== 'CASEADMIN') {
+      const userRole = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRole || !userRoles.includes('CASEADMIN')) {
         return res.status(403).json({ message: "Only CASEADMIN can delete cases" });
       }
 
@@ -721,8 +721,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has access to the case
-      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this document" });
       }
 
@@ -751,8 +751,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has access to the case
-      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this document" });
       }
 
@@ -781,8 +781,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has access to the case
-      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this document" });
       }
 
@@ -823,8 +823,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has access to the case
-      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this document" });
       }
 
@@ -1074,8 +1074,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
 
       // Verify user has access to the case
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: 'Access denied to this case' });
       }
 
@@ -1137,8 +1137,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
 
       // Verify user has access to the case
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: 'Access denied to this case' });
       }
 
@@ -1204,7 +1204,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Filter activities to only show cases the user has access to
       const filteredActivities = [];
       for (const activity of activities) {
-        const userRole = await storage.getUserRoleInCase(userId, activity.caseId);
+        const userRole = await storage.getUserRolesInCase(userId, activity.caseId);
         if (userRole) {
           filteredActivities.push(activity);
         }
@@ -1236,8 +1236,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found" });
       }
 
-      const userRole = await storage.getUserRoleInCase(userId, document.caseId);
-      if (!userRole) {
+      const userRole = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
         return res.status(403).json({ message: "Access denied to this case" });
       }
 
@@ -1279,7 +1279,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const caseId = parseInt(req.params.id);
       
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      const userRole = await storage.getUserRolesInCase(userId, caseId);
       if (userRole !== 'DISCLOSEE') {
         return res.status(403).json({ message: "This endpoint is only for DISCLOSEE users" });
       }
@@ -1304,8 +1304,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user has CASEADMIN role for this case
-      const userRole = await storage.getUserRoleInCase(userId, caseId);
-      if (userRole !== 'CASEADMIN') {
+      const userRole = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles.includes('CASEADMIN')) {
         return res.status(403).json({ message: "Only case administrators can edit case titles" });
       }
 

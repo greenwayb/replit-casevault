@@ -45,17 +45,17 @@ export interface IStorage {
   
   // Case operations
   createCase(caseData: InsertCase): Promise<Case>;
-  getCasesByUserId(userId: string): Promise<(Case & { role: Role; documentCount: number; totalFileSize: number })[]>;
+  getCasesByUserId(userId: string): Promise<(Case & { roles: Role[]; documentCount: number; totalFileSize: number })[]>;
   getCaseByNumber(caseNumber: string): Promise<Case | undefined>;
   getCaseById(id: number): Promise<Case | undefined>;
-  getUserRoleInCase(userId: string, caseId: number): Promise<Role | undefined>;
+  getUserRolesInCase(userId: string, caseId: number): Promise<Role[]>;
   deleteCase(id: number): Promise<void>;
   
   // Case user operations
   addUserToCase(caseUser: InsertCaseUser): Promise<CaseUser>;
   getCaseMembers(caseId: number): Promise<(CaseUser & { user: User })[]>;
   removeUserFromCase(caseId: number, userId: string): Promise<void>;
-  updateUserRoleInCase(caseId: number, userId: string, role: Role): Promise<CaseUser>;
+  updateUserRolesInCase(caseId: number, userId: string, roles: Role[]): Promise<CaseUser>;
   updateCaseTitle(caseId: number, title: string): Promise<Case>;
   getCaseTotalFileSize(caseId: number): Promise<number>;
   
@@ -317,7 +317,7 @@ export class DatabaseStorage implements IStorage {
     const caseUser = await this.addUserToCase({
       caseId: invitation.caseId,
       userId: userId,
-      role: invitation.role,
+      roles: invitation.roles,
     });
 
     // Mark invitation as accepted
@@ -539,32 +539,6 @@ export class DatabaseStorage implements IStorage {
     return activities as (ActivityLog & { user: User; case: Case })[];
   }
 
-  // Document status management methods
-  async updateDocumentStatus(documentId: number, status: string): Promise<Document> {
-    const [updatedDocument] = await db
-      .update(documents)
-      .set({ 
-        status: status as any,
-        updatedAt: new Date()
-      })
-      .where(eq(documents.id, documentId))
-      .returning();
-    return updatedDocument;
-  }
-
-  async getDocumentsForDisclosee(caseId: number): Promise<Document[]> {
-    // DISCLOSEE can only see documents with status 'REVIEWED'
-    return await db
-      .select()
-      .from(documents)
-      .where(
-        and(
-          eq(documents.caseId, caseId),
-          eq(documents.status, 'REVIEWED')
-        )
-      )
-      .orderBy(desc(documents.createdAt));
-  }
 }
 
 export const storage = new DatabaseStorage();
