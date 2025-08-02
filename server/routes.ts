@@ -404,7 +404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Document routes
+  // Document routes - Upload file only (step 1)
   app.post('/api/cases/:caseId/documents', isAuthenticated, upload.single('file'), async (req: any, res) => {
     try {
       const userId = req.user.id;
@@ -432,149 +432,148 @@ export async function registerRoutes(app: Express): Promise<Server> {
         uploadedById: userId,
       });
 
-      // Process Banking documents with AI
-      if (category.toUpperCase() === 'BANKING') {
-        try {
-          const { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber } = await import('./aiService');
-          const filePath = path.join(uploadDir, req.file.filename);
-          
-          // Analyze the document with AI
-          const analysis = await analyzeBankingDocument(filePath);
-          
-          // Get existing account groups for this case
-          const existingGroups = await storage.getExistingAccountGroups(caseId, 'BANKING');
-          
-          // Check if account holder name already exists
-          const allCaseDocuments = await storage.getDocumentsByCase(caseId);
-          const existingAccount = allCaseDocuments.find(doc => 
-            doc.category === 'BANKING' && 
-            doc.accountHolderName?.toLowerCase() === analysis.accountHolderName.toLowerCase()
-          );
-          
-          let accountGroupNumber: string;
-          let documentSequence: number;
-          
-          if (existingAccount && existingAccount.accountGroupNumber) {
-            // Use existing account group
-            accountGroupNumber = existingAccount.accountGroupNumber;
-            const groupDocuments = await storage.getDocumentsByAccountGroup(caseId, accountGroupNumber);
-            documentSequence = groupDocuments.length + 1;
-          } else {
-            // Create new account group
-            accountGroupNumber = generateAccountGroupNumber(existingGroups, analysis.accountHolderName);
-            documentSequence = 1;
-          }
-          
-          const documentNumber = generateDocumentNumber('BANKING', accountGroupNumber, documentSequence);
-          
-          // Generate CSV from PDF content
-          let csvInfo = { csvPath: '', csvRowCount: 0, csvGenerated: false };
-          try {
-            const csvResult = await generateCSVFromPDF(filePath, document.id);
-            csvInfo = {
-              csvPath: csvResult.csvPath,
-              csvRowCount: csvResult.rowCount,
-              csvGenerated: !!csvResult.csvContent
-            };
-          } catch (csvError) {
-            console.error("CSV generation failed:", csvError);
-            // Continue without CSV - this is non-critical
-          }
-
-          // Return document with extracted AI analysis for confirmation
-          const documentWithAnalysis = {
-            ...document,
-            extractedBankingInfo: {
-              accountHolderName: analysis.accountHolderName,
-              accountName: analysis.accountName,
-              financialInstitution: analysis.financialInstitution,
-              accountNumber: analysis.accountNumber,
-              bsbSortCode: analysis.bsbSortCode,
-              transactionDateFrom: analysis.transactionDateFrom,
-              transactionDateTo: analysis.transactionDateTo,
-              documentNumber,
-              accountGroupNumber,
-              csvInfo
-            }
-          };
-          
-          // Log the document upload activity
-          await storage.createActivityLog({
-            caseId: document.caseId,
-            userId: userId,
-            action: 'document_uploaded',
-            description: `uploaded banking document "${document.originalName}" for ${analysis.accountHolderName}`,
-            metadata: {
-              documentId: document.id,
-              filename: document.filename,
-              originalName: document.originalName,
-              category: document.category,
-              accountHolderName: analysis.accountHolderName,
-              documentNumber,
-              fileSize: document.fileSize,
-            }
-          });
-
-          res.json(documentWithAnalysis);
-        } catch (aiError) {
-          console.error("AI analysis failed:", aiError);
-          // Return document with error status for manual review
-          const documentWithError = {
-            ...document,
-            aiProcessingFailed: true,
-            processingError: aiError instanceof Error ? aiError.message : 'AI processing failed',
-            extractedBankingInfo: {
-              accountHolderName: '',
-              accountName: '',
-              financialInstitution: '',
-              accountNumber: '',
-              bsbSortCode: '',
-              transactionDateFrom: '',
-              transactionDateTo: '',
-              documentNumber: '',
-              accountGroupNumber: '',
-              csvInfo: null
-            }
-          };
-          // Log the document upload activity even with error
-          await storage.createActivityLog({
-            caseId: document.caseId,
-            userId: userId,
-            action: 'document_uploaded',
-            description: `uploaded document "${document.originalName}" (AI processing failed)`,
-            metadata: {
-              documentId: document.id,
-              filename: document.filename,
-              originalName: document.originalName,
-              category: document.category,
-              fileSize: document.fileSize,
-              aiProcessingError: true,
-            }
-          });
-
-          res.json(documentWithError);
+      // Log activity for upload
+      await storage.createActivityLog({
+        caseId,
+        userId,
+        action: 'DOCUMENT_UPLOADED',
+        description: `Uploaded document: ${req.file.originalname}`,
+        metadata: {
+          documentId: document.id,
+          category: category.toUpperCase(),
+          fileSize: req.file.size,
+          filename: req.file.originalname,
         }
-      } else {
-        // Log the document upload activity for non-banking documents
-        await storage.createActivityLog({
-          caseId: document.caseId,
-          userId: userId,
-          action: 'document_uploaded',
-          description: `uploaded ${document.category.toLowerCase()} document "${document.originalName}"`,
-          metadata: {
-            documentId: document.id,
-            filename: document.filename,
-            originalName: document.originalName,
-            category: document.category,
-            fileSize: document.fileSize,
-          }
-        });
+      });
 
-        res.json(document);
-      }
+      // Return document immediately after upload
+      res.json({ 
+        ...document, 
+        requiresAiProcessing: category.toUpperCase() === 'BANKING' 
+      });
+
     } catch (error) {
       console.error("Error uploading document:", error);
       res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  // AI Processing endpoint for banking documents (step 2)
+  app.post('/api/documents/:documentId/process-ai', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const documentId = parseInt(req.params.documentId);
+
+      // Get the document
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check if user has access to this case
+      const userRoles = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
+        return res.status(403).json({ message: "Access denied to this case" });
+      }
+
+      // Only process banking documents
+      if (document.category !== 'BANKING') {
+        return res.status(400).json({ message: "AI processing only available for banking documents" });
+      }
+
+      // Process Banking documents with AI
+      try {
+        const { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber } = await import('./aiService');
+        const filePath = path.join(uploadDir, document.filename);
+        
+        // Analyze the document with AI
+        const analysis = await analyzeBankingDocument(filePath);
+        
+        // Get existing account groups for this case
+        const existingGroups = await storage.getExistingAccountGroups(document.caseId, 'BANKING');
+        
+        // Check if account holder name already exists
+        const allCaseDocuments = await storage.getDocumentsByCase(document.caseId);
+        const existingAccount = allCaseDocuments.find(doc => 
+          doc.category === 'BANKING' && 
+          doc.accountHolderName?.toLowerCase() === analysis.accountHolderName.toLowerCase()
+        );
+        
+        let accountGroupNumber: string;
+        let documentSequence: number;
+        
+        if (existingAccount && existingAccount.accountGroupNumber) {
+          // Use existing account group
+          accountGroupNumber = existingAccount.accountGroupNumber;
+          const groupDocuments = await storage.getDocumentsByAccountGroup(document.caseId, accountGroupNumber);
+          documentSequence = groupDocuments.length + 1;
+        } else {
+          // Create new account group
+          accountGroupNumber = generateAccountGroupNumber(existingGroups, analysis.accountHolderName);
+          documentSequence = 1;
+        }
+        
+        const documentNumber = generateDocumentNumber('BANKING', accountGroupNumber, documentSequence);
+        
+        // Generate CSV from PDF content
+        let csvInfo = { csvPath: '', csvRowCount: 0, csvGenerated: false };
+        try {
+          const csvResult = await generateCSVFromPDF(filePath, document.id);
+          csvInfo = {
+            csvPath: csvResult.csvPath,
+            csvRowCount: csvResult.rowCount,
+            csvGenerated: !!csvResult.csvContent
+          };
+        } catch (csvError) {
+          console.error("CSV generation failed:", csvError);
+          // Continue without CSV - this is non-critical
+        }
+
+        // Return document with extracted AI analysis for confirmation
+        res.json({
+          id: document.id,
+          caseId: document.caseId,
+          filename: document.filename,
+          originalName: document.originalName,
+          extractedBankingInfo: {
+            accountHolderName: analysis.accountHolderName,
+            accountName: analysis.accountName,
+            financialInstitution: analysis.financialInstitution,
+            accountNumber: analysis.accountNumber,
+            bsbSortCode: analysis.bsbSortCode,
+            transactionDateFrom: analysis.transactionDateFrom,
+            transactionDateTo: analysis.transactionDateTo,
+            documentNumber,
+            accountGroupNumber,
+            csvInfo
+          }
+        });
+
+      } catch (aiError) {
+        console.error("AI processing failed:", aiError);
+        
+        // Return document with manual review required
+        res.json({
+          id: document.id,
+          caseId: document.caseId,
+          filename: document.filename,
+          originalName: document.originalName,
+          aiProcessingFailed: true,
+          extractedBankingInfo: {
+            accountHolderName: '',
+            accountName: '',
+            financialInstitution: '',
+            accountNumber: '',
+            bsbSortCode: '',
+            transactionDateFrom: '',
+            transactionDateTo: ''
+          }
+        });
+      }
+
+    } catch (error) {
+      console.error("Error processing AI for document:", error);
+      res.status(500).json({ message: "Failed to process document with AI" });
     }
   });
 

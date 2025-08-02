@@ -84,18 +84,19 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
       formData.append("file", data.file);
       formData.append("category", data.category);
 
-      // Simulate upload progress
+      // Simulate upload progress with more realistic timing
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
-          if (prev >= 95) {
+          if (prev >= 90) {
             clearInterval(progressInterval);
-            return 95;
+            return 90;
           }
-          return prev + Math.random() * 10;
+          return prev + Math.random() * 15;
         });
-      }, 100);
+      }, 50);
 
-      const response = await fetch(`/api/cases/${caseId}/documents`, {
+      // Step 1: Upload the file
+      const uploadResponse = await fetch(`/api/cases/${caseId}/documents`, {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -104,45 +105,57 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`${response.status}: ${errorText}`);
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        throw new Error(`${uploadResponse.status}: ${errorText}`);
       }
 
-      // Start AI processing phase for Banking documents
-      if (data.category === 'BANKING') {
+      const uploadResult = await uploadResponse.json();
+
+      // Step 2: AI processing for Banking documents
+      if (data.category === 'BANKING' && uploadResult.requiresAiProcessing) {
         setUploadPhase('ai');
         
         // Simulate AI processing progress
         const aiInterval = setInterval(() => {
           setAiProgress(prev => {
-            if (prev >= 95) {
+            if (prev >= 90) {
               clearInterval(aiInterval);
-              return 95;
+              return 90;
             }
-            return prev + Math.random() * 8;
+            return prev + Math.random() * 12;
           });
-        }, 200);
+        }, 150);
 
-        const result = await response.json();
+        // Call AI processing endpoint
+        const aiResponse = await fetch(`/api/documents/${uploadResult.id}/process-ai`, {
+          method: "POST",
+          credentials: "include",
+        });
         
         clearInterval(aiInterval);
         setAiProgress(100);
         setUploadPhase('complete');
+
+        if (!aiResponse.ok) {
+          throw new Error(`AI processing failed: ${aiResponse.statusText}`);
+        }
+
+        const aiResult = await aiResponse.json();
         
         // Check if this is a banking document with extracted info that needs confirmation
         // OR if AI processing failed and needs manual review
-        if (result.extractedBankingInfo) {
-          setPendingBankingData(result);
+        if (aiResult.extractedBankingInfo) {
+          setPendingBankingData(aiResult);
           setShowBankingConfirmation(true);
-          return result; // Don't close modal yet, wait for confirmation
+          return aiResult; // Don't close modal yet, wait for confirmation
         }
         
-        return result;
+        return aiResult;
       }
 
       setUploadPhase('complete');
-      return response.json();
+      return uploadResult;
     },
     onSuccess: (result) => {
       // Only show success and close modal if not waiting for banking confirmation
@@ -362,33 +375,50 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
 
             {/* Progress Bars */}
             {uploadDocumentMutation.isPending && (
-              <div className="space-y-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
                 {/* File Upload Progress */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">File Upload</span>
-                    <span>{Math.round(uploadProgress)}%</span>
+                  <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${uploadProgress === 100 ? 'bg-green-500' : 'bg-blue-500 animate-pulse'}`} />
+                      <span className="font-medium">File Upload</span>
+                    </div>
+                    <span className="text-slate-600">{Math.round(uploadProgress)}%</span>
                   </div>
-                  <Progress value={uploadProgress} className="h-2" />
+                  <Progress 
+                    value={uploadProgress} 
+                    className="h-3 bg-slate-200" 
+                  />
+                  {uploadProgress === 100 && uploadPhase === 'upload' && (
+                    <p className="text-xs text-green-600 font-medium">✓ File uploaded successfully</p>
+                  )}
                 </div>
 
                 {/* AI Processing Progress */}
                 {uploadPhase === 'ai' && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium">AI Processing</span>
-                      <span>{Math.round(aiProgress)}%</span>
+                  <div className="space-y-2 border-t border-slate-200 pt-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-orange-500 animate-pulse" />
+                        <span className="font-medium">AI Processing</span>
+                      </div>
+                      <span className="text-slate-600">{Math.round(aiProgress)}%</span>
                     </div>
-                    <Progress value={aiProgress} className="h-2" />
-                    <p className="text-xs text-gray-500">
-                      Extracting metadata and generating CSV from Banking document...
+                    <Progress 
+                      value={aiProgress} 
+                      className="h-3 bg-slate-200"
+                    />
+                    <p className="text-xs text-slate-600 flex items-center gap-1">
+                      <span className="animate-spin">⚡</span>
+                      Extracting banking metadata and generating CSV data...
                     </p>
                   </div>
                 )}
 
                 {uploadPhase === 'complete' && (
-                  <div className="text-sm text-green-600 font-medium">
-                    ✓ Upload and processing complete!
+                  <div className="text-sm text-green-600 font-medium flex items-center gap-2 border-t border-slate-200 pt-3">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    Upload and AI processing complete!
                   </div>
                 )}
               </div>
@@ -444,6 +474,7 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
             onReject={handleBankingReject}
             documentId={pendingBankingData.id}
             isManualReview={pendingBankingData.aiProcessingFailed}
+            selectedFile={selectedFile}
           />
         )}
       </Dialog>

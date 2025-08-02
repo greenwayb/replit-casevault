@@ -281,7 +281,7 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-bold text-slate-900">
-                                  B{groupNumber}: {accountHolderName}
+                                  {groupNumber}: {accountHolderName}
                                 </span>
                                 <div
                                   className="h-6 w-6 p-0 hover:bg-slate-100 rounded cursor-pointer flex items-center justify-center"

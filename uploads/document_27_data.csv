@@ -1,0 +1,33 @@
+Date,Description,Reference/Transaction_ID,Debit,Credit,Balance,Category
+2025-01-03,Transfer to Revolut user,To Evelyn G,-1002.84,,0.00,Transfer
+2025-01-03,Payment from Ben Greenway,From BEN GREENWAY 11372992,,2000.00,2000.00,Payment
+2025-01-03,Transfer to Revolut user,To Evelyn G,-2000.00,,0.00,Transfer
+2025-01-03,Payment from Ben Greenway,From BEN GREENWAY 11372992,,3400.00,3400.00,Payment
+2025-01-03,Transfer to Revolut user,To Evelyn G,-3361.69,,38.31,Transfer
+2025-01-04,Payment from Ben Greenway,From BEN GREENWAY 11372992,,100.00,138.31,Payment
+2025-01-06,Radhe Krishna Venture,To Radhe Krishna Venture Booragoon,-31.00,,107.31,Expense
+2025-01-08,Payment from Ben Greenway,From BEN GREENWAY 11372992,,2000.00,2107.31,Payment
+2025-01-24,Transfer from Revolut user,From GRANT PORTER LITTLE,,80.00,2187.31,Transfer
+2025-02-10,Square,To Sq *perth Festival Casa M Crawley,-24.38,,2162.93,Expense
+2025-02-10,Square,To Sq *perth Festival Casa M Crawley,-36.58,,2126.35,Expense
+2025-02-10,Square,To Sq *perth Festival Casa M Crawley,-24.38,,2101.97,Expense
+2025-02-10,Square,To Sq *perth Festival Casa M Crawley,-24.38,,2077.59,Expense
+2025-02-13,Google Call Recorder,To Google*call Recorder G.co/helppay#,-18.99,,2058.60,Expense
+2025-02-23,Exchanged to AUD,Amount converted,-2.68,,2061.28,Exchange
+2025-02-23,Exchanged to AUD,Amount converted,-26.65,,2087.93,Exchange
+2025-03-03,IKEA,To Ikea Perth Innaloo,-300.00,,1787.93,Expense
+2025-03-04,Coles,To Coles 0340 E Victoria Pk,-258.84,,1529.09,Expense
+2025-03-05,Pinto Thai Restaurant,To Pinto Thai Restaurant Kensington,-42.26,,1486.83,Expense
+2025-03-05,Kmart East Victoria Park,To Kmart 1278 E Victoria Pk,-18.90,,1467.93,Expense
+2025-03-06,Coles,To Coles 0340 E Victoria Pk,-17.90,,1450.03,Expense
+2025-03-08,Farmer Jacks Como,To Farmer Jacks Como Como,-53.44,,1396.59,Expense
+2025-03-08,Coles,To Coles 0296 Angelo Street,-23.45,,1373.14,Expense
+2025-03-10,Coles,To Coles 0296 Angelo Street,-92.02,,1281.12,Expense
+2025-03-12,Coles,To Coles 0296 Angelo Street,-15.35,,1265.77,Expense
+2025-03-13,Tucker Fresh Carine,To Tucker Fresh Exchang Bentley,-16.90,,1248.87,Expense
+2025-03-13,Coles,To Coles 0296 Angelo Street,-86.95,,1161.92,Expense
+2025-03-18,Coles,To Coles 0296 Angelo Street,-14.67,,1147.25,Expense
+2025-03-19,Coles,To Coles 0296 Angelo Street,-18.60,,1128.65,Expense
+2025-03-19,Coles,To Coles 0296 Angelo Street,-19.35,,1109.30,Expense
+2025-03-19,Payment from Ben Greenway,From BEN GREENWAY 15770802,,500.00,1609.30,Payment
+2025-03-21,Coles,To Coles 0296 Angelo Street,-41.44,,1567.86,Expense
