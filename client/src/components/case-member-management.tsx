@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Mail, Users, Shield, Trash2, UserPlus } from "lucide-react";
+import { MultiRoleSelector } from "@/components/multi-role-selector";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,12 +60,12 @@ const roleColors: Record<Role, string> = {
 
 const inviteUserSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  role: z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"]),
+  roles: z.array(z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"])).min(1, "Please select at least one role"),
 });
 
 const addExistingUserSchema = z.object({
   userId: z.string().min(1, "Please select a user"),
-  role: z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"]),
+  roles: z.array(z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"])).min(1, "Please select at least one role"),
 });
 
 type InviteUserForm = z.infer<typeof inviteUserSchema>;
@@ -105,7 +106,7 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
     resolver: zodResolver(inviteUserSchema),
     defaultValues: {
       email: "",
-      role: "REVIEWER",
+      roles: ["REVIEWER"],
     },
   });
 
@@ -113,7 +114,7 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
     resolver: zodResolver(addExistingUserSchema),
     defaultValues: {
       userId: "",
-      role: "REVIEWER",
+      roles: ["REVIEWER"],
     },
   });
 
@@ -270,23 +271,17 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                       
                       <FormField
                         control={addUserForm.control}
-                        name="role"
+                        name="roles"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="CASEADMIN">Case Admin</SelectItem>
-                                <SelectItem value="DISCLOSER">Discloser</SelectItem>
-                                <SelectItem value="DISCLOSEE">Disclosee</SelectItem>
-                                <SelectItem value="REVIEWER">Reviewer</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <FormLabel>Roles</FormLabel>
+                            <FormControl>
+                              <MultiRoleSelector
+                                selectedRoles={field.value}
+                                onRolesChange={field.onChange}
+                                placeholder="Select roles..."
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -335,23 +330,17 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                       
                       <FormField
                         control={inviteForm.control}
-                        name="role"
+                        name="roles"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="CASEADMIN">Case Admin</SelectItem>
-                                <SelectItem value="DISCLOSER">Discloser</SelectItem>
-                                <SelectItem value="DISCLOSEE">Disclosee</SelectItem>
-                                <SelectItem value="REVIEWER">Reviewer</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <FormLabel>Roles</FormLabel>
+                            <FormControl>
+                              <MultiRoleSelector
+                                selectedRoles={field.value}
+                                onRolesChange={field.onChange}
+                                placeholder="Select roles..."
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -376,7 +365,7 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
+              <TableHead>Roles</TableHead>
               <TableHead>Organization</TableHead>
               {canManageMembers && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
@@ -389,16 +378,20 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                 </TableCell>
                 <TableCell>{member.user.email}</TableCell>
                 <TableCell>
-                  <Badge variant="secondary" className={roleColors[member.role as Role]}>
-                    {roleLabels[member.role as Role]}
-                  </Badge>
+                  <div className="flex flex-wrap gap-1">
+                    {(Array.isArray(member.roles) ? member.roles : [member.role]).map((role: Role) => (
+                      <Badge key={role} variant="secondary" className={roleColors[role]}>
+                        {roleLabels[role]}
+                      </Badge>
+                    ))}
+                  </div>
                 </TableCell>
                 <TableCell>
                   {member.user.legalOrganization?.name || "Not specified"}
                 </TableCell>
                 {canManageMembers && (
                   <TableCell className="text-right">
-                    {member.role !== "CASEADMIN" && (
+                    {!((Array.isArray(member.roles) ? member.roles : [member.role]).includes("CASEADMIN")) && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -424,7 +417,7 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
               <TableHeader>
                 <TableRow>
                   <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
+                  <TableHead>Roles</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Invited</TableHead>
                 </TableRow>
@@ -434,9 +427,13 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                   <TableRow key={invitation.id}>
                     <TableCell>{invitation.email}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">
-                        {roleLabels[invitation.role as Role]}
-                      </Badge>
+                      <div className="flex flex-wrap gap-1">
+                        {(Array.isArray(invitation.roles) ? invitation.roles : [invitation.role]).map((role: Role) => (
+                          <Badge key={role} variant="outline">
+                            {roleLabels[role]}
+                          </Badge>
+                        ))}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant={invitation.status === 'pending' ? 'secondary' : 'default'}>

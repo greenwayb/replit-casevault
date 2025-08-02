@@ -9,23 +9,27 @@ import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import CaseDetail from "@/pages/case-detail";
 import AuthPage from "@/pages/auth-page";
+import { TopNav } from "@/components/top-nav";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
-        <>
-          <Route path="/" component={Dashboard} />
-          <Route path="/cases/:id" component={CaseDetail} />
-        </>
-      )}
-      <Route component={NotFound} />
-    </Switch>
+    <>
+      {isAuthenticated && <TopNav />}
+      <Switch>
+        <Route path="/auth" component={AuthPage} />
+        {isLoading || !isAuthenticated ? (
+          <Route path="/" component={Landing} />
+        ) : (
+          <>
+            <Route path="/" component={Dashboard} />
+            <Route path="/cases/:id" component={CaseDetail} />
+          </>
+        )}
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
 
