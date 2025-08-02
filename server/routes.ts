@@ -341,7 +341,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({
         ...caseData,
-        userRole,
+        role: userRole,  // Frontend expects 'role' field
+        userRole,        // Keep both for compatibility
         documents,
       });
     } catch (error) {

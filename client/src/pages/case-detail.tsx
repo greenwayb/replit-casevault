@@ -174,8 +174,8 @@ export default function CaseDetail() {
               Upload Document
             </Button>
             
-            {/* Case Member Management Button - Debug: showing for all users temporarily */}
-            {caseData && (
+            {/* Case Member Management Button - Only for CASEADMIN */}
+            {caseData?.role === 'CASEADMIN' && (
               <Button 
                 onClick={() => {
                   setShowDisclosurePdfs(true);
@@ -185,7 +185,7 @@ export default function CaseDetail() {
                 className="w-full border-primary/20 text-primary hover:bg-primary/5 touch-manipulation text-sm md:text-base py-2 md:py-2.5"
               >
                 <Users className="h-4 w-4 mr-2" />
-                Manage Members ({caseData?.role})
+                Manage Members
               </Button>
             )}
           </div>
