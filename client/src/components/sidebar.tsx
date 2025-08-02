@@ -10,6 +10,9 @@ import {
   X
 } from "lucide-react";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
 interface SidebarProps {
@@ -18,6 +21,26 @@ interface SidebarProps {
 
 export default function Sidebar({ user }: SidebarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { toast } = useToast();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/logout", {});
+      return response.json();
+    },
+    onSuccess: () => {
+      // Clear all cached queries and redirect to auth page
+      queryClient.clear();
+      window.location.href = "/auth";
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Logout failed", 
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
   
   const getInitials = (user: any) => {
     if (user?.firstName && user?.lastName) {
@@ -156,10 +179,13 @@ export default function Sidebar({ user }: SidebarProps) {
           <Button
             variant="ghost"
             className="w-full justify-start text-slate-600 hover:bg-slate-100 font-medium text-sm md:text-base py-2 md:py-2.5 touch-manipulation"
-            onClick={() => window.location.href = '/api/logout'}
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
           >
             <LogOut className="h-4 w-4 mr-2 md:mr-3 flex-shrink-0" />
-            <span className="truncate">Sign Out</span>
+            <span className="truncate">
+              {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
+            </span>
           </Button>
         </div>
       </aside>

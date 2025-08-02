@@ -153,15 +153,18 @@ export async function setupLocalAuth(app: Express) {
     }
   });
 
-  // Logout route
-  app.post("/api/logout", (req, res) => {
-    req.logout((err) => {
+  // Logout routes (support both GET and POST)
+  const logoutHandler = (req: any, res: any) => {
+    req.logout((err: any) => {
       if (err) {
         return res.status(500).json({ message: "Logout failed" });
       }
       res.json({ message: "Logout successful" });
     });
-  });
+  };
+  
+  app.post("/api/logout", logoutHandler);
+  app.get("/api/logout", logoutHandler);
 }
 
 export const isAuthenticated: RequestHandler = (req, res, next) => {
