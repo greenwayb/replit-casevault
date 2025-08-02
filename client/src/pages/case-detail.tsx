@@ -43,6 +43,7 @@ export default function CaseDetail() {
   const { data: caseData, isLoading: caseLoading, error } = useQuery({
     queryKey: ["/api/cases", id],
     enabled: isAuthenticated && !!id,
+    staleTime: 0, // Force fresh data
   });
 
   useEffect(() => {
@@ -174,7 +175,12 @@ export default function CaseDetail() {
               Upload Document
             </Button>
             
-            {/* Case Member Management Button - Only for CASEADMIN */}
+            {/* Case Member Management Button - Debug: showing role info */}
+            {caseData && (
+              <div className="text-xs text-gray-500 mb-2">
+                Role: {caseData?.role || 'undefined'} | UserRole: {caseData?.userRole || 'undefined'}
+              </div>
+            )}
             {caseData?.role === 'CASEADMIN' && (
               <Button 
                 onClick={() => {
