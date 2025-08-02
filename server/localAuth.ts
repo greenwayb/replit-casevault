@@ -6,11 +6,11 @@ import bcrypt from "bcrypt";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 import { randomUUID } from "crypto";
-import { User } from "@shared/schema";
+import { User as DbUser } from "@shared/schema";
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    interface User extends DbUser {}
   }
 }
 
