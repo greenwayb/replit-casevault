@@ -1,0 +1,34 @@
+Date,Description,Reference/Transaction_ID,Debit,Credit,Balance,Category
+2025-03-20,Angelo Street Market,Card: 421604******1229,4.53,,,
+2025-01-03,Transfer to Revolut user,To Evelyn G,1,002.84,,0.00,
+2025-01-03,Payment from Ben Greenway,From: BEN GREENWAY, ,-2,000.00,2,000.00,
+2025-01-03,Transfer to Revolut user,To Evelyn G,2,000.00,,0.00,
+2025-01-03,Payment from Ben Greenway,From: BEN GREENWAY, ,-3,400.00,3,400.00,
+2025-01-03,Transfer to Revolut user,To Evelyn G,3,361.69,,38.31,
+2025-01-04,Payment from Ben Greenway,From: BEN GREENWAY, ,-100.00,138.31,
+2025-01-06,Radhe Krishna Venture,Card: 421604******1229,31.00,,107.31,
+2025-01-08,Payment from Ben Greenway,From: BEN GREENWAY, ,-2,000.00,2,107.31,
+2025-01-24,Transfer from Revolut user,From: GRANT PORTER LITTLE, ,-80.00,2,187.31,
+2025-02-10,Square,Card: 421604******1229,24.38,,2,162.93,
+2025-02-10,Square,Card: 421604******1229,36.58,,2,126.35,
+2025-02-10,Square,Card: 421604******1229,24.38,,2,101.97,
+2025-02-10,Square,Card: 421604******1229,24.38,,2,077.59,
+2025-02-13,Google Call Recorder,Card: 421604******1229,18.99,,2,058.60,
+2025-02-23,Exchanged to AUD,Fee: 2.71,,2,061.28,
+2025-02-23,Exchanged to AUD,Fee: 0.27,,26.92,
+2025-03-03,IKEA,Card: 421604******1229,300.00,,1,787.93,
+2025-03-04,Coles,Card: 421604******1229,258.84,,1,529.09,Grocery
+2025-03-05,Pinto Thai Restaurant,Card: 421604******1229,42.26,,1,486.83,Restaurant
+2025-03-05,Kmart East Victoria Park,Card: 421604******1229,18.90,,1,467.93,Shopping
+2025-03-06,Coles,Card: 421604******1229,17.90,,1,450.03,Grocery
+2025-03-08,Farmer Jacks Como,Card: 421604******1229,53.44,,1,396.59,Grocery
+2025-03-08,Coles,Card: 421604******1229,23.45,,1,373.14,Grocery
+2025-03-10,Coles,Card: 421604******1229,92.02,,1,281.12,Grocery
+2025-03-12,Coles,Card: 421604******1229,15.35,,1,265.77,Grocery
+2025-03-13,Tucker Fresh Carine,Card: 421604******1229,16.90,,1,248.87,Marketplace
+2025-03-13,Coles,Card: 421604******1229,86.95,,1,161.92,Grocery
+2025-03-18,Coles,Card: 421604******1229,14.67,,1,147.25,Grocery
+2025-03-19,Coles,Card: 421604******1229,18.60,,1,128.65,Grocery
+2025-03-19,Coles,Card: 421604******1229,19.35,,1,109.30,Grocery
+2025-03-19,Payment from Ben Greenway,From: BEN GREENWAY, ,-500.00,1,609.30,
+2025-03-21,Coles,Card: 421604******1229,41.44,,1,567.86,Grocery
