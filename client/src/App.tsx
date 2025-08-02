@@ -19,6 +19,8 @@ function Router() {
       {isAuthenticated && <TopBanner />}
       <Switch>
         <Route path="/auth" component={AuthPage} />
+        <Route path="/signin" component={AuthPage} />
+        <Route path="/login" component={AuthPage} />
         {isLoading || !isAuthenticated ? (
           <Route path="/" component={Landing} />
         ) : (
