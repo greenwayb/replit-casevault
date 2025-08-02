@@ -186,6 +186,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user roles in case
+  app.put('/api/cases/:id/members/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      const targetUserId = req.params.userId;
+      const userId = req.user.id;
+      const { roles } = req.body;
+
+      // Validate roles array
+      if (!Array.isArray(roles) || roles.length === 0) {
+        return res.status(400).json({ message: 'At least one role must be specified' });
+      }
+
+      // Check if user is case admin
+      const userRoles = await storage.getUserRolesInCase(userId, caseId);
+      if (!userRoles.includes('CASEADMIN')) {
+        return res.status(403).json({ message: "Only case admins can modify user roles" });
+      }
+
+      // Update user roles
+      await storage.updateUserRolesInCase(caseId, targetUserId, roles);
+      res.json({ message: 'User roles updated successfully' });
+    } catch (error) {
+      console.error('Error updating user roles:', error);
+      res.status(500).json({ message: 'Failed to update user roles' });
+    }
+  });
+
   app.delete('/api/cases/:id/members/:userId', isAuthenticated, async (req: any, res) => {
     try {
       const caseId = parseInt(req.params.id);

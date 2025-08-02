@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Mail, Users, Shield, Trash2, UserPlus } from "lucide-react";
+import { Plus, Mail, Users, Shield, Trash2, UserPlus, Edit } from "lucide-react";
 import { MultiRoleSelector } from "@/components/multi-role-selector";
 
 import { Button } from "@/components/ui/button";
@@ -68,8 +68,14 @@ const addExistingUserSchema = z.object({
   roles: z.array(z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"])).min(1, "Please select at least one role"),
 });
 
+const modifyUserSchema = z.object({
+  userId: z.string().min(1, "Please select a user"),
+  roles: z.array(z.enum(["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"])).min(1, "Please select at least one role"),
+});
+
 type InviteUserForm = z.infer<typeof inviteUserSchema>;
 type AddExistingUserForm = z.infer<typeof addExistingUserSchema>;
+type ModifyUserForm = z.infer<typeof modifyUserSchema>;
 
 interface CaseMemberManagementProps {
   caseId: number;
@@ -79,6 +85,8 @@ interface CaseMemberManagementProps {
 export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberManagementProps) {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+  const [modifyUserDialogOpen, setModifyUserDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -112,6 +120,14 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
 
   const addUserForm = useForm<AddExistingUserForm>({
     resolver: zodResolver(addExistingUserSchema),
+    defaultValues: {
+      userId: "",
+      roles: ["REVIEWER"],
+    },
+  });
+
+  const modifyUserForm = useForm<ModifyUserForm>({
+    resolver: zodResolver(modifyUserSchema),
     defaultValues: {
       userId: "",
       roles: ["REVIEWER"],
@@ -182,6 +198,39 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
     },
   });
 
+  // Mutation to modify user roles
+  const modifyUserMutation = useMutation({
+    mutationFn: async (data: ModifyUserForm) => {
+      const response = await fetch(`/api/cases/${caseId}/members/${data.userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roles: data.roles }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to modify user roles");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "User roles updated",
+        description: "The user's roles have been successfully updated.",
+      });
+      setModifyUserDialogOpen(false);
+      modifyUserForm.reset();
+      setSelectedUser(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId, "members"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to update user roles",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Mutation to remove user
   const removeUserMutation = useMutation({
     mutationFn: async (userId: string) => {
@@ -208,6 +257,16 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
       });
     },
   });
+
+  const handleModifyUser = (member: any) => {
+    setSelectedUser(member);
+    const userRoles = Array.isArray(member.roles) ? member.roles : [member.role];
+    modifyUserForm.reset({
+      userId: member.userId,
+      roles: userRoles,
+    });
+    setModifyUserDialogOpen(true);
+  };
 
   const existingUserIds = members.map((member: any) => member.userId);
   const availableUsers = allUsers.filter((user: User) => !existingUserIds.includes(user.id));
@@ -359,6 +418,46 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
         )}
       </div>
 
+      {/* Modify User Dialog */}
+      <Dialog open={modifyUserDialogOpen} onOpenChange={setModifyUserDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modify User Roles</DialogTitle>
+            <DialogDescription>
+              Update the roles for {selectedUser?.user?.firstName} {selectedUser?.user?.lastName}.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...modifyUserForm}>
+            <form onSubmit={modifyUserForm.handleSubmit((data) => modifyUserMutation.mutate(data))}>
+              <div className="space-y-4">
+                <FormField
+                  control={modifyUserForm.control}
+                  name="roles"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Roles</FormLabel>
+                      <FormControl>
+                        <MultiRoleSelector
+                          selectedRoles={field.value}
+                          onRolesChange={field.onChange}
+                          placeholder="Select roles..."
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter className="mt-6">
+                <Button type="submit" disabled={modifyUserMutation.isPending}>
+                  {modifyUserMutation.isPending ? "Updating..." : "Update Roles"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
@@ -391,16 +490,26 @@ export function CaseMemberManagement({ caseId, currentUserRole }: CaseMemberMana
                 </TableCell>
                 {canManageMembers && (
                   <TableCell className="text-right">
-                    {!((Array.isArray(member.roles) ? member.roles : [member.role]).includes("CASEADMIN")) && (
+                    <div className="flex justify-end gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeUserMutation.mutate(member.userId)}
-                        disabled={removeUserMutation.isPending}
+                        onClick={() => handleModifyUser(member)}
+                        disabled={modifyUserMutation.isPending}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Edit className="h-4 w-4" />
                       </Button>
-                    )}
+                      {!((Array.isArray(member.roles) ? member.roles : [member.role]).includes("CASEADMIN")) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeUserMutation.mutate(member.userId)}
+                          disabled={removeUserMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 )}
               </TableRow>
