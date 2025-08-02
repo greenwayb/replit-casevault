@@ -44,7 +44,9 @@ export function LegalOrganizationSelector({
   const loadOrganizations = async () => {
     try {
       setIsLoading(true);
-      const data = await apiRequest("/api/legal-organizations");
+      const response = await fetch("/api/legal-organizations");
+      if (!response.ok) throw new Error("Failed to fetch organizations");
+      const data = await response.json();
       setOrganizations(data);
     } catch (error) {
       console.error("Failed to load organizations:", error);
@@ -61,7 +63,9 @@ export function LegalOrganizationSelector({
 
     try {
       setIsLoading(true);
-      const data = await apiRequest(`/api/legal-organizations/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`/api/legal-organizations/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error("Failed to search organizations");
+      const data = await response.json();
       setOrganizations(data);
     } catch (error) {
       console.error("Failed to search organizations:", error);
@@ -72,11 +76,14 @@ export function LegalOrganizationSelector({
 
   const createNewOrganization = async (name: string) => {
     try {
-      const newOrg = await apiRequest("/api/legal-organizations", {
+      const response = await fetch("/api/legal-organizations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
+      
+      if (!response.ok) throw new Error("Failed to create organization");
+      const newOrg = await response.json();
       
       setOrganizations(prev => [newOrg, ...prev]);
       onValueChange(newOrg.id);
