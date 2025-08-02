@@ -42,6 +42,10 @@ export async function setupLocalAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Import and setup OAuth strategies
+  const { setupOAuthAuth } = await import('./oauthAuth');
+  await setupOAuthAuth(app);
+
   // Configure passport local strategy
   passport.use(
     new LocalStrategy(
@@ -56,7 +60,11 @@ export async function setupLocalAuth(app: Express) {
             return done(null, false, { message: 'Invalid email or password' });
           }
 
-          // Compare password
+          // Compare password - handle missing password field
+          if (!user.password) {
+            return done(null, false, { message: 'Invalid email or password' });
+          }
+          
           const isValid = await bcrypt.compare(password, user.password);
           if (!isValid) {
             return done(null, false, { message: 'Invalid email or password' });

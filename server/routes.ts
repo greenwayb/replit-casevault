@@ -46,7 +46,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Registration is handled in localAuth.ts
+  // Seed route for development
+  app.post("/api/seed", async (req, res) => {
+    try {
+      const { runSeed } = await import('./seedData');
+      await runSeed();
+      res.json({ message: "Seed data created successfully" });
+    } catch (error) {
+      console.error("Seeding error:", error);
+      res.status(500).json({ message: "Failed to seed data" });
+    }
+  });
 
   // Legal organization routes
   app.get("/api/legal-organizations", async (req, res) => {
