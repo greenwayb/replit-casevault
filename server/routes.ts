@@ -1205,7 +1205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filteredActivities = [];
       for (const activity of activities) {
         const userRoles = await storage.getUserRolesInCase(userId, activity.caseId);
-        if (userRole) {
+        if (userRoles && userRoles.length > 0) {
           filteredActivities.push(activity);
         }
       }

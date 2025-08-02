@@ -1,17 +1,39 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export function TopBanner() {
   const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/logout");
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(["/api/auth/user"], null);
+      queryClient.clear();
+      window.location.href = "/";
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Logout failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   if (!isAuthenticated || !user) {
     return null;
   }
 
   const handleSignOut = () => {
-    window.location.href = "/api/logout";
+    logoutMutation.mutate();
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {
