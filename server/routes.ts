@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { randomUUID } from "crypto";
 import { insertCaseSchema, insertDocumentSchema, type Role } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
@@ -128,6 +129,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error seeding data:", error);
       res.status(500).json({ message: "Failed to seed data" });
+    }
+  });
+
+  // Case member management routes
+  app.get('/api/cases/:id/members', isAuthenticated, async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      // Check if user has access to this case
+      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      if (!userRole) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const members = await storage.getCaseMembers(caseId);
+      res.json(members);
+    } catch (error) {
+      console.error("Error fetching case members:", error);
+      res.status(500).json({ message: "Failed to fetch case members" });
+    }
+  });
+
+  app.post('/api/cases/:id/members', isAuthenticated, async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      const { userId: targetUserId, role } = req.body;
+      
+      // Check if user is case admin
+      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      if (userRole !== 'CASEADMIN') {
+        return res.status(403).json({ message: "Only case admins can add members" });
+      }
+      
+      const caseUser = await storage.addUserToCase({
+        caseId,
+        userId: targetUserId,
+        role,
+      });
+      
+      res.json(caseUser);
+    } catch (error) {
+      console.error("Error adding case member:", error);
+      res.status(500).json({ message: "Failed to add case member" });
+    }
+  });
+
+  app.delete('/api/cases/:id/members/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      const targetUserId = req.params.userId;
+      const userId = req.user.claims.sub;
+      
+      // Check if user is case admin
+      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      if (userRole !== 'CASEADMIN') {
+        return res.status(403).json({ message: "Only case admins can remove members" });
+      }
+      
+      await storage.removeUserFromCase(caseId, targetUserId);
+      res.json({ message: "User removed successfully" });
+    } catch (error) {
+      console.error("Error removing case member:", error);
+      res.status(500).json({ message: "Failed to remove case member" });
+    }
+  });
+
+  app.post('/api/cases/:id/invite', isAuthenticated, async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      const { email, role } = req.body;
+      
+      // Check if user is case admin
+      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      if (userRole !== 'CASEADMIN') {
+        return res.status(403).json({ message: "Only case admins can invite users" });
+      }
+      
+      // Generate invitation token
+      const token = randomUUID();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
+      
+      const invitation = await storage.createCaseInvitation({
+        caseId,
+        email,
+        role,
+        invitedById: userId,
+        token,
+        expiresAt,
+        status: 'pending',
+      });
+      
+      // Here you would send the email invitation
+      // For now, we'll just return the invitation details
+      res.json({ 
+        invitation,
+        invitationUrl: `${req.protocol}://${req.get('host')}/accept-invitation?token=${token}`
+      });
+    } catch (error) {
+      console.error("Error creating invitation:", error);
+      res.status(500).json({ message: "Failed to create invitation" });
+    }
+  });
+
+  app.get('/api/cases/:id/invitations', isAuthenticated, async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      // Check if user is case admin
+      const userRole = await storage.getUserRoleInCase(userId, caseId);
+      if (userRole !== 'CASEADMIN') {
+        return res.status(403).json({ message: "Only case admins can view invitations" });
+      }
+      
+      const invitations = await storage.getCaseInvitations(caseId);
+      res.json(invitations);
+    } catch (error) {
+      console.error("Error fetching invitations:", error);
+      res.status(500).json({ message: "Failed to fetch invitations" });
+    }
+  });
+
+  app.get('/api/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      res.json(allUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
     }
   });
 

@@ -118,6 +118,20 @@ export const documents = pgTable("documents", {
   csvGenerated: boolean("csv_generated").default(false),
 });
 
+// Case invitations table for inviting users via email
+export const caseInvitations = pgTable("case_invitations", {
+  id: serial("id").primaryKey(),
+  caseId: integer("case_id").notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  email: varchar("email").notNull(),
+  role: roleEnum("role").notNull(),
+  invitedById: varchar("invited_by_id").notNull().references(() => users.id),
+  status: varchar("status").default("pending"), // pending, accepted, expired
+  token: varchar("token").notNull().unique(), // Unique invitation token
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  acceptedAt: timestamp("accepted_at"),
+});
+
 // Disclosure PDFs table
 export const disclosurePdfs = pgTable("disclosure_pdfs", {
   id: serial("id").primaryKey(),
@@ -161,6 +175,12 @@ export const casesRelations = relations(cases, ({ one, many }) => ({
   caseUsers: many(caseUsers),
   documents: many(documents),
   disclosurePdfs: many(disclosurePdfs),
+  invitations: many(caseInvitations),
+}));
+
+export const caseInvitationsRelations = relations(caseInvitations, ({ one }) => ({
+  case: one(cases, { fields: [caseInvitations.caseId], references: [cases.id] }),
+  invitedBy: one(users, { fields: [caseInvitations.invitedById], references: [users.id] }),
 }));
 
 export const caseUsersRelations = relations(caseUsers, ({ one }) => ({
@@ -208,6 +228,12 @@ export const insertActivityLogSchema = createInsertSchema(activityLog).omit({
   createdAt: true,
 });
 
+export const insertCaseInvitationSchema = createInsertSchema(caseInvitations).omit({
+  id: true,
+  createdAt: true,
+  acceptedAt: true,
+});
+
 // Types
 
 export type UpsertUser = typeof users.$inferInsert;
@@ -252,6 +278,8 @@ export type DisclosurePdf = typeof disclosurePdfs.$inferSelect;
 export type InsertDisclosurePdf = z.infer<typeof insertDisclosurePdfSchema>;
 export type ActivityLog = typeof activityLog.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
+export type CaseInvitation = typeof caseInvitations.$inferSelect;
+export type InsertCaseInvitation = z.infer<typeof insertCaseInvitationSchema>;
 export type Role = 'DISCLOSER' | 'REVIEWER' | 'DISCLOSEE' | 'CASEADMIN';
 export type CaseStatus = 'ACTIVE' | 'UNDER_REVIEW' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
 export type Category = 'REAL_PROPERTY' | 'BANKING' | 'TAXATION' | 'SUPERANNUATION' | 'EMPLOYMENT' | 'SHARES_INVESTMENTS' | 'VEHICLES';

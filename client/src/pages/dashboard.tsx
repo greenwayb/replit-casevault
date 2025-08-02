@@ -9,7 +9,7 @@ import CreateCaseModal from "@/components/create-case-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Briefcase, FileText, Upload, Eye, Calendar, Trash2 } from "lucide-react";
+import { Plus, Briefcase, FileText, Upload, Eye, Calendar, Trash2, HardDrive } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
@@ -137,6 +137,14 @@ export default function Dashboard() {
     });
   };
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
   if (!isAuthenticated || isLoading) {
     return null;
   }
@@ -221,6 +229,10 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between text-xs md:text-sm">
                         <span className="text-slate-600 font-medium">Documents:</span>
                         <span className="font-bold text-slate-900">{caseItem.documentCount || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs md:text-sm">
+                        <span className="text-slate-600 font-medium">Storage:</span>
+                        <span className="font-bold text-slate-900">{formatFileSize(caseItem.totalFileSize || 0)}</span>
                       </div>
                       <div className="flex items-center justify-between text-xs md:text-sm">
                         <span className="text-slate-600 font-medium">Role:</span>

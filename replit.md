@@ -62,6 +62,13 @@ Preferred communication style: Simple, everyday language.
 # Recent Changes
 
 ## August 2, 2025
+- **Case Member Management System**: Implemented comprehensive case member management with user assignment and email invitation capabilities. Case admins can now add existing users to cases with specific roles or invite new users via email.
+- **Extended Database Schema**: Added caseInvitations table to support email-based user invitations to cases with token-based acceptance system. Extended storage interface with methods for managing case members, invitations, and role assignments.
+- **Case Member Management UI**: Created comprehensive case member management component with table-based user listing, role assignment, invitation system, and pending invitation tracking. Users can have multiple roles simultaneously.
+- **File Size Tracking**: Added total file size calculation and display functionality for case storage usage tracking. Dashboard case cards now show both document count and total storage size.
+- **API Routes Enhancement**: Added new API endpoints for case member management including /api/cases/:id/members, /api/cases/:id/invite, /api/cases/:id/invitations, and /api/users for comprehensive case user management.
+- **UI Components**: Created reusable Table and Badge components following shadcn/ui patterns for consistent user interface elements.
+- **SendGrid Integration Ready**: Framework prepared for SendGrid email invitation system with proper error handling and token-based invitation acceptance flow.
 - **User Management System**: Implemented comprehensive user signup with first name, surname, email, password collection
 - **Legal Organizations**: Created 30 WA family law firms database including Hickman Family Law, plus "Self Represented" and "Not Applicable" options
 - **Autocomplete Organization Selector**: Built intelligent autocomplete component allowing search of existing organizations or creation of new ones

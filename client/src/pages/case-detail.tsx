@@ -10,6 +10,7 @@ import DocumentTree from "@/components/document-tree";
 import DocumentViewer from "@/components/document-viewer";
 import DocumentUploadModal from "@/components/document-upload-modal";
 import { DisclosurePdfManager } from "@/components/disclosure-pdf-manager";
+import { CaseMemberManagement } from "@/components/case-member-management";
 import EditableCaseTitle from "@/components/editable-case-title";
 import { ArrowLeft, Upload, Briefcase, PanelLeftOpen, PanelLeftClose, FileText, X } from "lucide-react";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
@@ -197,7 +198,7 @@ export default function CaseDetail() {
               className="flex-1 text-xs"
             >
               <FileText className="h-3 w-3 mr-1" />
-              Disclosure PDFs
+              Management
             </Button>
           </div>
         </div>
@@ -223,9 +224,9 @@ export default function CaseDetail() {
       `}>
         {showDisclosurePdfs ? (
           <div className="h-full flex flex-col">
-            {/* Disclosure PDF Header */}
+            {/* Case Management Header */}
             <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Disclosure PDFs</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Case Management</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -236,8 +237,12 @@ export default function CaseDetail() {
               </Button>
             </div>
             
-            {/* Disclosure PDF Manager */}
-            <div className="flex-1 p-4 overflow-auto">
+            {/* Case Management Content */}
+            <div className="flex-1 p-4 overflow-auto space-y-6">
+              <CaseMemberManagement 
+                caseId={parseInt(id!)} 
+                currentUserRole={caseData?.role as any}
+              />
               <DisclosurePdfManager caseId={parseInt(id!)} />
             </div>
           </div>

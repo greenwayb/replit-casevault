@@ -6,6 +6,7 @@ import {
   caseUsers,
   disclosurePdfs,
   activityLog,
+  caseInvitations,
   type User,
   type UpsertUser,
   type LegalOrganization,
@@ -20,10 +21,12 @@ import {
   type InsertDisclosurePdf,
   type ActivityLog,
   type InsertActivityLog,
+  type CaseInvitation,
+  type InsertCaseInvitation,
   type Role,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, isNotNull, like } from "drizzle-orm";
+import { eq, and, desc, isNotNull, like, sql } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -32,6 +35,7 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   createUser(userData: UpsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
   
   // Legal organization operations
   getLegalOrganizations(): Promise<LegalOrganization[]>;
@@ -41,7 +45,7 @@ export interface IStorage {
   
   // Case operations
   createCase(caseData: InsertCase): Promise<Case>;
-  getCasesByUserId(userId: string): Promise<(Case & { role: Role; documentCount: number })[]>;
+  getCasesByUserId(userId: string): Promise<(Case & { role: Role; documentCount: number; totalFileSize: number })[]>;
   getCaseByNumber(caseNumber: string): Promise<Case | undefined>;
   getCaseById(id: number): Promise<Case | undefined>;
   getUserRoleInCase(userId: string, caseId: number): Promise<Role | undefined>;
@@ -49,7 +53,17 @@ export interface IStorage {
   
   // Case user operations
   addUserToCase(caseUser: InsertCaseUser): Promise<CaseUser>;
+  getCaseMembers(caseId: number): Promise<(CaseUser & { user: User })[]>;
+  removeUserFromCase(caseId: number, userId: string): Promise<void>;
+  updateUserRoleInCase(caseId: number, userId: string, role: Role): Promise<CaseUser>;
   updateCaseTitle(caseId: number, title: string): Promise<Case>;
+  getCaseTotalFileSize(caseId: number): Promise<number>;
+  
+  // Case invitation operations
+  createCaseInvitation(invitation: InsertCaseInvitation): Promise<CaseInvitation>;
+  getCaseInvitations(caseId: number): Promise<CaseInvitation[]>;
+  acceptCaseInvitation(token: string, userId: string): Promise<CaseUser | null>;
+  getInvitationByToken(token: string): Promise<CaseInvitation | undefined>;
   
   // Document operations
   createDocument(document: InsertDocument): Promise<Document>;
@@ -109,6 +123,10 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(users.firstName, users.lastName);
+  }
+
   // Legal organization operations
   async getLegalOrganizations(): Promise<LegalOrganization[]> {
     return await db
@@ -151,7 +169,7 @@ export class DatabaseStorage implements IStorage {
     return newCase;
   }
 
-  async getCasesByUserId(userId: string): Promise<(Case & { role: Role; documentCount: number })[]> {
+  async getCasesByUserId(userId: string): Promise<(Case & { role: Role; documentCount: number; totalFileSize: number })[]> {
     const result = await db
       .select({
         id: cases.id,
@@ -162,17 +180,21 @@ export class DatabaseStorage implements IStorage {
         createdAt: cases.createdAt,
         updatedAt: cases.updatedAt,
         role: caseUsers.role,
-        documentCount: db.$count(documents, eq(documents.caseId, cases.id)),
+        documentCount: sql<number>`COUNT(DISTINCT ${documents.id})`,
+        totalFileSize: sql<number>`COALESCE(SUM(${documents.fileSize}), 0)`,
       })
       .from(cases)
       .innerJoin(caseUsers, eq(caseUsers.caseId, cases.id))
+      .leftJoin(documents, eq(documents.caseId, cases.id))
       .where(eq(caseUsers.userId, userId))
+      .groupBy(cases.id, caseUsers.role)
       .orderBy(desc(cases.createdAt));
 
     return result.map(row => ({
       ...row,
       title: row.title || 'Untitled Case', // Provide default for old cases
       documentCount: Number(row.documentCount) || 0,
+      totalFileSize: Number(row.totalFileSize) || 0,
     }));
   }
 
@@ -216,6 +238,96 @@ export class DatabaseStorage implements IStorage {
       .values(caseUser)
       .returning();
     return newCaseUser;
+  }
+
+  async getCaseMembers(caseId: number): Promise<(CaseUser & { user: User })[]> {
+    return await db
+      .select({
+        id: caseUsers.id,
+        caseId: caseUsers.caseId,
+        userId: caseUsers.userId,
+        role: caseUsers.role,
+        createdAt: caseUsers.createdAt,
+        user: users,
+      })
+      .from(caseUsers)
+      .innerJoin(users, eq(caseUsers.userId, users.id))
+      .where(eq(caseUsers.caseId, caseId))
+      .orderBy(caseUsers.createdAt);
+  }
+
+  async removeUserFromCase(caseId: number, userId: string): Promise<void> {
+    await db
+      .delete(caseUsers)
+      .where(and(eq(caseUsers.caseId, caseId), eq(caseUsers.userId, userId)));
+  }
+
+  async updateUserRoleInCase(caseId: number, userId: string, role: Role): Promise<CaseUser> {
+    const [updatedCaseUser] = await db
+      .update(caseUsers)
+      .set({ role })
+      .where(and(eq(caseUsers.caseId, caseId), eq(caseUsers.userId, userId)))
+      .returning();
+    return updatedCaseUser;
+  }
+
+  async getCaseTotalFileSize(caseId: number): Promise<number> {
+    const result = await db
+      .select({ totalSize: sql<number>`SUM(${documents.fileSize})` })
+      .from(documents)
+      .where(eq(documents.caseId, caseId));
+    
+    return result[0]?.totalSize || 0;
+  }
+
+  // Case invitation operations
+  async createCaseInvitation(invitation: InsertCaseInvitation): Promise<CaseInvitation> {
+    const [newInvitation] = await db
+      .insert(caseInvitations)
+      .values(invitation)
+      .returning();
+    return newInvitation;
+  }
+
+  async getCaseInvitations(caseId: number): Promise<CaseInvitation[]> {
+    return await db
+      .select()
+      .from(caseInvitations)
+      .where(eq(caseInvitations.caseId, caseId))
+      .orderBy(desc(caseInvitations.createdAt));
+  }
+
+  async getInvitationByToken(token: string): Promise<CaseInvitation | undefined> {
+    const [invitation] = await db
+      .select()
+      .from(caseInvitations)
+      .where(eq(caseInvitations.token, token));
+    return invitation;
+  }
+
+  async acceptCaseInvitation(token: string, userId: string): Promise<CaseUser | null> {
+    const invitation = await this.getInvitationByToken(token);
+    if (!invitation || invitation.status !== 'pending' || invitation.expiresAt < new Date()) {
+      return null;
+    }
+
+    // Add user to case
+    const caseUser = await this.addUserToCase({
+      caseId: invitation.caseId,
+      userId: userId,
+      role: invitation.role,
+    });
+
+    // Mark invitation as accepted
+    await db
+      .update(caseInvitations)
+      .set({ 
+        status: 'accepted',
+        acceptedAt: new Date()
+      })
+      .where(eq(caseInvitations.id, invitation.id));
+
+    return caseUser;
   }
 
   // Document operations
