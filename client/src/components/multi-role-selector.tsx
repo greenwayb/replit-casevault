@@ -1,20 +1,6 @@
-import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type Role = "CASEADMIN" | "DISCLOSER" | "DISCLOSEE" | "REVIEWER";
 
@@ -45,76 +31,44 @@ export function MultiRoleSelector({
   placeholder = "Select roles...",
   disabled = false
 }: MultiRoleSelectorProps) {
-  const [open, setOpen] = useState(false);
   const allRoles: Role[] = ["CASEADMIN", "DISCLOSER", "DISCLOSEE", "REVIEWER"];
 
-  const handleToggleRole = (role: Role) => {
-    if (selectedRoles.includes(role)) {
-      onRolesChange(selectedRoles.filter(r => r !== role));
-    } else {
+  const handleToggleRole = (role: Role, checked: boolean) => {
+    if (checked) {
       onRolesChange([...selectedRoles, role]);
+    } else {
+      onRolesChange(selectedRoles.filter(r => r !== role));
     }
   };
 
-  const handleRemoveRole = (roleToRemove: Role) => {
-    onRolesChange(selectedRoles.filter(role => role !== roleToRemove));
-  };
-
   return (
-    <div className="space-y-2">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full justify-between"
-            disabled={disabled}
-          >
-            {selectedRoles.length === 0 ? placeholder : `${selectedRoles.length} role(s) selected`}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
-          <Command>
-            <CommandInput placeholder="Search roles..." />
-            <CommandEmpty>No roles found.</CommandEmpty>
-            <CommandGroup>
-              {allRoles.map((role) => (
-                <CommandItem
-                  key={role}
-                  onSelect={() => handleToggleRole(role)}
-                  className="cursor-pointer"
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedRoles.includes(role) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {roleLabels[role]}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
-      
-      {/* Display selected roles as badges */}
-      {selectedRoles.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selectedRoles.map((role) => (
-            <Badge
-              key={role}
-              variant="secondary"
-              className={cn("cursor-pointer", roleColors[role])}
-              onClick={() => handleRemoveRole(role)}
+    <div className="space-y-4">
+      <div className="space-y-3">
+        {allRoles.map((role) => (
+          <div key={role} className="flex items-center space-x-3">
+            <Checkbox
+              id={`role-${role}`}
+              checked={selectedRoles.includes(role)}
+              onCheckedChange={(checked) => handleToggleRole(role, checked as boolean)}
+              disabled={disabled}
+            />
+            <Label 
+              htmlFor={`role-${role}`} 
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
               {roleLabels[role]}
-              <span className="ml-1 text-xs">×</span>
-            </Badge>
-          ))}
-        </div>
+            </Label>
+            {selectedRoles.includes(role) && (
+              <Badge className={`${roleColors[role]} ml-2`}>
+                {roleLabels[role]}
+              </Badge>
+            )}
+          </div>
+        ))}
+      </div>
+      
+      {selectedRoles.length === 0 && (
+        <p className="text-sm text-slate-500 italic">{placeholder}</p>
       )}
     </div>
   );
