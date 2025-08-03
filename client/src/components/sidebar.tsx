@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   LayoutDashboard, 
   Folder, 
@@ -42,25 +41,7 @@ export default function Sidebar({ user }: SidebarProps) {
     },
   });
   
-  const getInitials = (user: any) => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-    }
-    if (user?.email) {
-      return user.email[0].toUpperCase();
-    }
-    return 'U';
-  };
 
-  const getDisplayName = (user: any) => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    }
-    if (user?.email) {
-      return user.email;
-    }
-    return 'User';
-  };
 
   return (
     <>
@@ -91,38 +72,20 @@ export default function Sidebar({ user }: SidebarProps) {
         fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <div className="p-4 md:p-6 border-b border-slate-300">
-          <div className="flex items-center justify-between">
-            {/* Close button for mobile */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden p-1"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      
-        {/* User Info */}
-        <div className="p-3 md:p-4 border-b border-slate-300 legal-document-section">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-8 w-8 md:h-10 md:w-10 ring-2 ring-primary/20 flex-shrink-0">
-              <AvatarImage src={user?.profileImageUrl} alt={getDisplayName(user)} />
-              <AvatarFallback className="bg-primary text-white text-xs md:text-sm font-semibold">
-                {getInitials(user)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <p className="font-semibold text-slate-900 text-sm md:text-base truncate">{getDisplayName(user)}</p>
-              <p className="text-xs text-slate-600 font-medium">Legal Professional</p>
-            </div>
-          </div>
+        {/* Mobile close button */}
+        <div className="md:hidden p-2 border-b border-slate-300 flex justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="p-1"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 md:p-4">
+        <nav className="flex-1 p-3 md:p-4 pt-4">
           <ul className="space-y-2 md:space-y-3">
             <li>
               <Button
