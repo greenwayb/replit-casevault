@@ -39,11 +39,11 @@ export function TopNav() {
         <div className="flex items-center gap-3">
           <img 
             src={logoPath} 
-            alt="Family Court Doco" 
-            className="h-8 w-8 object-contain flex-shrink-0"
+            alt="Family Court Documentation" 
+            className="h-10 w-10 object-contain flex-shrink-0"
           />
           <div>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Family Court Doco</h1>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Family Court Documentation</h1>
             <p className="text-xs text-slate-600 font-medium">Legal Document System</p>
           </div>
         </div>
