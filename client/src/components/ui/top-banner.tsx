@@ -47,7 +47,7 @@ export function TopBanner() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-              DocuFlow
+              Family Court Doco
             </h1>
           </div>
           

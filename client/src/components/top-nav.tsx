@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
 export function TopNav() {
   const { user } = useAuth();
@@ -32,25 +33,41 @@ export function TopNav() {
   if (!user) return null;
 
   return (
-    <div className="fixed top-0 right-0 z-50 p-4">
-      <div className="flex items-center gap-3 bg-white rounded-lg shadow-lg border border-gray-200 px-4 py-2">
-        <div className="flex items-center gap-2 text-sm text-gray-700">
-          <User className="h-4 w-4" />
-          <span className="font-medium">{user.firstName} {user.lastName}</span>
-          {user.email && (
-            <span className="text-gray-500">({user.email})</span>
-          )}
+    <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg border-b border-gray-200">
+      <div className="flex items-center justify-between px-6 py-3">
+        {/* Left side - Branding */}
+        <div className="flex items-center gap-3">
+          <img 
+            src={logoPath} 
+            alt="Family Court Doco" 
+            className="h-8 w-8 object-contain flex-shrink-0"
+          />
+          <div>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Family Court Doco</h1>
+            <p className="text-xs text-slate-600 font-medium">Legal Document System</p>
+          </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleLogout}
-          disabled={logoutMutation.isPending}
-          className="text-red-600 border-red-200 hover:bg-red-50"
-        >
-          <LogOut className="h-4 w-4 mr-1" />
-          {logoutMutation.isPending ? 'Signing out...' : 'Sign Out'}
-        </Button>
+        
+        {/* Right side - User info and logout */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <User className="h-4 w-4" />
+            <span className="font-medium">{user.firstName} {user.lastName}</span>
+            {user.email && (
+              <span className="text-gray-500">({user.email})</span>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+            className="text-red-600 border-red-200 hover:bg-red-50"
+          >
+            <LogOut className="h-4 w-4 mr-1" />
+            {logoutMutation.isPending ? 'Signing out...' : 'Sign Out'}
+          </Button>
+        </div>
       </div>
     </div>
   );

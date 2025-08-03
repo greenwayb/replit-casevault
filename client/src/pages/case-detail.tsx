@@ -116,7 +116,7 @@ export default function CaseDetail() {
   }
 
   return (
-    <div className="h-screen flex flex-col md:flex-row bg-white">
+    <div className="h-screen flex flex-col md:flex-row bg-white pt-16">
       {/* Case Navigation & Tree View */}
       <div className={`
         ${navExpanded ? 'w-full md:w-full' : 'w-full md:w-80'} 

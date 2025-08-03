@@ -152,7 +152,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-slate-50 pt-16">
       <Sidebar user={user} />
       
       <main className="flex-1 flex flex-col overflow-hidden md:ml-0">

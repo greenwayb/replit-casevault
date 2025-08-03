@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
+
 
 interface SidebarProps {
   user: any;
@@ -65,7 +65,7 @@ export default function Sidebar({ user }: SidebarProps) {
   return (
     <>
       {/* Mobile Menu Button */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      <div className="md:hidden fixed top-20 left-4 z-50">
         <Button
           variant="outline"
           size="sm"
@@ -86,24 +86,13 @@ export default function Sidebar({ user }: SidebarProps) {
 
       {/* Sidebar */}
       <aside className={`
-        w-64 legal-sidebar shadow-xl border-r-2 border-slate-200 flex flex-col
+        w-64 legal-sidebar shadow-xl border-r-2 border-slate-200 flex flex-col pt-16 md:pt-0
         md:relative md:translate-x-0 md:z-auto
         fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="p-4 md:p-6 border-b border-slate-300">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img 
-                src={logoPath} 
-                alt="Family Court Doco" 
-                className="h-8 w-8 md:h-10 md:w-10 object-contain flex-shrink-0"
-              />
-              <div>
-                <h1 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Family Court Doco</h1>
-                <p className="text-xs text-slate-600 mt-1 font-medium">Legal Document System</p>
-              </div>
-            </div>
             {/* Close button for mobile */}
             <Button
               variant="ghost"
