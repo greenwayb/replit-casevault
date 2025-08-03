@@ -61,7 +61,14 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes
 
-## August 2, 2025 (Latest Updates)
+## August 3, 2025 (Latest Updates)
+- **Relocated Branding to Top Navigation**: Successfully moved "Family Court Documentation" branding and logo from left sidebar to top navigation bar, replacing previous "DocuFlow" branding
+- **Fixed Logo Display Issue**: Resolved issue where Family Court logo wasn't appearing on authenticated pages by switching from TopBanner to TopNav component in App.tsx
+- **Streamlined Sidebar Layout**: Removed duplicate user information from sidebar since it now appears in top navigation, creating cleaner layout with proper alignment
+- **Enhanced Navigation Spacing**: Added proper top padding (pt-16) to main layout containers to accommodate fixed header positioning
+- **Updated Mobile Menu Positioning**: Adjusted mobile menu button placement to work with new header layout
+
+## August 2, 2025 (Earlier Updates)
 - **Enhanced Banking Document Upload Process**: Implemented dual progress bars showing separate upload and AI processing phases with visual status indicators, animated progress feedback, and colored status dots to clearly communicate each stage of the workflow
 - **Always-On PDF Preview**: Modified banking confirmation dialog to always display PDF preview side-by-side with extracted information form, allowing users to visually verify AI-extracted data against the original document for both uploaded files and processed documents
 - **Improved Upload UI**: Enhanced progress display with better styling, status animations, and clearer phase indicators during file upload and AI processing stages
