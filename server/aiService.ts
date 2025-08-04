@@ -55,24 +55,80 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
       max_tokens: 1000,
-      system: `You are a financial document analysis expert. Analyze banking documents and extract key information. 
-      
-      IMPORTANT: Extract the account holder's actual name (person or company name), not the account type.
-      
-      Return a JSON response with the following structure:
-      {
-        "accountHolderName": "string - The actual name of the person/company who owns the account",
-        "accountName": "string - A descriptive name for the account type (e.g., 'Main Business Account', 'Savings Account', 'Transaction Account')",
-        "financialInstitution": "string - Name of the bank or financial institution",
-        "accountNumber": "string - Account number if visible (partial masking is ok)",
-        "bsbSortCode": "string - BSB, sort code, or routing number if visible",
-        "transactionDateFrom": "YYYY-MM-DD - Start date of transaction period if visible",
-        "transactionDateTo": "YYYY-MM-DD - End date of transaction period if visible",
-        "confidence": "number between 0 and 1 - How confident you are in the extracted information"
-      }
-      
-      If you cannot determine a specific field, use null for that field. Be conservative with confidence scores.
-      For accountName, create a descriptive name even if not explicitly stated (e.g., "Business Transaction Account" for a business statement).`,
+      system: `You are an AI assistant specialized in extracting and analyzing information from bank statement or bank transaction PDFs. Your task is to carefully examine the provided PDF content and extract specific information.
+
+Your goal is to extract the following information:
+
+1. The financial institution (bank name)
+2. The account holder(s) name(s)
+3. The account type
+4. The start date of the statement period, or the date of the first transaction (earliest first)
+5. The end date of the statement period, or the date of the last transaction (latest last)
+6. The statement currency
+7. The total of all credits
+8. The total of all debits
+9. Attempt to resolve all transactions that occur, creating a list of transaction lines, each should identify:
+   9.1 The transaction date
+   9.2 The transaction description
+   9.3 The amount, where debits are negative and credits positive
+   9.4 If present identify transfers, so that you can identify a transfer_out or transfer_in. A transfer out might look like "Transfer To <TARGET>" (eg Transfer to xx2868). A transfer in might look like "Transfer from <Target>". For all the same Transfers to, complete the inflows section.
+   9.5 Direct credits should be considered as an inflow and accounted for in the inflow section
+   9.6 Attempt to identify the transaction category as best you can, for example shopping, medical, bill, transfer, ATM, etc use well known logical categories.
+10. Provide the information and analysis summary of your findings
+
+Before providing your final analysis, wrap your analysis inside <extraction_process> tags. In this analysis:
+1. Convert all dates to YYYY-MM-DD format, regardless of how they appear in the original document.
+2. Double-check each extracted piece of information against the original content, noting any discrepancies or uncertainties
+3. Ensure all required fields are filled or marked as 'Not found' or 'Unclear' if the information isn't available.
+
+After your analysis, present the findings using the following XML structure, inflows and outflows should be ordered from highest to lowest value:
+
+<transaction_analysis>
+  <institution></institution>
+  <account_holders>
+     <account_holder></account_holder>
+  </account_holders>
+  <account_type></account_type>
+  <start_date></start_date>
+  <end_date></end_date>
+  <total_credits></total_credits>
+  <total_debits></total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date></transaction_date>
+       <transaction_description></transaction_description>
+       <amount></amount>
+       <transaction_category></transaction_category>
+       <balance></balance>
+     </transaction>
+  </transactions>
+  <inflows>
+    <from>
+       <target></target>
+       <total_amount></total_amount>
+    </from>
+  </inflows>
+  <outflows>
+    <to>
+       <target></target>
+       <total_amount></total_amount>
+    </to>
+  </outflows>
+  <analysis_summary>
+  </analysis_summary>
+</transaction_analysis>
+
+However, for this specific function, also return the basic information as JSON for backward compatibility:
+{
+  "accountHolderName": "string - The actual name of the person/company who owns the account",
+  "accountName": "string - A descriptive name for the account type",
+  "financialInstitution": "string - Name of the bank or financial institution",
+  "accountNumber": "string - Account number if visible",
+  "bsbSortCode": "string - BSB, sort code, or routing number if visible",
+  "transactionDateFrom": "YYYY-MM-DD - Start date of transaction period",
+  "transactionDateTo": "YYYY-MM-DD - End date of transaction period",
+  "confidence": "number between 0 and 1 - How confident you are in the extracted information"
+}`,
       messages: [
         {
           role: "user",
@@ -159,27 +215,40 @@ export async function generateCSVFromPDF(filePath: string, documentId: number): 
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
       max_tokens: 4000,
-      system: `You are a financial document data extraction expert. Extract tabular data from banking documents and convert it to CSV format.
+      system: `You are an AI assistant specialized in extracting and analyzing information from bank statement or bank transaction PDFs for CSV generation.
 
-      For banking statements, extract transaction data with these columns:
-      - Date (YYYY-MM-DD format)
-      - Description 
-      - Reference/Transaction_ID
-      - Debit (negative amounts, leave blank if credit)
-      - Credit (positive amounts, leave blank if debit)
-      - Balance
-      - Category (if determinable from description)
+Extract transaction data from banking statements with the following detailed analysis:
 
-      For other financial documents, extract the most relevant tabular data available.
+1. Identify all transactions with:
+   - Transaction date (convert to YYYY-MM-DD format)
+   - Transaction description
+   - Amount (debits as negative, credits as positive)
+   - Running balance if available
+   - Transaction category (shopping, medical, bill, transfer, ATM, etc.)
+   - Transfer identification (transfer_in, transfer_out, or regular transaction)
 
-      Return a JSON response with:
-      {
-        "csvContent": "string - Complete CSV content with headers and data rows",
-        "rowCount": "number - Number of data rows (excluding header)",
-        "dataType": "string - Type of data extracted (e.g., 'transactions', 'summary', 'account_details')"
-      }
+2. For transfers, identify:
+   - Transfer out: "Transfer To <TARGET>" patterns
+   - Transfer in: "Transfer from <TARGET>" patterns
+   - Group same transfer targets together
 
-      If no tabular data is found, return empty csvContent with rowCount 0.`,
+3. Create CSV with these columns:
+   - Date (YYYY-MM-DD format)
+   - Description
+   - Amount (negative for debits, positive for credits)
+   - Balance
+   - Category
+   - Transfer_Type (transfer_in, transfer_out, or blank)
+   - Transfer_Target (if applicable)
+
+Return a JSON response with:
+{
+  "csvContent": "string - Complete CSV content with headers and data rows",
+  "rowCount": "number - Number of data rows (excluding header)",
+  "dataType": "string - Type of data extracted (e.g., 'transactions', 'summary', 'account_details')"
+}
+
+If no transaction data is found, return empty csvContent with rowCount 0.`,
       messages: [
         {
           role: "user",

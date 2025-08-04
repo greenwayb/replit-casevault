@@ -62,6 +62,9 @@ Preferred communication style: Simple, everyday language.
 # Recent Changes
 
 ## August 3, 2025 (Latest Updates)
+- **Migrated to Claude Sonnet 4**: Successfully switched PDF processing from OpenAI GPT-4o to Anthropic's Claude Sonnet 4 (claude-sonnet-4-20250514) for enhanced banking document analysis
+- **Enhanced Banking Statement Analysis**: Implemented detailed XML-structured transaction analysis with comprehensive categorization, transfer identification, and inflow/outflow tracking
+- **Improved Transaction Processing**: Added sophisticated transfer detection (transfer_in/transfer_out), transaction categorization, and detailed CSV generation with expanded columns
 - **Relocated Branding to Top Navigation**: Successfully moved "Family Court Documentation" branding and logo from left sidebar to top navigation bar, replacing previous "DocuFlow" branding
 - **Fixed Logo Display Issue**: Resolved issue where Family Court logo wasn't appearing on authenticated pages by switching from TopBanner to TopNav component in App.tsx
 - **Streamlined Sidebar Layout**: Removed duplicate user information from sidebar since it now appears in top navigation, creating cleaner layout with proper alignment
