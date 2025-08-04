@@ -3,6 +3,98 @@ import { Sankey, ResponsiveContainer, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
 
+// Custom Node Component
+const CustomNode = (props: any) => {
+  const { payload, x, y, width, height } = props;
+  const isInflow = payload.name && payload.name.includes('Inflow') || payload.type === 'source';
+  const isOutflow = payload.name && payload.name.includes('Outflow') || payload.type === 'target';
+  const isAccount = payload.name && (payload.name.includes('Account') || payload.type === 'intermediate');
+
+  let color = '#6b7280'; // default gray
+  if (isInflow) color = '#10b981'; // green for inflows
+  else if (isOutflow) color = '#ef4444'; // red for outflows  
+  else if (isAccount) color = '#3b82f6'; // blue for account
+
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={color}
+        rx={4}
+        ry={4}
+        stroke="#ffffff"
+        strokeWidth={2}
+      />
+      <text
+        x={x + width / 2}
+        y={y + height / 2}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={12}
+        fontWeight={600}
+        fill="#ffffff"
+      >
+        {payload.name && payload.name.length > 15 ? 
+          payload.name.substring(0, 12) + '...' : 
+          payload.name
+        }
+      </text>
+    </g>
+  );
+};
+
+// Custom Link Component
+const CustomLink = (props: any) => {
+  const { payload, sourceX, targetX, sourceY, targetY, sourceControlX, targetControlX } = props;
+  const isInflow = payload && payload.type === 'inflow';
+  const color = isInflow ? '#10b981' : '#ef4444';
+  const opacity = 0.6;
+
+  const pathData = `
+    M${sourceX},${sourceY}
+    C${sourceControlX},${sourceY} ${targetControlX},${targetY} ${targetX},${targetY}
+  `;
+
+  return (
+    <path
+      d={pathData}
+      stroke={color}
+      strokeWidth={Math.max(2, Math.min(50, payload.value / 1000))}
+      fill="none"
+      opacity={opacity}
+    />
+  );
+};
+
+// Custom Tooltip Component
+const CustomTooltip = (props: any) => {
+  const { active, payload } = props;
+  
+  if (!active || !payload || !payload[0]) return null;
+
+  const data = payload[0].payload;
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-AU', {
+      style: 'currency',
+      currency: 'AUD'
+    }).format(Math.abs(amount));
+  };
+
+  return (
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
+      <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
+        {data.name}
+      </p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Amount: <span className="font-medium">{formatCurrency(data.value)}</span>
+      </p>
+    </div>
+  );
+};
+
 interface SankeyNode {
   id: string;
   name: string;
@@ -227,14 +319,15 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
           </div>
         </div>
 
-        {/* Recharts Sankey Diagram */}
-        <div className="h-[500px] mb-6 bg-white dark:bg-gray-950 rounded-lg border p-4">
+        {/* Enhanced Sankey Diagram */}
+        <div className="bg-white dark:bg-gray-950 rounded-lg shadow-lg p-4 mb-6" style={{ height: 'calc(100vh - 300px)', minHeight: '500px' }}>
           <ResponsiveContainer width="100%" height="100%">
             <Sankey
               data={{
                 nodes: sankeyData.nodes.map((node, index) => ({
                   name: node.name,
-                  value: node.value
+                  value: node.value,
+                  type: node.type
                 })),
                 links: sankeyData.links.map(link => {
                   // Find the node indices for source and target
@@ -243,18 +336,18 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
                   return {
                     source: sourceIndex >= 0 ? sourceIndex : 0,
                     target: targetIndex >= 0 ? targetIndex : 0,
-                    value: link.value
+                    value: link.value,
+                    type: link.type
                   };
                 })
               }}
-              nodePadding={30}
-              nodeWidth={15}
-              margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+              nodeWidth={150}
+              nodePadding={20}
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              link={<CustomLink />}
+              node={<CustomNode />}
             >
-              <Tooltip 
-                formatter={(value: any, name: string) => [formatCurrency(Number(value)), name]}
-                labelFormatter={(label: string) => `Flow: ${label}`}
-              />
+              <Tooltip content={<CustomTooltip />} />
             </Sankey>
           </ResponsiveContainer>
         </div>
