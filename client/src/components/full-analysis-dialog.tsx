@@ -28,12 +28,10 @@ export default function FullAnalysisDialog({
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const steps = [
-    "Analyzing document content...",
-    "Extracting transaction data...",
-    "Categorizing transactions...",
-    "Generating CSV file...",
-    "Creating XML analysis...",
-    "Generating Sankey flow data...",
+    "Preparing AI analysis...",
+    "Generating XML transaction analysis...",
+    "Extracting CSV data from XML...",
+    "Creating visualization data...",
     "Finalizing analysis..."
   ];
 
@@ -111,18 +109,51 @@ export default function FullAnalysisDialog({
       }
 
       const data = await response.json();
-      addToLog("AI analysis completed successfully");
       
-      setProgress(100);
-      setCurrentStep('Analysis complete!');
-      setSuccess(true);
-      addToLog("Analysis process finished");
-      
-      // Wait a moment before calling onComplete
-      setTimeout(() => {
-        onComplete(data);
-        handleClose();
-      }, 1500);
+      // Handle the XML-first workflow response
+      if (data.analysisError) {
+        addToLog(`Analysis completed with errors: ${data.analysisError}`);
+        
+        // Show processing step details
+        if (data.processingSteps) {
+          addToLog(`XML Generated: ${data.processingSteps.xmlGenerated ? 'Yes' : 'No'}`);
+          addToLog(`CSV Generated: ${data.processingSteps.csvGenerated ? 'Yes' : 'No'}`);
+        }
+        
+        setCurrentStep('Analysis completed with errors');
+        setError(data.analysisError);
+        setProgress(100);
+        
+        // Still call onComplete with partial data for frontend to handle
+        setTimeout(() => {
+          onComplete(data);
+          handleClose();
+        }, 2000);
+        
+      } else {
+        addToLog("AI analysis completed successfully");
+        
+        // Log successful processing steps
+        if (data.processingSteps) {
+          addToLog(`XML Generated: ${data.processingSteps.xmlGenerated ? 'Yes' : 'No'}`);
+          addToLog(`CSV Generated: ${data.processingSteps.csvGenerated ? 'Yes' : 'No'}`);
+        }
+        
+        if (data.csvInfo) {
+          addToLog(`CSV file created: ${data.csvInfo.csvRowCount || 0} transactions`);
+        }
+        
+        setProgress(100);
+        setCurrentStep('Analysis complete!');
+        setSuccess(true);
+        addToLog("Analysis process finished");
+        
+        // Wait a moment before calling onComplete
+        setTimeout(() => {
+          onComplete(data);
+          handleClose();
+        }, 1500);
+      }
 
     } catch (error: any) {
       console.error('Full analysis failed:', error);

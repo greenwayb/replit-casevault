@@ -574,64 +574,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Basic analysis must be completed first" });
       }
 
-      // Phase 2: Full transaction analysis
+      // Phase 2: Full transaction analysis - XML-first approach
       try {
-        const { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateXMLFromAnalysis } = await import('./aiService');
-        const { generateCSVFromPDF } = await import('./aiService');
+        const { analyzeBankingDocument, generateCSVFromXML, generateXMLFromAnalysis } = await import('./aiService');
         const filePath = path.join(uploadDir, document.filename);
         
-        // Run full analysis
-        const analysis = await analyzeBankingDocument(filePath);
+        console.log(`Starting full analysis for document ${documentId}`);
         
-        // Generate CSV from PDF content
-        let csvInfo = { csvPath: '', csvRowCount: 0, csvGenerated: false };
-        try {
-          const csvResult = await generateCSVFromPDF(filePath, document.id);
-          csvInfo = {
-            csvPath: csvResult.csvPath,
-            csvRowCount: csvResult.rowCount,
-            csvGenerated: !!csvResult.csvContent
-          };
-        } catch (csvError) {
-          console.error("CSV generation failed:", csvError);
-        }
-
-        // Generate XML from analysis with detailed transactions
-        let xmlInfo = { xmlPath: '', xmlGenerated: false };
+        // Step 1: Generate comprehensive XML analysis first
         let xmlAnalysisData = '';
+        let xmlInfo = { xmlPath: '', xmlGenerated: false };
+        let analysisError = null;
+        
         try {
-          // Use the analysis result to generate XML
-          const xmlResult = await generateXMLFromAnalysis(analysis.xmlAnalysis || '', document.id);
+          console.log('Step 1: Running AI analysis to generate XML...');
+          const analysis = await analyzeBankingDocument(filePath);
+          
+          if (!analysis.xmlAnalysis) {
+            throw new Error('AI analysis did not produce XML data');
+          }
+          
+          // Generate XML file from analysis
+          const xmlResult = await generateXMLFromAnalysis(analysis.xmlAnalysis, document.id);
           xmlInfo = {
             xmlPath: xmlResult.xmlPath,
             xmlGenerated: !!xmlResult.xmlContent
           };
           xmlAnalysisData = xmlResult.xmlContent;
-        } catch (xmlError) {
-          console.error("XML generation failed:", xmlError);
+          console.log('Step 1: XML generation completed successfully');
+          
+        } catch (xmlError: any) {
+          console.error("Step 1: XML generation failed:", xmlError);
+          analysisError = `XML generation failed: ${xmlError.message}`;
+          xmlAnalysisData = '';
+          xmlInfo = { xmlPath: '', xmlGenerated: false };
         }
 
-        // Update document with full analysis
-        const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, {
-          fullAnalysisCompleted: true,
-          csvPath: csvInfo?.csvPath,
-          csvRowCount: csvInfo?.csvRowCount,
-          csvGenerated: csvInfo?.csvGenerated || false,
-          xmlPath: xmlInfo?.xmlPath,
-          xmlAnalysisData: xmlAnalysisData,
-        });
+        // Step 2: Generate CSV from XML data (if XML was created successfully)
+        let csvInfo = { csvPath: '', csvRowCount: 0, csvGenerated: false };
+        
+        if (xmlAnalysisData) {
+          try {
+            console.log('Step 2: Generating CSV from XML data...');
+            const csvResult = await generateCSVFromXML(xmlAnalysisData, document.id);
+            csvInfo = {
+              csvPath: csvResult.csvPath,
+              csvRowCount: csvResult.rowCount,
+              csvGenerated: !!csvResult.csvContent
+            };
+            console.log(`Step 2: CSV generation completed - ${csvInfo.csvRowCount} rows`);
+          } catch (csvError: any) {
+            console.error("Step 2: CSV generation from XML failed:", csvError);
+            if (!analysisError) {
+              analysisError = `CSV generation failed: ${csvError.message}`;
+            }
+          }
+        } else {
+          console.log('Step 2: Skipping CSV generation - no XML data available');
+        }
 
+        // Step 3: Update document with results
+        console.log('Step 3: Updating document with analysis results...');
+        const updateData: any = {
+          fullAnalysisCompleted: !analysisError,
+          csvPath: csvInfo.csvPath,
+          csvRowCount: csvInfo.csvRowCount,
+          csvGenerated: csvInfo.csvGenerated,
+          xmlPath: xmlInfo.xmlPath,
+          xmlAnalysisData: xmlAnalysisData,
+        };
+
+        if (analysisError) {
+          updateData.analysisError = analysisError;
+          updateData.aiProcessingFailed = true;
+        }
+
+        const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, updateData);
+
+        console.log('Step 3: Document updated successfully');
+
+        // Return comprehensive response with error details if any
         res.json({
           ...updatedDocument,
           csvInfo,
           xmlInfo,
           xmlAnalysisData,
-          message: "Full analysis completed successfully"
+          analysisError,
+          message: analysisError 
+            ? `Analysis completed with errors: ${analysisError}` 
+            : "Full analysis completed successfully",
+          processingSteps: {
+            xmlGenerated: xmlInfo.xmlGenerated,
+            csvGenerated: csvInfo.csvGenerated,
+            errorOccurred: !!analysisError
+          }
         });
 
-      } catch (error) {
-        console.error("Full analysis failed:", error);
-        res.status(500).json({ message: "Failed to complete full analysis" });
+      } catch (error: any) {
+        console.error("Full analysis workflow failed:", error);
+        
+        // Update document to mark analysis as failed
+        try {
+          await storage.updateDocumentWithAIAnalysis(documentId, {
+            fullAnalysisCompleted: false,
+            aiProcessingFailed: true,
+            analysisError: `Workflow error: ${error.message}`
+          });
+        } catch (updateError) {
+          console.error("Failed to update document with error status:", updateError);
+        }
+        
+        res.status(500).json({ 
+          message: "Failed to complete full analysis",
+          error: error.message,
+          processingSteps: {
+            xmlGenerated: false,
+            csvGenerated: false,
+            errorOccurred: true
+          }
+        });
       }
 
     } catch (error) {

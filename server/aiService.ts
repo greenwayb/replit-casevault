@@ -250,6 +250,96 @@ export async function generateXMLFromAnalysis(xmlAnalysis: string, documentId: n
   }
 }
 
+export async function generateCSVFromXML(xmlData: string, documentId: number): Promise<CSVGenerationResult> {
+  try {
+    console.log(`Generating CSV from XML data for document ${documentId}`);
+    
+    // Simple regex-based XML parsing for transaction data
+    const transactionMatches = xmlData.match(/<transaction>[\s\S]*?<\/transaction>/g);
+    
+    if (!transactionMatches || transactionMatches.length === 0) {
+      console.log('No transactions found in XML data');
+      return {
+        csvPath: '',
+        csvContent: '',
+        rowCount: 0
+      };
+    }
+    
+    // Create CSV header
+    const csvHeaders = [
+      'Date',
+      'Description', 
+      'Amount',
+      'Balance',
+      'Category',
+      'Transfer_Type',
+      'Transfer_Target'
+    ];
+    
+    // Extract transaction data
+    const csvRows: string[] = [csvHeaders.join(',')];
+    
+    transactionMatches.forEach((transactionXml) => {
+      // Extract fields using regex
+      const extractField = (fieldName: string) => {
+        const match = transactionXml.match(new RegExp(`<${fieldName}>(.*?)<\/${fieldName}>`, 's'));
+        return match ? match[1].trim() : '';
+      };
+      
+      const date = extractField('date');
+      const description = extractField('description');
+      const amount = extractField('amount');
+      const balance = extractField('balance');
+      const category = extractField('category');
+      const transferType = extractField('transfer_type');
+      const transferTarget = extractField('transfer_target');
+      
+      // Escape CSV values (handle commas and quotes)
+      const escapeCsvValue = (value: string) => {
+        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      };
+      
+      const row = [
+        escapeCsvValue(date),
+        escapeCsvValue(description),
+        escapeCsvValue(amount),
+        escapeCsvValue(balance),
+        escapeCsvValue(category),
+        escapeCsvValue(transferType),
+        escapeCsvValue(transferTarget)
+      ].join(',');
+      
+      csvRows.push(row);
+    });
+    
+    const csvContent = csvRows.join('\n');
+    
+    // Generate CSV file path
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    const csvFileName = `document_${documentId}_transactions.csv`;
+    const csvPath = path.join(uploadsDir, csvFileName);
+    
+    // Write CSV content to file
+    fs.writeFileSync(csvPath, csvContent, 'utf8');
+    
+    console.log(`CSV generated successfully: ${transactionMatches.length} transactions`);
+    
+    return {
+      csvPath: csvFileName, // Store relative path
+      csvContent,
+      rowCount: transactionMatches.length
+    };
+    
+  } catch (error) {
+    console.error('Error generating CSV from XML:', error);
+    throw new Error(`Failed to generate CSV from XML: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function generateCSVFromPDF(filePath: string, documentId: number): Promise<CSVGenerationResult> {
   try {
     // Read and parse the PDF file to extract text

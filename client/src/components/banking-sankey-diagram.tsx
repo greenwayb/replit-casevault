@@ -127,6 +127,7 @@ interface BankingSankeyDiagramProps {
 export default function BankingSankeyDiagram({ xmlData, documentName, accountName }: BankingSankeyDiagramProps) {
   const [sankeyData, setSankeyData] = useState<SankeyData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!xmlData) return;
@@ -143,9 +144,22 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
 
   const parseXMLToSankey = (xml: string) => {
     try {
-      // Parse XML string (simple approach for now)
+      if (!xml || xml.trim().length === 0) {
+        console.warn('Empty XML data provided to Sankey parser');
+        return;
+      }
+
+      // Parse XML string
       const parser = new DOMParser();
       const doc = parser.parseFromString(xml, 'text/xml');
+      
+      // Check for parsing errors
+      const parseError = doc.querySelector('parsererror');
+      if (parseError) {
+        console.error('XML parsing error:', parseError.textContent);
+        setError(`XML parsing error: ${parseError.textContent}`);
+        return;
+      }
       
       const nodes: SankeyNode[] = [];
       const links: SankeyLink[] = [];
@@ -234,8 +248,16 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
         netFlow
       });
 
-    } catch (error) {
-      console.error('Error parsing XML:', error);
+      // Validate that we have some data
+      if (nodes.length === 1 && links.length === 0) {
+        console.warn('No transaction flows found in XML data');
+        setError('No transaction flows found in the analysis data');
+        return;
+      }
+
+    } catch (error: any) {
+      console.error('Error parsing XML for Sankey:', error);
+      setError(`Failed to parse transaction data: ${error.message}`);
       setSankeyData(null);
     }
   };
@@ -256,6 +278,24 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
         <CardContent>
           <div className="flex items-center justify-center h-64">
             <div className="text-muted-foreground">Analyzing transaction flows...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Transaction Flow Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="text-red-600 mb-2">Analysis Error</div>
+              <div className="text-sm text-muted-foreground">{error}</div>
+            </div>
           </div>
         </CardContent>
       </Card>

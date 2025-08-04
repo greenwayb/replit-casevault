@@ -28,6 +28,7 @@ export default function BankingDocumentTabs({
   
   // Check if full analysis is completed
   const isFullAnalysisComplete = document?.fullAnalysisCompleted && xmlData;
+  const hasAnalysisError = document?.analysisError || document?.aiProcessingFailed;
 
   const handleDownloadXML = () => {
     if (!xmlData) return;
@@ -254,6 +255,11 @@ export default function BankingDocumentTabs({
                         <p className="text-sm text-green-600 dark:text-green-300">
                           ✓ Transaction Data Extracted
                         </p>
+                        {document?.csvGenerated && (
+                          <p className="text-sm text-green-600 dark:text-green-300">
+                            ✓ CSV File Generated ({document.csvRowCount || 0} transactions)
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -272,6 +278,58 @@ export default function BankingDocumentTabs({
                       </div>
                     </div>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          ) : hasAnalysisError ? (
+            <Card>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <div className="h-12 w-12 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                      <BarChart3 className="h-6 w-6 text-red-600" />
+                    </div>
+                    <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">Analysis Error</h3>
+                    <p className="text-sm text-red-600 dark:text-red-300 mb-4">
+                      {document?.analysisError || 'AI processing failed'}
+                    </p>
+                  </div>
+                  
+                  {/* Processing Steps Status */}
+                  <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                    <h4 className="font-medium text-red-800 dark:text-red-200 mb-3">Processing Status:</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        {document?.xmlGenerated ? 
+                          <span className="text-green-600">✓</span> : 
+                          <span className="text-red-600">✗</span>
+                        }
+                        <span className={document?.xmlGenerated ? 'text-green-700 dark:text-green-300' : 'text-red-600 dark:text-red-400'}>
+                          XML Analysis Generation
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {document?.csvGenerated ? 
+                          <span className="text-green-600">✓</span> : 
+                          <span className="text-red-600">✗</span>
+                        }
+                        <span className={document?.csvGenerated ? 'text-green-700 dark:text-green-300' : 'text-red-600 dark:text-red-400'}>
+                          CSV Data Extraction
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <Button 
+                      onClick={onFullAnalysis}
+                      variant="outline"
+                      className="border-red-300 text-red-600 hover:bg-red-50"
+                    >
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Retry Analysis
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

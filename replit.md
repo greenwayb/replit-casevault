@@ -62,6 +62,10 @@ Preferred communication style: Simple, everyday language.
 # Recent Changes
 
 ## August 4, 2025 (Latest Updates)
+- **Restructured AI Analysis to XML-First Architecture**: Completely redesigned the detailed AI analysis workflow to create XML data first, then use it as the source for all downstream processing (CSV generation, summary analysis, Sankey diagram visualization). This ensures data consistency and better error handling throughout the system.
+- **Enhanced Error Handling and Processing Visibility**: Added comprehensive error reporting with detailed processing step tracking. Users now see exactly which steps succeeded/failed (XML generation, CSV extraction) with specific error messages for troubleshooting.
+- **Added generateCSVFromXML Function**: Created new CSV generation function that extracts transaction data directly from XML using regex parsing, replacing the separate PDF-to-CSV analysis to ensure consistent data flow.
+- **Improved Frontend Error Display**: Updated banking document tabs and analysis dialogs to show processing step status, error details, and retry options when analysis fails, providing clear visibility into the AI processing workflow.
 - **Updated Banking Document Analysis Prompt**: Switched to comprehensive XML-structured analysis with detailed transaction breakdown including transfer identification, categorization, and inflow/outflow tracking according to new specification
 - **Enhanced Banking Confirmation UI**: Updated confirmation modal to display XML-structured fields including institution, account_holders, account_type, start_date, and end_date for better alignment with AI analysis output
 - **Fixed Date Conversion Errors**: Resolved database insertion issues with timestamp fields by properly converting date strings to ISO format before storage
