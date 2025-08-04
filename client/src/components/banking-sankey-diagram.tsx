@@ -232,15 +232,20 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
           <ResponsiveContainer width="100%" height="100%">
             <Sankey
               data={{
-                nodes: sankeyData.nodes.map(node => ({
+                nodes: sankeyData.nodes.map((node, index) => ({
                   name: node.name,
                   value: node.value
                 })),
-                links: sankeyData.links.map(link => ({
-                  source: link.source,
-                  target: link.target,
-                  value: link.value
-                }))
+                links: sankeyData.links.map(link => {
+                  // Find the node indices for source and target
+                  const sourceIndex = sankeyData.nodes.findIndex(n => n.id === link.source);
+                  const targetIndex = sankeyData.nodes.findIndex(n => n.id === link.target);
+                  return {
+                    source: sourceIndex >= 0 ? sourceIndex : 0,
+                    target: targetIndex >= 0 ? targetIndex : 0,
+                    value: link.value
+                  };
+                })
               }}
               nodePadding={50}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
