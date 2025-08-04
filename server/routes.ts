@@ -490,8 +490,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const basicFields = await extractBasicBankingFields(filePath);
         
         // Convert basic fields to expected format for confirmation modal
-        const primaryAccountHolder = basicFields.accountHolders[0] || 'Unknown';
-        const accountHoldersText = basicFields.accountHolders.join(', ');
+        const accountHolderName = basicFields.accountHolders.join(' & ') || 'Unknown';
         
         // Return the basic analysis results for user review - Phase 1 complete
         res.json({
@@ -501,13 +500,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           originalName: document.originalName,
           extractedBankingInfo: {
             financialInstitution: basicFields.financialInstitution,
-            accountHolderName: primaryAccountHolder,
-            accountName: accountHoldersText, // For compatibility with existing UI
+            accountHolderName: accountHolderName,
+            accountName: basicFields.accountType,
             accountNumber: basicFields.accountNumber,
             bsbSortCode: basicFields.accountBsb,
             transactionDateFrom: basicFields.startDate,
             transactionDateTo: basicFields.endDate,
-            accountType: basicFields.accountType,
             // No CSV, XML or detailed analysis yet - Phase 2 not started
             csvInfo: null,
             xmlInfo: null,

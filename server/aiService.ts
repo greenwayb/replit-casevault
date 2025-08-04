@@ -150,7 +150,7 @@ ${pdfText}`
       ]
     });
 
-    const fullResponse = response.content[0].text || '';
+    const fullResponse = response.content[0].type === 'text' ? response.content[0].text : '';
     
     // Extract JSON from the response for backward compatibility
     let analysisResult = {};
@@ -228,6 +228,44 @@ export function generateAccountGroupNumber(existingGroups: string[], accountName
   return `B${nextNumber}`;
 }
 
+// Helper function to escape XML special characters
+function escapeXML(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+// Helper function to sanitize XML content
+function sanitizeXMLContent(xmlContent: string): string {
+  try {
+    // Extract XML content between transaction_analysis tags
+    const match = xmlContent.match(/<transaction_analysis>[\s\S]*?<\/transaction_analysis>/);
+    if (!match) {
+      return xmlContent;
+    }
+    
+    let sanitizedXML = match[0];
+    
+    // Fix common XML parsing issues
+    // 1. Replace unescaped ampersands
+    sanitizedXML = sanitizedXML.replace(/&(?!amp;|lt;|gt;|quot;|apos;)/g, '&amp;');
+    
+    // 2. Fix malformed entity references
+    sanitizedXML = sanitizedXML.replace(/&([^;]*)?(?=\s|<|$)/g, '&amp;$1');
+    
+    // 3. Remove or escape problematic characters
+    sanitizedXML = sanitizedXML.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    
+    return sanitizedXML;
+  } catch (error) {
+    console.warn('Error sanitizing XML content:', error);
+    return xmlContent;
+  }
+}
+
 export async function generateXMLFromAnalysis(xmlAnalysis: string, documentId: number): Promise<XMLGenerationResult> {
   try {
     // Generate XML file path
@@ -235,14 +273,16 @@ export async function generateXMLFromAnalysis(xmlAnalysis: string, documentId: n
     const xmlFileName = `document_${documentId}_analysis.xml`;
     const xmlPath = path.join(uploadsDir, xmlFileName);
     
-    // Write XML content to file
+    // Sanitize XML content before writing
+    let sanitizedXML = xmlAnalysis;
     if (xmlAnalysis) {
-      fs.writeFileSync(xmlPath, xmlAnalysis, 'utf8');
+      sanitizedXML = sanitizeXMLContent(xmlAnalysis);
+      fs.writeFileSync(xmlPath, sanitizedXML, 'utf8');
     }
     
     return {
       xmlPath: xmlAnalysis ? xmlFileName : '', // Store relative path
-      xmlContent: xmlAnalysis
+      xmlContent: sanitizedXML
     };
   } catch (error) {
     console.error('Error generating XML file:', error);
@@ -401,13 +441,13 @@ ${pdfText}`
 
     let extractionResult;
     try {
-      const content = response.content[0].text || '{}';
+      const content = response.content[0].type === 'text' ? response.content[0].text : '{}';
       // Clean up potential JSON formatting issues
       const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       extractionResult = JSON.parse(cleanedContent);
     } catch (parseError) {
       console.error('JSON parsing error:', parseError);
-      console.error('Raw content:', response.content[0].text);
+      console.error('Raw content:', response.content[0].type === 'text' ? response.content[0].text : 'Non-text content');
       // Fallback to empty result
       extractionResult = { csvContent: '', rowCount: 0, dataType: 'parsing_error' };
     }

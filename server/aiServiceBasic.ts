@@ -84,7 +84,7 @@ Important:
       }]
     });
 
-    const responseText = response.content[0].text;
+    const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
     
     // Parse the XML response (browser DOMParser not available in Node.js)
     // Simple XML parsing for our specific format
@@ -123,6 +123,6 @@ Important:
 
   } catch (error) {
     console.error("Error in basic banking field extraction:", error);
-    throw new Error(`Failed to extract basic banking fields: ${error.message}`);
+    throw new Error(`Failed to extract basic banking fields: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
