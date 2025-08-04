@@ -1,0 +1,257 @@
+<transaction_analysis>
+  <institution>Commonwealth Bank of Australia</institution>
+  <account_holders>
+     <account_holder>BEN GREENWAY AND EVELYN GREENWAY</account_holder>
+  </account_holders>
+  <account_type>Viridian Line of Credit</account_type>
+  <start_date>2025-01-01</start_date>
+  <end_date>2025-03-31</end_date>
+  <account_number>06 6000 11372992</account_number>
+  <account_bsb>Not found</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>34955.86</total_credits>
+  <total_debits>55295.98</total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date>2025-01-01</transaction_date>
+       <transaction_description>OPENING BALANCE</transaction_description>
+       <amount>3120.86</amount>
+       <transaction_category>balance</transaction_category>
+       <balance>3120.86</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-01</transaction_date>
+       <transaction_description>Fast Transfer From HOLLY GREENWAY Daiso</transaction_description>
+       <amount>25.35</amount>
+       <transaction_category>transfer_in</transaction_category>
+       <balance>3146.21</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-01</transaction_date>
+       <transaction_description>Fast Transfer From HOLLY GREENWAY Don ke hoti</transaction_description>
+       <amount>64.43</amount>
+       <transaction_category>transfer_in</transaction_category>
+       <balance>3210.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Transfer to xx1915 NetBank</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer_out</transaction_category>
+       <balance>3209.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Transfer to xx8494 NetBank</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer_out</transaction_category>
+       <balance>3208.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Transfer to xx0085 NetBank regular</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer_out</transaction_category>
+       <balance>3207.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN &amp; MISS EVELYN Bills</transaction_description>
+       <amount>2000.00</amount>
+       <transaction_category>transfer_in</transaction_category>
+       <balance>5207.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-665.00</amount>
+       <transaction_category>transfer_out</transaction_category>
+       <balance>4542.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Direct Debit 382220 FREMANTLE EDUCAT 172393060</transaction_description>
+       <amount>-325.94</amount>
+       <transaction_category>education</transaction_category>
+       <balance>4216.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Direct Debit 060046 SSTUWA 06539862</transaction_description>
+       <amount>-20.18</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>4196.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685609</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>4188.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Direct Debit 209033 SMARTRIDER #017233784250103412</transaction_description>
+       <amount>-20.00</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>4168.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App uk</transaction_description>
+       <amount>-2000.00</amount>
+       <transaction_category>transfer_out</transaction_category>
+       <balance>2168.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN &amp; MISS EVELYN Ev uk</transaction_description>
+       <amount>3400.00</amount>
+       <transaction_category>transfer_in</transaction_category>
+       <balance>5568.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App ev uk</transaction_description>
+       <amount>-3400.00</amount>
+       <transaction_category>transfer_out</transaction_category>
+       <balance>2168.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Payroll</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>payroll</transaction_category>
+       <balance>7116.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-22</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Payroll</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>payroll</transaction_category>
+       <balance>7195.58</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Payroll</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>payroll</transaction_category>
+       <balance>7178.20</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-19</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Payroll</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>payroll</transaction_category>
+       <balance>323.63</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-31</transaction_date>
+       <transaction_description>CLOSING BALANCE</transaction_description>
+       <amount>-17219.26</amount>
+       <transaction_category>balance</transaction_category>
+       <balance>-17219.26</balance>
+     </transaction>
+  </transactions>
+  <inflows>
+    <from>
+       <target>Australian Investment Exchange (AUSIEX) Payroll</target>
+       <total_amount>18860.24</total_amount>
+    </from>
+    <from>
+       <target>MR BEN &amp; MISS EVELYN</target>
+       <total_amount>9700.00</total_amount>
+    </from>
+    <from>
+       <target>MCARE BENEFITS</target>
+       <total_amount>1472.75</total_amount>
+    </from>
+    <from>
+       <target>xx7560</target>
+       <total_amount>1921.00</total_amount>
+    </from>
+    <from>
+       <target>HOLLY GREENWAY</target>
+       <total_amount>89.78</total_amount>
+    </from>
+    <from>
+       <target>SUMMER GREENWAY</target>
+       <total_amount>263.08</total_amount>
+    </from>
+    <from>
+       <target>Ladbrokes</target>
+       <total_amount>72.71</total_amount>
+    </from>
+    <from>
+       <target>WENZEL JOUBERT</target>
+       <total_amount>80.00</total_amount>
+    </from>
+    <from>
+       <target>TixelticketsRoyk</target>
+       <total_amount>83.30</total_amount>
+    </from>
+  </inflows>
+  <outflows>
+    <to>
+       <target>xx2868</target>
+       <total_amount>16540.45</total_amount>
+    </to>
+    <to>
+       <target>Ben Greenway Revolut</target>
+       <total_amount>5500.00</total_amount>
+    </to>
+    <to>
+       <target>evelyn greenway revolut</target>
+       <total_amount>3252.10</total_amount>
+    </to>
+    <to>
+       <target>xx4432</target>
+       <total_amount>4000.00</total_amount>
+    </to>
+    <to>
+       <target>Nick WArd</target>
+       <total_amount>5000.00</total_amount>
+    </to>
+    <to>
+       <target>Summer Greenway</target>
+       <total_amount>877.08</total_amount>
+    </to>
+    <to>
+       <target>CBA A/c</target>
+       <total_amount>338.61</total_amount>
+    </to>
+    <to>
+       <target>Home Loan</target>
+       <total_amount>500.00</total_amount>
+    </to>
+    <to>
+       <target>Austin Jarvis</target>
+       <total_amount>77.99</total_amount>
+    </to>
+    <to>
+       <target>Jamie Clark</target>
+       <total_amount>80.00</total_amount>
+    </to>
+    <to>
+       <target>Ladbrokes</target>
+       <total_amount>5.00</total_amount>
+    </to>
+    <to>
+       <target>WENZEL JOUBERT</target>
+       <total_amount>16.00</total_amount>
+    </to>
+  </outflows>
+  <analysis_summary>
+This is a Commonwealth Bank Viridian Line of Credit account for Ben and Evelyn Greenway covering Q1 2025. The account started with a credit balance of $3,120.86 but ended overdrawn by $17,219.26, representing a significant deterioration of $20,340.12. 
+
+Key observations:
+- Regular salary income of $4,715.06 fortnightly from Australian Investment Exchange
+- Heavy usage of transfers to xx2868 (likely credit card payments) totaling $16,540.45
+- Large retail purchases in March from Harvey Norman ($2,901) and Domaine Bedding ($2,996)
+- Multiple family transfers and international transfers via Revolut
+- Regular bills including education ($325.94), health insurance ($91.06), utilities, and transport
+- The account operates as a line of credit with a $30,000 limit and variable interest rates (8.13-8.38% p.a.)
+- Account went into significant debit in February and remained overdrawn through March
+- Total credits: $34,955.86, Total debits: $55,295.98
+</analysis_summary>
+</transaction_analysis>

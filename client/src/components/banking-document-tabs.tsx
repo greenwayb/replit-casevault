@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet } from "lucide-react";
-import BankingSankeyDiagram from "./banking-sankey-diagram";
+import { BankingSankeyDiagram } from "./banking-sankey-diagram";
 
 interface BankingDocumentTabsProps {
   document: any;
@@ -122,9 +122,9 @@ export default function BankingDocumentTabs({
         <TabsContent value="sankey" className="space-y-4">
           {isFullAnalysisComplete ? (
             <BankingSankeyDiagram 
-              xmlData={xmlData}
-              documentName={documentName}
-              accountName={accountName}
+              xmlData={xmlData || ''}
+              accountName={accountName || 'Bank Account'}
+              dateRange={`${document?.transactionDateFrom || ''} - ${document?.transactionDateTo || ''}`}
             />
           ) : (
             <Card>

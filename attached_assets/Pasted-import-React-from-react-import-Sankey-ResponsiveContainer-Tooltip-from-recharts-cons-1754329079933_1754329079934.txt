@@ -1,0 +1,224 @@
+import React from 'react';
+import { Sankey, ResponsiveContainer, Tooltip } from 'recharts';
+
+const SankeyDiagram = () => {
+  // Data structure for Sankey diagram
+  const data = {
+    nodes: [
+      // Inflow sources
+      { name: 'Australian Investment Exchange (Salary)', category: 'inflow' },
+      { name: 'MR BEN & MISS EVELYN Account', category: 'inflow' },
+      { name: 'Medicare Benefits', category: 'inflow' },
+      { name: 'Transfer In Admin', category: 'inflow' },
+      { name: 'xx7560 Account', category: 'inflow' },
+      { name: 'Summer Greenway', category: 'inflow' },
+      { name: 'Holly Greenway', category: 'inflow' },
+      { name: 'Wenzel Joubert', category: 'inflow' },
+      { name: 'Ladbrokes', category: 'inflow' },
+      { name: 'Tixel Tickets', category: 'inflow' },
+      
+      // Central account
+      { name: 'Commonwealth Bank Account', category: 'account' },
+      
+      // Outflow destinations
+      { name: 'xx2868 Account (Credit Card)', category: 'outflow' },
+      { name: 'Ben Greenway Revolut', category: 'outflow' },
+      { name: 'Nick Ward', category: 'outflow' },
+      { name: 'xx4432 Account (Savings)', category: 'outflow' },
+      { name: 'Evelyn Greenway Revolut', category: 'outflow' },
+      { name: 'Summer Greenway (Transfers)', category: 'outflow' },
+      { name: 'Retail Purchases', category: 'outflow' },
+      { name: 'Bills & Utilities', category: 'outflow' },
+      { name: 'Insurance & Health', category: 'outflow' },
+      { name: 'Loan Repayments', category: 'outflow' },
+      { name: 'ATM Withdrawals', category: 'outflow' },
+      { name: 'Education', category: 'outflow' },
+      { name: 'Other Transfers', category: 'outflow' }
+    ],
+    links: [
+      // Inflows to account
+      { source: 0, target: 10, value: 14145.18 }, // Salary
+      { source: 1, target: 10, value: 9700.00 },  // MR BEN & MISS EVELYN
+      { source: 2, target: 10, value: 1174.20 },  // Medicare
+      { source: 3, target: 10, value: 1000.00 },  // Transfer In Admin
+      { source: 4, target: 10, value: 921.00 },   // xx7560
+      { source: 5, target: 10, value: 263.08 },   // Summer Greenway
+      { source: 6, target: 10, value: 89.78 },    // Holly Greenway
+      { source: 7, target: 10, value: 80.00 },    // Wenzel Joubert
+      { source: 8, target: 10, value: 72.71 },    // Ladbrokes
+      { source: 9, target: 10, value: 83.30 },    // Tixel Tickets
+      
+      // Outflows from account
+      { source: 10, target: 11, value: 15395.45 }, // xx2868 (Credit Card)
+      { source: 10, target: 12, value: 7502.10 },  // Ben Greenway Revolut
+      { source: 10, target: 13, value: 5000.00 },  // Nick Ward
+      { source: 10, target: 14, value: 4000.00 },  // xx4432 (Savings)
+      { source: 10, target: 15, value: 2651.00 },  // Evelyn Greenway Revolut
+      { source: 10, target: 16, value: 994.33 },   // Summer Greenway
+      { source: 10, target: 17, value: 5897.00 },  // Retail Purchases (Harvey Norman + Domayne)
+      { source: 10, target: 18, value: 1589.59 },  // Bills & Utilities (Alinta, Synergy, Water Corp, Council)
+      { source: 10, target: 19, value: 1186.42 },  // Insurance & Health (BUPA, medical)
+      { source: 10, target: 20, value: 120.84 },   // Loan Repayments
+      { source: 10, target: 21, value: 450.00 },   // ATM Withdrawals
+      { source: 10, target: 22, value: 651.88 },   // Education (Fremantle Education)
+      { source: 10, target: 23, value: 1000.00 }   // Other smaller transfers and fees
+    ]
+  };
+
+  // Custom node component
+  const CustomNode = ({ payload, ...props }) => {
+    const { x, y, width, height, index } = props;
+    const node = data.nodes[index];
+    
+    let fill = '#8884d8';
+    if (node.category === 'inflow') fill = '#82ca9d';
+    else if (node.category === 'outflow') fill = '#ffc658';
+    else if (node.category === 'account') fill = '#ff7c7c';
+    
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          fill={fill}
+          stroke="#333"
+          strokeWidth={1}
+          rx={4}
+        />
+        <text
+          x={x + width / 2}
+          y={y + height / 2}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={10}
+          fill="#333"
+          fontWeight="bold"
+        >
+          {node.name.length > 20 ? node.name.substring(0, 18) + '...' : node.name}
+        </text>
+      </g>
+    );
+  };
+
+  // Custom link component
+  const CustomLink = ({ payload, ...props }) => {
+    const { sourceX, sourceY, targetX, targetY, sourceControlX, targetControlX, linkWidth } = props;
+    
+    return (
+      <path
+        d={`M${sourceX},${sourceY}C${sourceControlX},${sourceY} ${targetControlX},${targetY} ${targetX},${targetY}`}
+        fill="none"
+        stroke="#8884d8"
+        strokeWidth={linkWidth}
+        strokeOpacity={0.6}
+      />
+    );
+  };
+
+  // Custom tooltip
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
+          <p className="font-semibold">{`${data.source?.name || 'Source'} → ${data.target?.name || 'Target'}`}</p>
+          <p className="text-blue-600">{`Amount: $${data.value?.toLocaleString() || 0}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="w-full h-screen bg-gray-50 p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          Commonwealth Bank Account - Money Flow Analysis
+        </h1>
+        <p className="text-gray-600 mb-4">
+          January 1 - March 31, 2025 | Total Credits: $34,955.86 | Total Debits: $55,295.98
+        </p>
+        
+        {/* Legend */}
+        <div className="flex gap-6 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-400 rounded"></div>
+            <span className="text-sm">Money In (Inflows)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-400 rounded"></div>
+            <span className="text-sm">Commonwealth Bank Account</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+            <span className="text-sm">Money Out (Outflows)</span>
+          </div>
+        </div>
+        
+        {/* Key insights */}
+        <div className="bg-white p-4 rounded-lg shadow mb-4">
+          <h3 className="font-semibold mb-2">Key Insights:</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="font-medium text-green-600">Largest Inflow:</span>
+              <br />Salary ($14,145.18)
+            </div>
+            <div>
+              <span className="font-medium text-red-600">Largest Outflow:</span>
+              <br />Credit Card Payments ($15,395.45)
+            </div>
+            <div>
+              <span className="font-medium text-orange-600">Net Position:</span>
+              <br />-$20,340.12 (from +$3,120.86 to -$17,219.26)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sankey Diagram */}
+      <div className="bg-white rounded-lg shadow-lg p-4" style={{ height: 'calc(100vh - 300px)' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <Sankey
+            data={data}
+            nodeWidth={150}
+            nodePadding={20}
+            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            link={<CustomLink />}
+            node={<CustomNode />}
+          >
+            <Tooltip content={<CustomTooltip />} />
+          </Sankey>
+        </ResponsiveContainer>
+      </div>
+      
+      {/* Summary statistics */}
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-green-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-green-800 mb-2">Top Inflows</h3>
+          <ul className="text-sm space-y-1">
+            <li>1. Salary: $14,145.18 (40.4%)</li>
+            <li>2. Internal Transfers: $9,700.00 (27.7%)</li>
+            <li>3. Medicare Benefits: $1,174.20 (3.4%)</li>
+            <li>4. Admin Transfer: $1,000.00 (2.9%)</li>
+            <li>5. Other Transfers: $921.00 (2.6%)</li>
+          </ul>
+        </div>
+        
+        <div className="bg-red-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-red-800 mb-2">Top Outflows</h3>
+          <ul className="text-sm space-y-1">
+            <li>1. Credit Card (xx2868): $15,395.45 (27.8%)</li>
+            <li>2. Ben's Revolut: $7,502.10 (13.6%)</li>
+            <li>3. Retail Purchases: $5,897.00 (10.7%)</li>
+            <li>4. Nick Ward: $5,000.00 (9.0%)</li>
+            <li>5. Savings (xx4432): $4,000.00 (7.2%)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SankeyDiagram;
