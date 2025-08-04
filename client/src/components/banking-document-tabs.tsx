@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, BarChart3, Code2, TrendingUp } from "lucide-react";
+import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet } from "lucide-react";
 import BankingSankeyDiagram from "./banking-sankey-diagram";
 
 interface BankingDocumentTabsProps {
@@ -79,7 +79,7 @@ export default function BankingDocumentTabs({
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger 
             value="sankey" 
             className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -87,6 +87,14 @@ export default function BankingDocumentTabs({
           >
             <TrendingUp className="h-4 w-4" />
             Sankey Flow
+          </TabsTrigger>
+          <TabsTrigger 
+            value="summary" 
+            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFullAnalysisComplete}
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            Summary
           </TabsTrigger>
           <TabsTrigger 
             value="analysis" 
@@ -123,6 +131,99 @@ export default function BankingDocumentTabs({
                 <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-medium text-gray-600 mb-2">Transaction Flow Analysis</h3>
                 <p className="text-gray-500 mb-4">Click "AI Analysis" to analyze transaction flows and generate the Sankey diagram</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="summary" className="space-y-4">
+          {isFullAnalysisComplete ? (
+            <Card>
+              <CardContent className="p-6">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Analysis Summary</h3>
+                    {xmlData && (() => {
+                      try {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
+                        const summaryElement = xmlDoc.querySelector('analysis_summary');
+                        const summary = summaryElement?.textContent?.trim();
+                        
+                        if (summary) {
+                          return (
+                            <div className="space-y-4">
+                              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-3">Document Summary</h4>
+                                <div className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
+                                  {summary.split('\n').map((line, index) => (
+                                    line.trim() && (
+                                      <p key={index} className="mb-2">
+                                        {line.trim()}
+                                      </p>
+                                    )
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Additional summary details from XML */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                  <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">Account Details</h4>
+                                  <div className="text-sm text-green-700 dark:text-green-300">
+                                    <p>Institution: {xmlDoc.querySelector('institution')?.textContent || 'Not specified'}</p>
+                                    <p>Account Type: {xmlDoc.querySelector('account_type')?.textContent || 'Not specified'}</p>
+                                    <p>Period: {xmlDoc.querySelector('start_date')?.textContent || 'N/A'} to {xmlDoc.querySelector('end_date')?.textContent || 'N/A'}</p>
+                                  </div>
+                                </div>
+                                
+                                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                  <h4 className="font-medium text-purple-800 dark:text-purple-200 mb-2">Transaction Summary</h4>
+                                  <div className="text-sm text-purple-700 dark:text-purple-300">
+                                    {(() => {
+                                      const transactions = xmlDoc.querySelectorAll('transaction');
+                                      const totalTransactions = transactions.length;
+                                      const inflows = Array.from(transactions).filter(t => t.querySelector('type')?.textContent?.includes('in')).length;
+                                      const outflows = totalTransactions - inflows;
+                                      
+                                      return (
+                                        <>
+                                          <p>Total Transactions: {totalTransactions}</p>
+                                          <p>Inflows: {inflows}</p>
+                                          <p>Outflows: {outflows}</p>
+                                        </>
+                                      );
+                                    })()}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        
+                        return (
+                          <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                            <p className="text-yellow-700 dark:text-yellow-300">No analysis summary found in XML data.</p>
+                          </div>
+                        );
+                      } catch (error) {
+                        return (
+                          <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                            <p className="text-red-700 dark:text-red-300">Error parsing XML data for summary.</p>
+                          </div>
+                        );
+                      }
+                    })()}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <FileSpreadsheet className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">Analysis Summary</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to generate a comprehensive summary of your banking document</p>
               </CardContent>
             </Card>
           )}

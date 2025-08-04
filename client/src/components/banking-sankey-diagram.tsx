@@ -228,7 +228,7 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
         </div>
 
         {/* Recharts Sankey Diagram */}
-        <div className="h-96 mb-6">
+        <div className="h-[500px] mb-6 bg-white dark:bg-gray-950 rounded-lg border p-4">
           <ResponsiveContainer width="100%" height="100%">
             <Sankey
               data={{
@@ -247,8 +247,9 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
                   };
                 })
               }}
-              nodePadding={50}
-              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              nodePadding={30}
+              nodeWidth={15}
+              margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
             >
               <Tooltip 
                 formatter={(value: any, name: string) => [formatCurrency(Number(value)), name]}
