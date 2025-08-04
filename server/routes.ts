@@ -581,6 +581,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Create log file for detailed AI processing logs
         const fs = await import('fs');
+        const { fileURLToPath } = await import('url');
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
         const logsDir = path.join(__dirname, '../logs');
         if (!fs.existsSync(logsDir)) {
           fs.mkdirSync(logsDir, { recursive: true });
