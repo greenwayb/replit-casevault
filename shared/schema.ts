@@ -118,6 +118,7 @@ export const documents = pgTable("documents", {
   
   // Processing status
   aiProcessed: boolean("ai_processed").default(false),
+  fullAnalysisCompleted: boolean("full_analysis_completed").default(false), // Track if Phase 2 analysis is done
   processingError: text("processing_error"),
   
   // CSV generation information

@@ -53,6 +53,7 @@ interface BankingConfirmationModalProps {
   documentId?: number;
   isManualReview?: boolean;
   selectedFile?: File | null;
+  analysisPhase?: 'basic' | 'full';
 }
 
 export default function BankingConfirmationModal({

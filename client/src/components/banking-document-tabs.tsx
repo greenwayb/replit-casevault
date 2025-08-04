@@ -12,6 +12,7 @@ interface BankingDocumentTabsProps {
   csvData?: string;
   documentName: string;
   accountName?: string;
+  onFullAnalysis?: () => void;
 }
 
 export default function BankingDocumentTabs({ 
@@ -20,9 +21,13 @@ export default function BankingDocumentTabs({
   xmlData, 
   csvData, 
   documentName, 
-  accountName 
+  accountName,
+  onFullAnalysis
 }: BankingDocumentTabsProps) {
   const [activeTab, setActiveTab] = useState("sankey");
+  
+  // Check if full analysis is completed
+  const isFullAnalysisComplete = document?.fullAnalysisCompleted && xmlData;
 
   const handleDownloadXML = () => {
     if (!xmlData) return;
@@ -54,13 +59,35 @@ export default function BankingDocumentTabs({
 
   return (
     <div className="space-y-4">
+      {/* AI Analysis Button - only show if full analysis not completed */}
+      {!isFullAnalysisComplete && (
+        <div className="flex justify-center">
+          <Button 
+            onClick={onFullAnalysis}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+            size="lg"
+          >
+            <BarChart3 className="h-5 w-5 mr-2" />
+            AI Analysis
+          </Button>
+        </div>
+      )}
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="sankey" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="sankey" 
+            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFullAnalysisComplete}
+          >
             <TrendingUp className="h-4 w-4" />
             Sankey Flow
           </TabsTrigger>
-          <TabsTrigger value="analysis" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="analysis" 
+            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFullAnalysisComplete}
+          >
             <BarChart3 className="h-4 w-4" />
             Analysis Data
           </TabsTrigger>
@@ -68,27 +95,41 @@ export default function BankingDocumentTabs({
             <FileText className="h-4 w-4" />
             PDF Document
           </TabsTrigger>
-          <TabsTrigger value="xml" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="xml" 
+            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFullAnalysisComplete}
+          >
             <Code2 className="h-4 w-4" />
             XML Data
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="sankey" className="space-y-4">
-          <BankingSankeyDiagram 
-            xmlData={xmlData}
-            documentName={documentName}
-            accountName={accountName}
-          />
+          {isFullAnalysisComplete ? (
+            <BankingSankeyDiagram 
+              xmlData={xmlData}
+              documentName={documentName}
+              accountName={accountName}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">Transaction Flow Analysis</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to analyze transaction flows and generate the Sankey diagram</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Document Analysis Summary</h3>
-                  {xmlData ? (
+          {isFullAnalysisComplete ? (
+            <Card>
+              <CardContent className="p-6">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Document Analysis Summary</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                         <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Account Information</h4>
@@ -109,29 +150,31 @@ export default function BankingDocumentTabs({
                         </p>
                       </div>
                     </div>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <BarChart3 className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                      <p>No analysis data available</p>
-                      <p className="text-sm">Upload and process a banking document to see analysis data</p>
+                  </div>
+                  
+                  {csvData && (
+                    <div>
+                      <h4 className="font-medium mb-2">Transaction Preview</h4>
+                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-48 overflow-y-auto">
+                        <pre className="text-sm font-mono whitespace-pre-wrap break-words">
+                          {csvData.split('\n').slice(0, 5).join('\n')}
+                          {csvData.split('\n').length > 5 && '\n... (showing first 5 rows)'}
+                        </pre>
+                      </div>
                     </div>
                   )}
                 </div>
-                
-                {csvData && (
-                  <div>
-                    <h4 className="font-medium mb-2">Transaction Preview</h4>
-                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-48 overflow-y-auto">
-                      <pre className="text-sm font-mono whitespace-pre-wrap break-words">
-                        {csvData.split('\n').slice(0, 5).join('\n')}
-                        {csvData.split('\n').length > 5 && '\n... (showing first 5 rows)'}
-                      </pre>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">Analysis Data</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to extract detailed transaction data and analysis</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="pdf" className="space-y-4">
@@ -149,16 +192,17 @@ export default function BankingDocumentTabs({
         </TabsContent>
 
         <TabsContent value="xml" className="space-y-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">XML Analysis Data</h3>
-                <div className="flex gap-2">
-                  {csvData && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleDownloadCSV}
+          {isFullAnalysisComplete ? (
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">XML Analysis Data</h3>
+                  <div className="flex gap-2">
+                    {csvData && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleDownloadCSV}
                       className="flex items-center gap-2"
                     >
                       <Download className="h-4 w-4" />
@@ -208,6 +252,15 @@ export default function BankingDocumentTabs({
               )}
             </CardContent>
           </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Code2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">XML Analysis Data</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to generate detailed XML transaction analysis</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

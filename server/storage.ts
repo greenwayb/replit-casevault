@@ -484,6 +484,7 @@ export class DatabaseStorage implements IStorage {
       documentNumber?: string;
       accountGroupNumber?: string;
       aiProcessed?: boolean;
+      fullAnalysisCompleted?: boolean;
       processingError?: string;
       csvPath?: string;
       csvRowCount?: number;
