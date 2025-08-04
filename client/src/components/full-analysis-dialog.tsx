@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -24,8 +24,10 @@ export default function FullAnalysisDialog({
   const [success, setSuccess] = useState(false);
   const [detailedLog, setDetailedLog] = useState<string[]>([]);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [isCancelling, setIsCancelling] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const steps = [
     "Preparing AI analysis...",
@@ -38,6 +40,35 @@ export default function FullAnalysisDialog({
   const addToLog = (message: string) => {
     const timestamp = new Date().toLocaleTimeString();
     setDetailedLog(prev => [...prev, `[${timestamp}] ${message}`]);
+  };
+
+  // Timer effect for elapsed time
+  useEffect(() => {
+    if (isAnalyzing && startTime) {
+      timerRef.current = setInterval(() => {
+        const now = new Date();
+        const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+        setElapsedTime(elapsed);
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isAnalyzing, startTime]);
+
+  const formatElapsedTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const cancelAnalysis = async () => {
@@ -191,9 +222,17 @@ export default function FullAnalysisDialog({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Full Transaction Analysis
+          <DialogTitle className="flex items-center gap-2 justify-between">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Full Transaction Analysis
+            </div>
+            {isAnalyzing && startTime && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                {formatElapsedTime(elapsedTime)}
+              </div>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -228,12 +267,7 @@ export default function FullAnalysisDialog({
                   <span className="font-medium">Analyzing Document</span>
                 </div>
                 
-                {startTime && (
-                  <div className="flex items-center gap-1 text-sm text-gray-500">
-                    <Clock className="h-4 w-4" />
-                    {Math.floor((new Date().getTime() - startTime.getTime()) / 1000)}s
-                  </div>
-                )}
+
               </div>
               
               <Progress value={progress} className="w-full" />

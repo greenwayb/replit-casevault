@@ -20,10 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Building, User, CreditCard, Calendar } from "lucide-react";
+import { Building, User, CreditCard, Calendar, Plus, X } from "lucide-react";
 
 const bankingConfirmationSchema = z.object({
-  accountHolderName: z.string().min(1, "Account holder name is required"),
+  accountHolders: z.array(z.string()).min(1, "At least one account holder is required"),
   accountName: z.string().min(1, "Account type is required"),
   financialInstitution: z.string().min(1, "Financial institution is required"),
   accountNumber: z.string().optional(),
@@ -35,7 +35,7 @@ const bankingConfirmationSchema = z.object({
 type BankingConfirmationFormData = z.infer<typeof bankingConfirmationSchema>;
 
 interface BankingInfo {
-  accountHolderName: string;
+  accountHolders: string[];
   accountName: string;
   financialInstitution: string;
   accountNumber?: string;
@@ -69,7 +69,7 @@ export default function BankingConfirmationModal({
   const form = useForm<BankingConfirmationFormData>({
     resolver: zodResolver(bankingConfirmationSchema),
     defaultValues: {
-      accountHolderName: bankingInfo.accountHolderName || '',
+      accountHolders: bankingInfo.accountHolders || [],
       accountName: bankingInfo.accountName || '',
       financialInstitution: bankingInfo.financialInstitution || '',
       accountNumber: bankingInfo.accountNumber || '',
@@ -82,7 +82,7 @@ export default function BankingConfirmationModal({
   // Reset form values when bankingInfo changes
   React.useEffect(() => {
     form.reset({
-      accountHolderName: bankingInfo.accountHolderName || '',
+      accountHolders: bankingInfo.accountHolders || [],
       accountName: bankingInfo.accountName || '',
       financialInstitution: bankingInfo.financialInstitution || '',
       accountNumber: bankingInfo.accountNumber || '',
@@ -94,7 +94,7 @@ export default function BankingConfirmationModal({
 
   const onSubmit = (data: BankingConfirmationFormData) => {
     onConfirm({
-      accountHolderName: data.accountHolderName,
+      accountHolders: data.accountHolders,
       accountName: data.accountName,
       financialInstitution: data.financialInstitution,
       accountNumber: data.accountNumber || undefined,
@@ -131,23 +131,63 @@ export default function BankingConfirmationModal({
           <div className="overflow-y-auto">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="accountHolderName"
+                    name="accountHolders"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
                           <User className="h-4 w-4" />
-                          Account Holder Name
+                          Account Holders
                         </FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="e.g., John Smith" />
-                        </FormControl>
+                        <div className="space-y-2">
+                          {field.value?.map((holder, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <Input
+                                value={holder}
+                                onChange={(e) => {
+                                  const newHolders = [...field.value];
+                                  newHolders[index] = e.target.value;
+                                  field.onChange(newHolders);
+                                }}
+                                placeholder="e.g., John Smith"
+                                className="flex-1"
+                              />
+                              {field.value.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newHolders = field.value.filter((_, i) => i !== index);
+                                    field.onChange(newHolders);
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          )) || []}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              field.onChange([...(field.value || []), '']);
+                            }}
+                            className="w-full"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Account Holder
+                          </Button>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                <div className="grid grid-cols-2 gap-4">
 
                   <FormField
                     control={form.control}
@@ -261,6 +301,7 @@ export default function BankingConfirmationModal({
                       </FormItem>
                     )}
                   />
+                </div>
                 </div>
 
                 <div className="flex justify-end space-x-3 pt-6">

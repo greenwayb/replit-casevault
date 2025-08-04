@@ -359,37 +359,100 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
           </div>
         </div>
 
-        {/* Enhanced Sankey Diagram */}
-        <div className="bg-white dark:bg-gray-950 rounded-lg shadow-lg p-4 mb-6" style={{ height: 'calc(100vh - 300px)', minHeight: '500px' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <Sankey
-              data={{
-                nodes: sankeyData.nodes.map((node, index) => ({
-                  name: node.name,
-                  value: node.value,
-                  type: node.type
-                })),
-                links: sankeyData.links.map(link => {
-                  // Find the node indices for source and target
-                  const sourceIndex = sankeyData.nodes.findIndex(n => n.id === link.source);
-                  const targetIndex = sankeyData.nodes.findIndex(n => n.id === link.target);
-                  return {
-                    source: sourceIndex >= 0 ? sourceIndex : 0,
-                    target: targetIndex >= 0 ? targetIndex : 0,
-                    value: link.value,
-                    type: link.type
-                  };
-                })
-              }}
-              nodeWidth={150}
-              nodePadding={20}
-              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-              link={<CustomLink />}
-              node={<CustomNode />}
-            >
-              <Tooltip content={<CustomTooltip />} />
-            </Sankey>
-          </ResponsiveContainer>
+        {/* Enhanced Sankey Diagram - Three Column Layout */}
+        <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg p-6 mb-6" style={{ minHeight: '600px' }}>
+          <div className="grid grid-cols-3 gap-8 h-full">
+            
+            {/* Left Column - Inflows */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-green-700 dark:text-green-400 mb-4 text-center">Money Coming In</h3>
+              {sankeyData.nodes.filter(n => n.type === 'source').map((node, index) => (
+                <div 
+                  key={node.id} 
+                  className="relative group"
+                  style={{ 
+                    height: `${Math.max(40, (node.value / maxValue) * 120)}px`,
+                  }}
+                >
+                  <div 
+                    className="w-full h-full bg-gradient-to-r from-green-400 to-green-500 rounded-lg shadow-md 
+                               hover:shadow-lg transition-all duration-200 flex items-center justify-center
+                               border-2 border-green-300 hover:border-green-400"
+                    style={{
+                      backgroundColor: '#10b981', // green-500
+                    }}
+                  >
+                    <div className="text-center px-2">
+                      <div className="text-white font-medium text-sm truncate">{node.name}</div>
+                      <div className="text-green-100 text-xs">{formatCurrency(node.value)}</div>
+                    </div>
+                  </div>
+                  
+                  {/* Connection line to center */}
+                  <div 
+                    className="absolute top-1/2 -right-8 w-8 h-0.5 bg-gradient-to-r from-green-400 to-red-400"
+                    style={{ transform: 'translateY(-50%)' }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Center Column - Bank Account */}
+            <div className="flex items-center justify-center">
+              <div className="w-full max-w-xs">
+                <div 
+                  className="w-full bg-gradient-to-br from-red-400 to-red-500 rounded-xl shadow-xl 
+                             border-4 border-red-300 flex items-center justify-center text-center p-6"
+                  style={{ 
+                    height: `${Math.max(100, ((sankeyData.nodes.find(n => n.id === 'account')?.value || 0) / maxValue) * 200)}px`,
+                    backgroundColor: '#ef4444', // red-500
+                  }}
+                >
+                  <div>
+                    <div className="text-white font-bold text-lg mb-2">{sankeyData.nodes.find(n => n.id === 'account')?.name || 'Bank Account'}</div>
+                    <div className="text-red-100 text-sm">
+                      {formatCurrency(sankeyData.nodes.find(n => n.id === 'account')?.value || 0)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Outflows */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-orange-700 dark:text-orange-400 mb-4 text-center">Money Going Out</h3>
+              {sankeyData.nodes.filter(n => n.type === 'target').map((node, index) => (
+                <div 
+                  key={node.id} 
+                  className="relative group"
+                  style={{ 
+                    height: `${Math.max(40, (node.value / maxValue) * 120)}px`,
+                  }}
+                >
+                  {/* Connection line from center */}
+                  <div 
+                    className="absolute top-1/2 -left-8 w-8 h-0.5 bg-gradient-to-r from-red-400 to-orange-400"
+                    style={{ transform: 'translateY(-50%)' }}
+                  />
+                  
+                  <div 
+                    className="w-full h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-lg shadow-md 
+                               hover:shadow-lg transition-all duration-200 flex items-center justify-center
+                               border-2 border-orange-300 hover:border-orange-400"
+                    style={{
+                      backgroundColor: '#f97316', // orange-500
+                    }}
+                  >
+                    <div className="text-center px-2">
+                      <div className="text-white font-medium text-sm truncate">{node.name}</div>
+                      <div className="text-orange-100 text-xs">{formatCurrency(node.value)}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
         </div>
 
         {/* Detailed Flow Breakdown */}
