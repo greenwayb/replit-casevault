@@ -19,9 +19,20 @@ interface BankingSankeyDiagramProps {
 
 export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: BankingSankeyDiagramProps) {
   const { sankeyData, summaryStats } = useMemo(() => {
-    // Parse XML to extract transactions
+    // Parse XML to extract transactions and account info
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
+    
+    // Extract account information from XML
+    const getElementText = (tagName: string, parent = xmlDoc) => {
+      const element = parent.getElementsByTagName(tagName)[0];
+      return element ? element.textContent?.trim() || '' : '';
+    };
+    
+    const accountNumber = getElementText('account_number');
+    const accountDisplayName = accountNumber ? 
+      `${accountName}\n(${accountNumber})` : 
+      accountName;
     
     const transactions: Transaction[] = [];
     const transactionNodes = xmlDoc.getElementsByTagName('transaction');
@@ -44,27 +55,68 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       });
     }
 
-    // Group transactions by type and target
+    // Also extract inflows/outflows from XML structure
+    const inflowsFromXML = new Map<string, number>();
+    const outflowsFromXML = new Map<string, number>();
+    
+    // Parse inflows section
+    const inflowNodes = xmlDoc.getElementsByTagName('from');
+    for (let i = 0; i < inflowNodes.length; i++) {
+      const fromNode = inflowNodes[i];
+      const target = fromNode.getElementsByTagName('target')[0]?.textContent?.trim() || '';
+      const amount = parseFloat(fromNode.getElementsByTagName('total_amount')[0]?.textContent || '0');
+      if (target && amount > 0) {
+        inflowsFromXML.set(target, amount);
+      }
+    }
+    
+    // Parse outflows section  
+    const outflowNodes = xmlDoc.getElementsByTagName('to');
+    for (let i = 0; i < outflowNodes.length; i++) {
+      const toNode = outflowNodes[i];
+      const target = toNode.getElementsByTagName('target')[0]?.textContent?.trim() || '';
+      const amount = parseFloat(toNode.getElementsByTagName('total_amount')[0]?.textContent || '0');
+      if (target && amount > 0) {
+        outflowsFromXML.set(target, amount);
+      }
+    }
+
+    // Group transactions by type and target (fallback if XML structure doesn't have inflows/outflows)
     const inflows = new Map<string, number>();
     const outflows = new Map<string, number>();
     let totalCredits = 0;
     let totalDebits = 0;
     
-    transactions.forEach(transaction => {
-      const amount = Math.abs(transaction.amount);
-      
-      if (transaction.amount > 0) {
-        // Inflow
+    // Use XML inflows/outflows if available, otherwise parse transactions
+    if (inflowsFromXML.size > 0 || outflowsFromXML.size > 0) {
+      // Use the structured inflow/outflow data from XML
+      inflowsFromXML.forEach((amount, source) => {
+        inflows.set(source, amount);
         totalCredits += amount;
-        const source = transaction.transfer_target || transaction.category || 'Other Income';
-        inflows.set(source, (inflows.get(source) || 0) + amount);
-      } else {
-        // Outflow  
+      });
+      
+      outflowsFromXML.forEach((amount, target) => {
+        outflows.set(target, amount);
         totalDebits += amount;
-        const target = transaction.transfer_target || transaction.category || 'Other Expenses';
-        outflows.set(target, (outflows.get(target) || 0) + amount);
-      }
-    });
+      });
+    } else {
+      // Fallback to transaction-by-transaction analysis
+      transactions.forEach(transaction => {
+        const amount = Math.abs(transaction.amount);
+        
+        if (transaction.amount > 0) {
+          // Inflow
+          totalCredits += amount;
+          const source = transaction.transfer_target || transaction.category || 'Other Income';
+          inflows.set(source, (inflows.get(source) || 0) + amount);
+        } else {
+          // Outflow  
+          totalDebits += amount;
+          const target = transaction.transfer_target || transaction.category || 'Other Expenses';
+          outflows.set(target, (outflows.get(target) || 0) + amount);
+        }
+      });
+    }
 
     // Create nodes and links for Sankey
     const nodes: Array<{ name: string; category: string }> = [];
@@ -79,10 +131,10 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       nodeMap.set(source, nodeIndex++);
     });
     
-    // Add central account node
+    // Add central account node (with account number if available)
     const accountNodeIndex = nodeIndex;
-    nodes.push({ name: accountName, category: 'account' });
-    nodeMap.set(accountName, nodeIndex++);
+    nodes.push({ name: accountDisplayName, category: 'account' });
+    nodeMap.set(accountDisplayName, nodeIndex++);
     
     // Add outflow nodes
     Array.from(outflows.entries()).forEach(([target, amount]) => {
