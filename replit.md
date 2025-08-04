@@ -61,7 +61,14 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes
 
-## August 3, 2025 (Latest Updates)
+## August 4, 2025 (Latest Updates)
+- **Updated Banking Document Analysis Prompt**: Switched to comprehensive XML-structured analysis with detailed transaction breakdown including transfer identification, categorization, and inflow/outflow tracking according to new specification
+- **Enhanced Banking Confirmation UI**: Updated confirmation modal to display XML-structured fields including institution, account_holders, account_type, start_date, and end_date for better alignment with AI analysis output
+- **Fixed Date Conversion Errors**: Resolved database insertion issues with timestamp fields by properly converting date strings to ISO format before storage
+- **Improved Banking Document Interface**: Modified field labels in confirmation dialog to match XML structure (Financial Institution → Institution, Account Name → Account Type, Period From/To → Start Date/End Date)
+- **Increased AI Token Limit**: Enhanced analysis capability by increasing max tokens from 1000 to 8000 for more comprehensive banking document processing
+
+## August 3, 2025 (Earlier Updates)
 - **Migrated to Claude Sonnet 4**: Successfully switched PDF processing from OpenAI GPT-4o to Anthropic's Claude Sonnet 4 (claude-sonnet-4-20250514) for enhanced banking document analysis
 - **Enhanced Banking Statement Analysis**: Implemented detailed XML-structured transaction analysis with comprehensive categorization, transfer identification, and inflow/outflow tracking
 - **Improved Transaction Processing**: Added sophisticated transfer detection (transfer_in/transfer_out), transaction categorization, and detailed CSV generation with expanded columns

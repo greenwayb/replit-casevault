@@ -24,7 +24,7 @@ import { Building, User, CreditCard, Calendar } from "lucide-react";
 
 const bankingConfirmationSchema = z.object({
   accountHolderName: z.string().min(1, "Account holder name is required"),
-  accountName: z.string().min(1, "Account name is required"),
+  accountName: z.string().min(1, "Account type is required"),
   financialInstitution: z.string().min(1, "Financial institution is required"),
   accountNumber: z.string().optional(),
   bsbSortCode: z.string().optional(),
@@ -155,7 +155,7 @@ export default function BankingConfirmationModal({
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
                           <CreditCard className="h-4 w-4" />
-                          Account Name
+                          Account Type
                         </FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="e.g., Business Transaction Account" />
@@ -172,7 +172,7 @@ export default function BankingConfirmationModal({
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
                           <Building className="h-4 w-4" />
-                          Financial Institution
+                          Institution
                         </FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="e.g., Commonwealth Bank" />
@@ -212,12 +212,29 @@ export default function BankingConfirmationModal({
 
                   <FormField
                     control={form.control}
+                    name="transactionDateFrom"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          Start Date
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} type="date" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="transactionDateTo"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
-                          Period To
+                          End Date
                         </FormLabel>
                         <FormControl>
                           <Input {...field} type="date" />
