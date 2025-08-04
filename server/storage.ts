@@ -492,12 +492,22 @@ export class DatabaseStorage implements IStorage {
       xmlAnalysisData?: string;
     }
   ): Promise<void> {
+    const updateData: any = {
+      ...data,
+      updatedAt: new Date(),
+    };
+    
+    // Convert date strings to Date objects if they exist
+    if (data.transactionDateFrom) {
+      updateData.transactionDateFrom = new Date(data.transactionDateFrom);
+    }
+    if (data.transactionDateTo) {
+      updateData.transactionDateTo = new Date(data.transactionDateTo);
+    }
+    
     await db
       .update(documents)
-      .set({
-        ...data,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(documents.id, documentId));
   }
 

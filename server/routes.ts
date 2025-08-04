@@ -561,7 +561,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             documentNumber,
             accountGroupNumber,
             csvInfo,
-            xmlInfo
+            xmlInfo,
+            xmlAnalysisData: analysis.xmlAnalysis
           }
         });
 
@@ -661,7 +662,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/documents/:id/confirm-banking", isAuthenticated, async (req: any, res) => {
     try {
       const documentId = parseInt(req.params.id);
-      const { bankingInfo, csvInfo, xmlInfo, isManualReview } = req.body;
+      const { bankingInfo, csvInfo, xmlInfo, xmlAnalysisData, isManualReview } = req.body;
       
       const { BankAbbreviationService } = await import('./bankAbbreviationService');
       const { DocumentNumberingService } = await import('./documentNumberingService');
@@ -696,8 +697,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         financialInstitution: bankingInfo.financialInstitution,
         accountNumber: bankingInfo.accountNumber,
         bsbSortCode: bankingInfo.bsbSortCode,
-        transactionDateFrom: bankingInfo.transactionDateFrom ? new Date(bankingInfo.transactionDateFrom).toISOString() : undefined,
-        transactionDateTo: bankingInfo.transactionDateTo ? new Date(bankingInfo.transactionDateTo).toISOString() : undefined,
+        transactionDateFrom: bankingInfo.transactionDateFrom || undefined,
+        transactionDateTo: bankingInfo.transactionDateTo || undefined,
         documentNumber,
         accountGroupNumber: groupNumber,
         aiProcessed: true,
@@ -705,7 +706,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         csvRowCount: csvInfo?.csvRowCount,
         csvGenerated: csvInfo?.csvGenerated || false,
         xmlPath: xmlInfo?.xmlPath,
-        xmlAnalysisData: xmlInfo?.xmlAnalysisData,
+        xmlAnalysisData: xmlAnalysisData,
       });
 
       res.json(updatedDocument);
@@ -730,6 +731,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error rejecting banking document:", error);
       res.status(500).json({ message: "Failed to reject banking document" });
+    }
+  });
+
+  // Get XML data for a document
+  app.get("/api/documents/:id/xml", isAuthenticated, async (req: any, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+      const userId = req.user.id;
+
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check user access to the case
+      const userRoles = await storage.getUserCaseRoles(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
+        return res.status(403).json({ message: "Access denied to this case" });
+      }
+
+      if (!document.xmlAnalysisData) {
+        return res.status(404).json({ message: "No XML analysis data available" });
+      }
+
+      res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Content-Disposition', `attachment; filename="document_${documentId}_analysis.xml"`);
+      res.send(document.xmlAnalysisData);
+    } catch (error) {
+      console.error("Error serving XML data:", error);
+      res.status(500).json({ message: "Failed to serve XML data" });
     }
   });
 
