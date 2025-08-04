@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { Sankey, ResponsiveContainer, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
 
@@ -226,32 +227,44 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
           </div>
         </div>
 
-        {/* Simplified Sankey Visualization */}
-        <div className="space-y-6">
+        {/* Recharts Sankey Diagram */}
+        <div className="h-96 mb-6">
+          <ResponsiveContainer width="100%" height="100%">
+            <Sankey
+              data={{
+                nodes: sankeyData.nodes.map(node => ({
+                  name: node.name,
+                  value: node.value
+                })),
+                links: sankeyData.links.map(link => ({
+                  source: link.source,
+                  target: link.target,
+                  value: link.value
+                }))
+              }}
+              nodePadding={50}
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            >
+              <Tooltip 
+                formatter={(value: any, name: string) => [formatCurrency(Number(value)), name]}
+                labelFormatter={(label: string) => `Flow: ${label}`}
+              />
+            </Sankey>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Detailed Flow Breakdown */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Inflows */}
           <div>
             <h4 className="text-sm font-medium text-green-600 dark:text-green-400 mb-3">Money Coming In</h4>
             <div className="space-y-2">
               {sankeyData.nodes.filter(n => n.type === 'source').map((node) => (
-                <div key={node.id} className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium">{node.name}</span>
-                      <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                        {formatCurrency(node.value)}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div 
-                        className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(node.value / maxValue) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-green-500" />
-                  <div className="w-12 h-8 bg-blue-100 dark:bg-blue-900 rounded border-2 border-blue-300 dark:border-blue-700 flex items-center justify-center">
-                    <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Account</span>
-                  </div>
+                <div key={node.id} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-950 rounded">
+                  <span className="text-sm font-medium">{node.name}</span>
+                  <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                    {formatCurrency(node.value)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -262,25 +275,11 @@ export default function BankingSankeyDiagram({ xmlData, documentName, accountNam
             <h4 className="text-sm font-medium text-red-600 dark:text-red-400 mb-3">Money Going Out</h4>
             <div className="space-y-2">
               {sankeyData.nodes.filter(n => n.type === 'target').map((node) => (
-                <div key={node.id} className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-blue-100 dark:bg-blue-900 rounded border-2 border-blue-300 dark:border-blue-700 flex items-center justify-center">
-                    <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Account</span>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-red-500" />
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium">{node.name}</span>
-                      <span className="text-sm text-red-600 dark:text-red-400 font-medium">
-                        {formatCurrency(node.value)}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div 
-                        className="bg-red-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(node.value / maxValue) * 100}%` }}
-                      />
-                    </div>
-                  </div>
+                <div key={node.id} className="flex items-center justify-between p-2 bg-red-50 dark:bg-red-950 rounded">
+                  <span className="text-sm font-medium">{node.name}</span>
+                  <span className="text-sm text-red-600 dark:text-red-400 font-medium">
+                    {formatCurrency(node.value)}
+                  </span>
                 </div>
               ))}
             </div>
