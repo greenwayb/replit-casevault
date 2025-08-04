@@ -46,7 +46,12 @@ export default function BankingDocumentTabs({
   const handleDownloadCSV = () => {
     if (!csvData) return;
     
-    const blob = new Blob([csvData], { type: 'text/csv' });
+    // Check if csvData is a string or array format
+    const csvContent = typeof csvData === 'string' ? csvData : 
+                      Array.isArray(csvData) ? csvData.map(row => Object.values(row).join(',')).join('\n') : 
+                      '';
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -157,8 +162,11 @@ export default function BankingDocumentTabs({
                       <h4 className="font-medium mb-2">Transaction Preview</h4>
                       <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-48 overflow-y-auto">
                         <pre className="text-sm font-mono whitespace-pre-wrap break-words">
-                          {csvData.split('\n').slice(0, 5).join('\n')}
-                          {csvData.split('\n').length > 5 && '\n... (showing first 5 rows)'}
+                          {typeof csvData === 'string' ? 
+                            csvData.split('\n').slice(0, 5).join('\n') + 
+                            (csvData.split('\n').length > 5 ? '\n... (showing first 5 rows)' : '') :
+                            'CSV data format not recognized'
+                          }
                         </pre>
                       </div>
                     </div>

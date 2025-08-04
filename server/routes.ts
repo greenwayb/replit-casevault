@@ -600,7 +600,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let xmlInfo = { xmlPath: '', xmlGenerated: false };
         let xmlAnalysisData = '';
         try {
-          const xmlResult = await generateXMLFromAnalysis(filePath, document.id);
+          // Use the analysis result to generate XML
+          const xmlResult = await generateXMLFromAnalysis(analysis.xmlAnalysis || '', document.id);
           xmlInfo = {
             xmlPath: xmlResult.xmlPath,
             xmlGenerated: !!xmlResult.xmlContent
