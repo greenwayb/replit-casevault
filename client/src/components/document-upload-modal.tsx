@@ -224,6 +224,8 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
             accountGroupNumber: isManual ? '1' : pendingBankingData.extractedBankingInfo.accountGroupNumber,
           },
           csvInfo: pendingBankingData.extractedBankingInfo.csvInfo,
+          xmlInfo: pendingBankingData.extractedBankingInfo.xmlInfo,
+          xmlAnalysisData: pendingBankingData.extractedBankingInfo.xmlAnalysisData,
           isManualReview: isManual
         })
       });
