@@ -39,8 +39,9 @@ Preferred communication style: Simple, everyday language.
 - **File Types**: PDF-only (50MB limit)
 - **Organization**: Hierarchical categorization (REAL_PROPERTY, BANKING, TAXATION, SUPERANNUATION, EMPLOYMENT, SHARES/INVESTMENTS, VEHICLES) with a comprehensive numbering system (e.g., A1, B1, B1.1)
 - **Access Control**: Case-based permissions with user role assignments
-- **AI Processing**: Automatic Banking document analysis using OpenAI GPT-4o, generating XML first, then CSV from XML.
+- **AI Processing**: Automatic Banking document analysis using Claude Sonnet 4, generating XML first, then CSV from XML with comprehensive error handling and timeout protection.
 - **CSV Generation**: Automatic extraction of transaction data into downloadable CSV files.
+- **Enhanced Error Handling**: Processing failures keep dialog open, log detailed error information to server files, and display log locations to users for debugging.
 
 ## Case Management
 - **Creation**: Unique case number generation, creator assignment
@@ -55,6 +56,7 @@ Preferred communication style: Simple, everyday language.
 - **Interactive Elements**: TiltedCard component for interactive case cards with 3D tilt effects.
 - **PDF Preview**: Always-on side-by-side PDF preview with extracted information for verification.
 - **Upload Progress**: Dual progress bars showing upload and AI processing phases with visual indicators.
+- **Enhanced Sankey Visualization**: Comprehensive banking flow diagram with summary statistics, top inflows/outflows breakdown, color-coded visual design, and detailed analytics matching user style preferences.
 
 # External Dependencies
 

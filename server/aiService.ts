@@ -57,7 +57,14 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
       throw new Error("Could not extract text from PDF");
     }
 
-    const response = await anthropic.messages.create({
+    // Add timeout wrapper for AI request
+    const TIMEOUT_MS = 180000; // 3 minutes timeout
+    
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('AI request timed out after 3 minutes')), TIMEOUT_MS);
+    });
+    
+    const aiRequestPromise = anthropic.messages.create({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
       max_tokens: 8000,
@@ -149,6 +156,9 @@ ${pdfText}`
         }
       ]
     });
+
+    // Race between AI request and timeout
+    const response = await Promise.race([aiRequestPromise, timeoutPromise]) as any;
 
     const fullResponse = response.content[0].type === 'text' ? response.content[0].text : '';
     

@@ -144,6 +144,7 @@ export default function FullAnalysisDialog({
       // Handle the XML-first workflow response
       if (data.analysisError) {
         addToLog(`Analysis completed with errors: ${data.analysisError}`);
+        addToLog(`Server log location: logs/ai-processing-${documentId}.log`);
         
         // Show processing step details
         if (data.processingSteps) {
@@ -154,12 +155,10 @@ export default function FullAnalysisDialog({
         setCurrentStep('Analysis completed with errors');
         setError(data.analysisError);
         setProgress(100);
+        setIsAnalyzing(false);
         
-        // Still call onComplete with partial data for frontend to handle
-        setTimeout(() => {
-          onComplete(data);
-          handleClose();
-        }, 2000);
+        // Don't auto-close on error - let user manually close
+        onComplete(data);
         
       } else {
         addToLog("AI analysis completed successfully");
@@ -189,6 +188,7 @@ export default function FullAnalysisDialog({
     } catch (error: any) {
       console.error('Full analysis failed:', error);
       addToLog(`Error occurred: ${error.message}`);
+      addToLog(`Server log location: logs/ai-processing-${documentId}.log`);
       
       if (error.name === 'AbortError' || error.message.includes('cancelled')) {
         setError('Analysis was cancelled');
@@ -198,6 +198,7 @@ export default function FullAnalysisDialog({
         addToLog(`Detailed error: ${error.stack || error.toString()}`);
       }
       setIsAnalyzing(false);
+      // Don't auto-close on error - stay open for user to see logs
     }
   };
 

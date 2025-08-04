@@ -579,14 +579,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`Starting full analysis for document ${documentId}`);
         
+        // Create log file for detailed AI processing logs
+        const fs = await import('fs');
+        const logsDir = path.join(__dirname, '../logs');
+        if (!fs.existsSync(logsDir)) {
+          fs.mkdirSync(logsDir, { recursive: true });
+        }
+        const logFile = path.join(logsDir, `ai-processing-${documentId}.log`);
+        
+        const logToFile = (message: string) => {
+          const timestamp = new Date().toISOString();
+          const logMessage = `[${timestamp}] ${message}\n`;
+          fs.appendFileSync(logFile, logMessage);
+          console.log(message); // Also log to console
+        };
+        
+        logToFile(`Starting full analysis for document ${documentId}`);
+        logToFile(`Log file location: ${logFile}`);
+        
         // Step 1: Generate comprehensive XML analysis first
         let xmlAnalysisData = '';
         let xmlInfo = { xmlPath: '', xmlGenerated: false };
         let analysisError = null;
         
         try {
-          console.log('Step 1: Running AI analysis to generate XML...');
+          logToFile('Step 1: Running AI analysis to generate XML...');
+          const startTime = Date.now();
           const analysis = await analyzeBankingDocument(filePath);
+          
+          const elapsed = Date.now() - startTime;
+          logToFile(`AI analysis completed in ${elapsed}ms`);
           
           if (!analysis.xmlAnalysis) {
             throw new Error('AI analysis did not produce XML data');
@@ -599,10 +621,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             xmlGenerated: !!xmlResult.xmlContent
           };
           xmlAnalysisData = xmlResult.xmlContent;
-          console.log('Step 1: XML generation completed successfully');
+          logToFile('Step 1: XML generation completed successfully');
           
         } catch (xmlError: any) {
-          console.error("Step 1: XML generation failed:", xmlError);
+          logToFile(`Step 1: XML generation failed: ${xmlError.message}`);
+          logToFile(`Error stack: ${xmlError.stack}`);
           analysisError = `XML generation failed: ${xmlError.message}`;
           xmlAnalysisData = '';
           xmlInfo = { xmlPath: '', xmlGenerated: false };
@@ -613,26 +636,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (xmlAnalysisData) {
           try {
-            console.log('Step 2: Generating CSV from XML data...');
+            logToFile('Step 2: Generating CSV from XML data...');
             const csvResult = await generateCSVFromXML(xmlAnalysisData, document.id);
             csvInfo = {
               csvPath: csvResult.csvPath,
               csvRowCount: csvResult.rowCount,
               csvGenerated: !!csvResult.csvContent
             };
-            console.log(`Step 2: CSV generation completed - ${csvInfo.csvRowCount} rows`);
+            logToFile(`Step 2: CSV generation completed - ${csvInfo.csvRowCount} rows`);
           } catch (csvError: any) {
-            console.error("Step 2: CSV generation from XML failed:", csvError);
+            logToFile(`Step 2: CSV generation from XML failed: ${csvError.message}`);
             if (!analysisError) {
               analysisError = `CSV generation failed: ${csvError.message}`;
             }
           }
         } else {
-          console.log('Step 2: Skipping CSV generation - no XML data available');
+          logToFile('Step 2: Skipping CSV generation - no XML data available');
         }
 
         // Step 3: Update document with results
-        console.log('Step 3: Updating document with analysis results...');
+        logToFile('Step 3: Updating document with analysis results...');
         const updateData: any = {
           fullAnalysisCompleted: !analysisError,
           csvPath: csvInfo.csvPath,
@@ -649,7 +672,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, updateData);
 
-        console.log('Step 3: Document updated successfully');
+        logToFile('Step 3: Document updated successfully');
+        logToFile(`Analysis completed. Log saved to: ${logFile}`);
 
         // Return comprehensive response with error details if any
         res.json({
