@@ -60,7 +60,7 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
     const response = await anthropic.messages.create({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
-      max_tokens: 1000,
+      max_tokens: 8000,
       system: `You are an AI assistant specialized in extracting and analyzing information from bank statement or bank transaction PDFs. Your task is to carefully examine the provided PDF content and extract specific information.
 
 Your goal is to extract the following information:
@@ -70,17 +70,19 @@ Your goal is to extract the following information:
 3. The account type
 4. The start date of the statement period, or the date of the first transaction (earliest first)
 5. The end date of the statement period, or the date of the last transaction (latest last)
-6. The statement currency
-7. The total of all credits
-8. The total of all debits
-9. Attempt to resolve all transactions that occur, creating a list of transaction lines, each should identify:
-   9.1 The transaction date
-   9.2 The transaction description
-   9.3 The amount, where debits are negative and credits positive
-   9.4 If present identify transfers, so that you can identify a transfer_out or transfer_in. A transfer out might look like "Transfer To <TARGET>" (eg Transfer to xx2868). A transfer in might look like "Transfer from <Target>". For all the same Transfers to, complete the inflows section.
-   9.5 Direct credits should be considered as an inflow and accounted for in the inflow section
-   9.6 Attempt to identify the transaction category as best you can, for example shopping, medical, bill, transfer, ATM, etc use well known logical categories.
-10. Provide the information and analysis summary of your findings
+6. The account number
+7. The account BSB
+8. The statement currency
+9. The total of all credits
+10. The total of all debits
+11. Attempt to resolve all transactions that occur, creating a list of transaction lines, each should identify:
+   11.1 The transaction date
+   11.2 The transaction description
+   11.3 The amount, where debits are negative and credits positive
+   11.4 If present identify transfers, so that you can identify a transfer_out or transfer_in. A transfer out might look like "Transfer To <TARGET>" (eg Transfer to xx2868). A transfer in might look like "Transfer from <Target>". For all the same Transfers to, complete the inflows section.
+   11.5 Direct credits should be considered as an inflow and accounted for in the inflow section
+   11.6 Attempt to identify the transaction category as best you can, for example shopping, medical, bill, transfer, ATM, etc use well known logical categories.
+12. Provide the information and analysis summary of your findings
 
 Before providing your final analysis, wrap your analysis inside <extraction_process> tags. In this analysis:
 1. Convert all dates to YYYY-MM-DD format, regardless of how they appear in the original document.
@@ -97,6 +99,9 @@ After your analysis, present the findings using the following XML structure, inf
   <account_type></account_type>
   <start_date></start_date>
   <end_date></end_date>
+  <account_number></account_number>
+  <account_bsb></account_bsb>
+  <currency></currency>
   <total_credits></total_credits>
   <total_debits></total_debits>
   <transactions>
