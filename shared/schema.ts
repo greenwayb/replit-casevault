@@ -123,6 +123,10 @@ export const documents = pgTable("documents", {
   // CSV generation information
   csvPath: varchar("csv_path", { length: 255 }), // Path to generated CSV file
   csvRowCount: integer("csv_row_count").default(0),
+  
+  // XML analysis information
+  xmlPath: varchar("xml_path", { length: 255 }), // Path to generated XML analysis file
+  xmlAnalysisData: text("xml_analysis_data"), // Store the full XML analysis
   csvGenerated: boolean("csv_generated").default(false),
 });
 

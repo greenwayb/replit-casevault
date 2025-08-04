@@ -32,6 +32,12 @@ export interface BankingDocumentAnalysis {
   transactionDateFrom?: string;
   transactionDateTo?: string;
   confidence: number;
+  xmlAnalysis?: string; // Full XML analysis data
+}
+
+export interface XMLGenerationResult {
+  xmlPath: string;
+  xmlContent: string;
 }
 
 export interface CSVGenerationResult {
@@ -139,7 +145,23 @@ ${pdfText}`
       ]
     });
 
-    const analysisResult = JSON.parse(response.content[0].text || '{}');
+    const fullResponse = response.content[0].text || '';
+    
+    // Extract JSON from the response for backward compatibility
+    let analysisResult = {};
+    try {
+      // Look for JSON in the response
+      const jsonMatch = fullResponse.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        analysisResult = JSON.parse(jsonMatch[0]);
+      }
+    } catch (error) {
+      console.warn('Could not parse JSON from analysis response:', error);
+    }
+    
+    // Extract XML analysis from the response
+    const xmlMatch = fullResponse.match(/<transaction_analysis>[\s\S]*?<\/transaction_analysis>/);
+    const xmlAnalysis = xmlMatch ? xmlMatch[0] : '';
     
     // Validate and normalize the response
     return {
@@ -150,7 +172,8 @@ ${pdfText}`
       bsbSortCode: analysisResult.bsbSortCode || undefined,
       transactionDateFrom: analysisResult.transactionDateFrom || undefined,
       transactionDateTo: analysisResult.transactionDateTo || undefined,
-      confidence: Math.min(Math.max(analysisResult.confidence || 0.5, 0), 1)
+      confidence: Math.min(Math.max(analysisResult.confidence || 0.5, 0), 1),
+      xmlAnalysis
     };
   } catch (error) {
     console.error('Error analyzing banking document:', error);
@@ -198,6 +221,28 @@ export function generateAccountGroupNumber(existingGroups: string[], accountName
   
   const nextNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
   return `B${nextNumber}`;
+}
+
+export async function generateXMLFromAnalysis(xmlAnalysis: string, documentId: number): Promise<XMLGenerationResult> {
+  try {
+    // Generate XML file path
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    const xmlFileName = `document_${documentId}_analysis.xml`;
+    const xmlPath = path.join(uploadsDir, xmlFileName);
+    
+    // Write XML content to file
+    if (xmlAnalysis) {
+      fs.writeFileSync(xmlPath, xmlAnalysis, 'utf8');
+    }
+    
+    return {
+      xmlPath: xmlAnalysis ? xmlFileName : '', // Store relative path
+      xmlContent: xmlAnalysis
+    };
+  } catch (error) {
+    console.error('Error generating XML file:', error);
+    throw new Error(`Failed to generate XML: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 export async function generateCSVFromPDF(filePath: string, documentId: number): Promise<CSVGenerationResult> {

@@ -8,7 +8,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF } from "./aiService";
+import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF, generateXMLFromAnalysis } from "./aiService";
 import { GoogleDriveService } from "./googleDriveService";
 import { DisclosurePdfService } from "./disclosurePdfService";
 
@@ -483,7 +483,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Process Banking documents with AI
       try {
-        const { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber } = await import('./aiService');
+        const { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateXMLFromAnalysis } = await import('./aiService');
         const filePath = path.join(uploadDir, document.filename);
         
         // Analyze the document with AI
@@ -529,6 +529,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Continue without CSV - this is non-critical
         }
 
+        // Generate XML analysis if available
+        let xmlInfo = { xmlPath: '', xmlAnalysisData: '' };
+        if (analysis.xmlAnalysis) {
+          try {
+            const xmlResult = await generateXMLFromAnalysis(analysis.xmlAnalysis, document.id);
+            xmlInfo = {
+              xmlPath: xmlResult.xmlPath,
+              xmlAnalysisData: analysis.xmlAnalysis
+            };
+          } catch (xmlError) {
+            console.error("XML generation failed:", xmlError);
+            // Continue without XML - this is non-critical
+          }
+        }
+
         // Return document with extracted AI analysis for confirmation
         res.json({
           id: document.id,
@@ -545,7 +560,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             transactionDateTo: analysis.transactionDateTo,
             documentNumber,
             accountGroupNumber,
-            csvInfo
+            csvInfo,
+            xmlInfo
           }
         });
 
@@ -645,7 +661,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/documents/:id/confirm-banking", isAuthenticated, async (req: any, res) => {
     try {
       const documentId = parseInt(req.params.id);
-      const { bankingInfo, csvInfo, isManualReview } = req.body;
+      const { bankingInfo, csvInfo, xmlInfo, isManualReview } = req.body;
       
       const { BankAbbreviationService } = await import('./bankAbbreviationService');
       const { DocumentNumberingService } = await import('./documentNumberingService');
@@ -674,22 +690,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       // Update document with confirmed banking analysis
-      const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, {
+      const updatedDocument = await storage.updateDocumentWithAIExtraction(documentId, {
         accountHolderName: bankingInfo.accountHolderName,
         accountName: bankingInfo.accountName,
         financialInstitution: bankingInfo.financialInstitution,
-        bankAbbreviation,
         accountNumber: bankingInfo.accountNumber,
         bsbSortCode: bankingInfo.bsbSortCode,
-        transactionDateFrom: bankingInfo.transactionDateFrom ? new Date(bankingInfo.transactionDateFrom) : undefined,
-        transactionDateTo: bankingInfo.transactionDateTo ? new Date(bankingInfo.transactionDateTo) : undefined,
+        transactionDateFrom: bankingInfo.transactionDateFrom,
+        transactionDateTo: bankingInfo.transactionDateTo,
         documentNumber,
         accountGroupNumber: groupNumber,
-        displayName,
         aiProcessed: true,
         csvPath: csvInfo?.csvPath,
         csvRowCount: csvInfo?.csvRowCount,
         csvGenerated: csvInfo?.csvGenerated || false,
+        xmlPath: xmlInfo?.xmlPath,
+        xmlAnalysisData: xmlInfo?.xmlAnalysisData,
       });
 
       res.json(updatedDocument);

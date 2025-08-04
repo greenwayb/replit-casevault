@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Maximize2, FileText, Calendar, FileSpreadsheet, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import BankingBalanceChart from "./banking-balance-chart";
+import BankingDocumentTabs from "./banking-document-tabs";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { StatusSelect } from "@/components/ui/status-select";
 
@@ -31,6 +31,8 @@ interface Document {
   csvPath?: string;
   csvRowCount?: number;
   csvGenerated?: boolean;
+  xmlPath?: string;
+  xmlAnalysisData?: string;
 }
 
 interface DocumentViewerProps {
@@ -42,7 +44,7 @@ interface DocumentViewerProps {
 export default function DocumentViewer({ document, userRole, onDocumentUpdate }: DocumentViewerProps) {
   const { toast } = useToast();
 
-  // Fetch CSV data for banking documents to show balance chart
+  // Fetch CSV data for banking documents
   const { data: csvData } = useQuery({
     queryKey: ['/api/documents', document?.id, 'csv-data'],
     enabled: document?.category === 'BANKING' && document?.csvGenerated === true,
@@ -269,25 +271,30 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
         </div>
       </div>
       
-      {/* PDF Viewer Area */}
-      <div className="flex-1 p-6 space-y-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-350px)] min-h-[500px]">
-          <iframe
-            src={`/api/documents/${document.id}/view`}
-            className="w-full h-full rounded-lg"
-            title={document.originalName}
-          />
-        </div>
-        
-        {/* Banking Balance Chart for Banking Documents */}
-        {document.category === 'BANKING' && document.csvGenerated && (
-          <BankingBalanceChart 
+      {/* Banking Document Tabs Section */}
+      {document.category === 'BANKING' ? (
+        <div className="flex-1 p-6">
+          <BankingDocumentTabs 
+            document={document}
+            pdfUrl={`/api/documents/${document.id}/view`}
+            xmlData={document.xmlAnalysisData}
             csvData={(csvData as any)?.csvData}
             documentName={document.originalName}
             accountName={document.accountName}
           />
-        )}
-      </div>
+        </div>
+      ) : (
+        /* PDF Viewer Area for non-banking documents */
+        <div className="flex-1 p-6 space-y-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-350px)] min-h-[500px]">
+            <iframe
+              src={`/api/documents/${document.id}/view`}
+              className="w-full h-full rounded-lg"
+              title={document.originalName}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

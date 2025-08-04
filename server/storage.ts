@@ -72,6 +72,24 @@ export interface IStorage {
   getDocumentsByCategory(caseId: number, category: string): Promise<Document[]>;
   deleteDocument(id: number): Promise<void>;
   updateDocumentWithAIAnalysis(documentId: number, analysis: any): Promise<Document>;
+  updateDocumentWithAIExtraction(documentId: number, data: {
+    accountHolderName?: string;
+    accountName?: string;
+    financialInstitution?: string;
+    accountNumber?: string;
+    bsbSortCode?: string;
+    transactionDateFrom?: string;
+    transactionDateTo?: string;
+    documentNumber?: string;
+    accountGroupNumber?: string;
+    aiProcessed?: boolean;
+    processingError?: string;
+    csvPath?: string;
+    csvRowCount?: number;
+    csvGenerated?: boolean;
+    xmlPath?: string;
+    xmlAnalysisData?: string;
+  }): Promise<void>;
   getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]>;
   updateDocumentStatus(documentId: number, status: string): Promise<Document>;
   getDocumentsForDisclosee(caseId: number): Promise<Document[]>;
@@ -451,6 +469,36 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(documents)
       .where(eq(documents.id, id));
+  }
+
+  async updateDocumentWithAIExtraction(
+    documentId: number, 
+    data: {
+      accountHolderName?: string;
+      accountName?: string;
+      financialInstitution?: string;
+      accountNumber?: string;
+      bsbSortCode?: string;
+      transactionDateFrom?: string;
+      transactionDateTo?: string;
+      documentNumber?: string;
+      accountGroupNumber?: string;
+      aiProcessed?: boolean;
+      processingError?: string;
+      csvPath?: string;
+      csvRowCount?: number;
+      csvGenerated?: boolean;
+      xmlPath?: string;
+      xmlAnalysisData?: string;
+    }
+  ): Promise<void> {
+    await db
+      .update(documents)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(documents.id, documentId));
   }
 
   async deleteCase(id: number): Promise<void> {
