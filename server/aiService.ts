@@ -93,12 +93,30 @@ Your goal is to extract the following information:
    11.6 Attempt to identify the transaction category as best you can, for example shopping, medical, bill, transfer, ATM, etc use well known logical categories.
 12. Provide the information and analysis summary of your findings
 
-Before providing your final analysis, wrap your analysis inside <extraction_process> tags. In this analysis:
-1. Convert all dates to YYYY-MM-DD format, regardless of how they appear in the original document.
-2. Double-check each extracted piece of information against the original content, noting any discrepancies or uncertainties
-3. Ensure all required fields are filled or marked as 'Not found' or 'Unclear' if the information isn't available.
+IMPORTANT: You must provide your response in EXACTLY this format:
 
-After your analysis, present the findings using the following XML structure, inflows and outflows should be ordered from highest to lowest value:
+1. First, provide your working analysis inside <extraction_process> tags
+2. Then, provide the JSON data for backward compatibility
+3. Finally, provide the XML structure with the transaction analysis
+
+The response must contain both JSON and XML. Here's the exact format you must follow:
+
+<extraction_process>
+[Your analysis process here]
+</extraction_process>
+
+{
+  "accountHolderName": "string - The actual name of the person/company who owns the account",
+  "accountName": "string - A descriptive name for the account type",
+  "financialInstitution": "string - Name of the bank or financial institution",
+  "accountNumber": "string - Account number if visible",
+  "bsbSortCode": "string - BSB, sort code, or routing number if visible",
+  "transactionDateFrom": "YYYY-MM-DD - Start date of transaction period",
+  "transactionDateTo": "YYYY-MM-DD - End date of transaction period",
+  "confidence": "number between 0 and 1 - How confident you are in the extracted information"
+}
+
+Then provide the findings using the following XML structure (inflows and outflows should be ordered from highest to lowest value):
 
 <transaction_analysis>
   <institution></institution>
@@ -136,19 +154,7 @@ After your analysis, present the findings using the following XML structure, inf
   </outflows>
   <analysis_summary>
   </analysis_summary>
-</transaction_analysis>
-
-However, for this specific function, also return the basic information as JSON for backward compatibility:
-{
-  "accountHolderName": "string - The actual name of the person/company who owns the account",
-  "accountName": "string - A descriptive name for the account type",
-  "financialInstitution": "string - Name of the bank or financial institution",
-  "accountNumber": "string - Account number if visible",
-  "bsbSortCode": "string - BSB, sort code, or routing number if visible",
-  "transactionDateFrom": "YYYY-MM-DD - Start date of transaction period",
-  "transactionDateTo": "YYYY-MM-DD - End date of transaction period",
-  "confidence": "number between 0 and 1 - How confident you are in the extracted information"
-}`,
+</transaction_analysis>`,
       messages: [
         {
           role: "user",
@@ -167,31 +173,52 @@ ${pdfText}`
     // Extract JSON from the response for backward compatibility
     let analysisResult: any = {};
     try {
-      // Look for JSON in the response
-      const jsonMatch = fullResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
+      // Look for JSON in the response - try multiple patterns
+      let jsonMatch = fullResponse.match(/\{[\s\S]*?\}/);
+      
+      // If no JSON found, try extracting data from the extraction_process section
+      if (!jsonMatch) {
+        // Try to extract basic info from the extraction_process text
+        const extractionMatch = fullResponse.match(/<extraction_process>([\s\S]*?)<\/extraction_process>/);
+        if (extractionMatch) {
+          const extractionText = extractionMatch[1];
+          
+          // Extract key information from the text analysis
+          analysisResult = extractDataFromText(extractionText);
+          console.log('Extracted data from extraction_process text:', analysisResult);
+        }
+      } else {
         analysisResult = JSON.parse(jsonMatch[0]);
       }
     } catch (error) {
       console.warn('Could not parse JSON from analysis response:', error);
+      console.log('Attempting to extract data from text instead...');
+      
+      // Fallback: extract data from the full response text
+      analysisResult = extractDataFromText(fullResponse);
     }
     
-    // Extract XML analysis from the response
-    const xmlMatch = fullResponse.match(/<transaction_analysis>[\s\S]*?<\/transaction_analysis>/);
-    const xmlAnalysis = xmlMatch ? xmlMatch[0] : '';
+    // Extract XML analysis from the response - try multiple patterns
+    let xmlMatch = fullResponse.match(/<transaction_analysis>[\s\S]*?<\/transaction_analysis>/);
+    let xmlAnalysis = xmlMatch ? xmlMatch[0] : '';
     
-    // Log the response for debugging if XML is missing
+    // If transaction_analysis not found, look for it after extraction_process
     if (!xmlAnalysis) {
-      console.log('AI Response length:', fullResponse.length);
-      console.log('AI Response preview (first 500 chars):', fullResponse.substring(0, 500));
-      console.log('Looking for transaction_analysis XML tag...');
-      
-      // Try alternative XML extraction patterns
-      const altXmlMatch = fullResponse.match(/<extraction_process>[\s\S]*?<\/extraction_process>/);
-      if (altXmlMatch) {
-        console.log('Found extraction_process XML instead');
+      // Look for transaction_analysis that might come after extraction_process
+      const afterExtractionMatch = fullResponse.match(/<\/extraction_process>[\s\S]*?(<transaction_analysis>[\s\S]*?<\/transaction_analysis>)/);
+      if (afterExtractionMatch) {
+        xmlAnalysis = afterExtractionMatch[1];
+        console.log('Found transaction_analysis XML after extraction_process');
       } else {
-        console.log('No XML structure found in response');
+        // Try to find any XML-like structure that might be the analysis
+        const anyXmlMatch = fullResponse.match(/<[^>]+>[\s\S]*?<\/[^>]+>/);
+        if (anyXmlMatch) {
+          console.log('Found some XML structure, but not transaction_analysis format');
+          console.log('Full AI response:', fullResponse);
+        } else {
+          console.log('No XML structure found in response at all');
+          console.log('Full AI response:', fullResponse);
+        }
       }
     }
     
@@ -220,6 +247,90 @@ export function generateDocumentNumber(
 ): string {
   // accountGroupNumber already includes the prefix (e.g., "B1")
   return `${accountGroupNumber}.${documentSequence}`;
+}
+
+// Helper function to extract data from text when JSON parsing fails
+function extractDataFromText(text: string): any {
+  const result: any = {};
+  
+  // Extract institution
+  const institutionMatch = text.match(/(?:Institution|Bank|Financial Institution)[:\s]*([^\n]*?)(?:\n|$)/i);
+  if (institutionMatch) {
+    result.financialInstitution = institutionMatch[1].trim();
+  }
+  
+  // Extract account holders
+  const holderMatch = text.match(/(?:Account Holders?|Holders?)[:\s]*([^\n]*?)(?:\n|$)/i);
+  if (holderMatch) {
+    result.accountHolderName = holderMatch[1].trim();
+  }
+  
+  // Extract account type/name
+  const typeMatch = text.match(/(?:Account Type|Account Name)[:\s]*([^\n]*?)(?:\n|$)/i);
+  if (typeMatch) {
+    result.accountName = typeMatch[1].trim();
+  }
+  
+  // Extract account number
+  const accountMatch = text.match(/(?:Account Number)[:\s]*([^\n]*?)(?:\n|$)/i);
+  if (accountMatch) {
+    result.accountNumber = accountMatch[1].trim();
+  }
+  
+  // Extract BSB
+  const bsbMatch = text.match(/(?:BSB|Sort Code)[:\s]*([^\n]*?)(?:\n|$)/i);
+  if (bsbMatch) {
+    result.bsbSortCode = bsbMatch[1].trim();
+  }
+  
+  // Extract date range
+  const dateFromMatch = text.match(/(?:Start Date|From|Period)[:\s]*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}|\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2})/i);
+  if (dateFromMatch) {
+    result.transactionDateFrom = convertToISODate(dateFromMatch[1]);
+  }
+  
+  const dateToMatch = text.match(/(?:End Date|To)[:\s]*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}|\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2})/i);
+  if (dateToMatch) {
+    result.transactionDateTo = convertToISODate(dateToMatch[1]);
+  }
+  
+  result.confidence = 0.7; // Medium confidence for text extraction
+  
+  return result;
+}
+
+// Helper function to convert various date formats to ISO format
+function convertToISODate(dateStr: string): string {
+  try {
+    // Handle different date formats
+    let date: Date;
+    
+    if (dateStr.includes('/')) {
+      const parts = dateStr.split('/');
+      if (parts[0].length === 4) {
+        // YYYY/MM/DD
+        date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      } else {
+        // DD/MM/YYYY or MM/DD/YYYY - assume DD/MM/YYYY for Australian banks
+        date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+      }
+    } else if (dateStr.includes('-')) {
+      const parts = dateStr.split('-');
+      if (parts[0].length === 4) {
+        // YYYY-MM-DD
+        date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      } else {
+        // DD-MM-YYYY
+        date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+      }
+    } else {
+      return dateStr; // Return as-is if can't parse
+    }
+    
+    return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
+  } catch (error) {
+    return dateStr; // Return original if parsing fails
+  }
 }
 
 // Helper function to normalize account holder names
