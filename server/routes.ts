@@ -659,7 +659,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Return comprehensive response with error details if any
         res.json({
           ...updatedDocument,
-          csvInfo,
           xmlInfo,
           xmlAnalysisData,
           analysisError,
@@ -668,7 +667,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             : "Full analysis completed successfully",
           processingSteps: {
             xmlGenerated: xmlInfo.xmlGenerated,
-            csvGenerated: csvInfo.csvGenerated,
             errorOccurred: !!analysisError
           }
         });
@@ -679,7 +677,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Update document to mark analysis as failed
         try {
           await storage.updateDocumentWithAIAnalysis(documentId, {
-            fullAnalysisCompleted: false,
             aiProcessingFailed: true,
             analysisError: `Workflow error: ${error.message}`
           });
@@ -692,7 +689,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           error: error.message,
           processingSteps: {
             xmlGenerated: false,
-            csvGenerated: false,
             errorOccurred: true
           }
         });
