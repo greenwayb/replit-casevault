@@ -75,8 +75,29 @@ export async function extractBasicBankingFields(filePath: string): Promise<Basic
 
     console.log(`PDF text length: ${pdfText.length} characters`);
     
-    // Count transaction lines to estimate complexity
-    const transactionLineCount = (pdfText.match(/\d{2}\/\d{2}\/\d{4}/g) || []).length;
+    // Count transaction lines to estimate complexity - improved pattern matching
+    const datePatterns = [
+      /\d{2}\/\d{2}\/\d{4}/g,     // DD/MM/YYYY
+      /\d{1,2}\/\d{1,2}\/\d{4}/g, // D/M/YYYY or DD/M/YYYY
+      /\d{4}-\d{2}-\d{2}/g,       // YYYY-MM-DD
+      /\d{2}-\d{2}-\d{4}/g,       // DD-MM-YYYY
+      /\d{2}\s\w{3}\s\d{4}/g      // DD MON YYYY
+    ];
+    
+    let transactionLineCount = 0;
+    for (const pattern of datePatterns) {
+      const matches = pdfText.match(pattern) || [];
+      transactionLineCount = Math.max(transactionLineCount, matches.length);
+    }
+    
+    // If no dates found, estimate based on text patterns typical of bank statements
+    if (transactionLineCount === 0) {
+      // Look for transaction-like patterns with amounts
+      const amountPattern = /[\$\-]?\d+\.\d{2}/g;
+      const amounts = pdfText.match(amountPattern) || [];
+      transactionLineCount = Math.floor(amounts.length / 3); // Rough estimate: debits, credits, balances
+    }
+    
     console.log(`Estimated transaction lines in PDF: ${transactionLineCount}`);
     
     // Calculate time estimate for full analysis

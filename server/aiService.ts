@@ -73,13 +73,13 @@ function estimateProcessingTime(textLength: number, transactionCount: number): {
   // Base time: 30 seconds for simple documents
   let baseTime = 0.5;
   
-  // Add time based on text length (1 minute per 50k characters)
-  const textComplexity = Math.ceil(textLength / 50000);
+  // Add time based on text length (2 minutes per 50k characters for large files)
+  const textComplexity = Math.ceil(textLength / 50000) * 2;
   
-  // Add time based on transaction count (30 seconds per 100 transactions)
-  const transactionComplexity = Math.ceil(transactionCount / 100) * 0.5;
+  // Add time based on transaction count (1 minute per 100 transactions)
+  const transactionComplexity = Math.ceil(transactionCount / 100);
   
-  const totalMinutes = Math.max(baseTime + textComplexity + transactionComplexity, 0.5);
+  const totalMinutes = Math.max(baseTime + textComplexity + transactionComplexity, 2); // Minimum 2 minutes
   
   let description = `Document analysis estimated time: ${totalMinutes} minutes`;
   if (transactionCount > 200) {
@@ -106,16 +106,37 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
 
     console.log(`PDF text length: ${pdfText.length} characters`);
     
-    // Count transaction lines in PDF to set expectations
-    const transactionLineCount = (pdfText.match(/\d{2}\/\d{2}\/\d{4}/g) || []).length;
+    // Count transaction lines in PDF to set expectations - improved pattern matching
+    const datePatterns = [
+      /\d{2}\/\d{2}\/\d{4}/g,     // DD/MM/YYYY
+      /\d{1,2}\/\d{1,2}\/\d{4}/g, // D/M/YYYY or DD/M/YYYY
+      /\d{4}-\d{2}-\d{2}/g,       // YYYY-MM-DD
+      /\d{2}-\d{2}-\d{4}/g,       // DD-MM-YYYY
+      /\d{2}\s\w{3}\s\d{4}/g      // DD MON YYYY
+    ];
+    
+    let transactionLineCount = 0;
+    for (const pattern of datePatterns) {
+      const matches = pdfText.match(pattern) || [];
+      transactionLineCount = Math.max(transactionLineCount, matches.length);
+    }
+    
+    // If no dates found, estimate based on text patterns typical of bank statements
+    if (transactionLineCount === 0) {
+      // Look for transaction-like patterns with amounts
+      const amountPattern = /[\$\-]?\d+\.\d{2}/g;
+      const amounts = pdfText.match(amountPattern) || [];
+      transactionLineCount = Math.floor(amounts.length / 3); // Rough estimate: debits, credits, balances
+    }
+    
     console.log(`Estimated transaction lines in PDF: ${transactionLineCount}`);
     
     // Calculate processing time estimate
     const timeEstimate = estimateProcessingTime(pdfText.length, transactionLineCount);
     console.log(timeEstimate.description);
 
-    // Dynamic timeout based on complexity - minimum 2 minutes, maximum 10 minutes
-    const TIMEOUT_MS = Math.min(Math.max(timeEstimate.estimatedMinutes * 60 * 1000, 120000), 600000);
+    // Dynamic timeout based on complexity - minimum 3 minutes, maximum 20 minutes for large files
+    const TIMEOUT_MS = Math.min(Math.max(timeEstimate.estimatedMinutes * 60 * 1000, 180000), 1200000);
     
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error(`AI request timed out after ${Math.round(TIMEOUT_MS/60000)} minutes`)), TIMEOUT_MS);
@@ -124,7 +145,7 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
     const aiRequestPromise = anthropic.messages.create({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
-      max_tokens: 16384,
+      max_tokens: 32768, // Increased for large documents
       system: `You are an AI assistant specialized in extracting and analyzing information from bank statement or bank transaction PDFs. Your task is to carefully examine the provided PDF content and extract specific information.
 
 IMPORTANT: You may be provided with a number of statements combined into one file, which may or may not be in the correct order, so you should carefully analyse the file checking all data and time entries and ensure its resolved consistently across the file. Further some statements such as those used for credit cards may only have one value such as amount, which may be positive or negative. You should determine or locate a payment to the statement to determine which is a credit and which is a debit, because this may be around in a different way to a normal bank statement.
@@ -283,10 +304,10 @@ ${pdfText}`
       // Extract earliest and latest transaction dates from XML
       const transactionDates = xmlAnalysis.match(/<transaction_date>([^<]+)<\/transaction_date>/g);
       if (transactionDates && transactionDates.length > 0) {
-        const dates = transactionDates.map(match => {
+        const dates = transactionDates.map((match: string) => {
           const dateMatch = match.match(/<transaction_date>([^<]+)<\/transaction_date>/);
           return dateMatch ? dateMatch[1].trim() : '';
-        }).filter(date => date);
+        }).filter((date: string) => date);
         
         if (dates.length > 0) {
           // Sort dates and get earliest/latest
@@ -378,7 +399,7 @@ ${pdfText}`
         latestTransaction: analysisResult.latestTransaction || undefined,
       }
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error analyzing banking document:', error);
     throw new Error(`Failed to analyze document: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }

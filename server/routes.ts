@@ -616,11 +616,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let xmlAnalysisData = '';
         let xmlInfo = { xmlPath: '', xmlGenerated: false };
         let analysisError = null;
+        let analysis = null; // Initialize analysis variable
         
         try {
           logToFile('Step 1: Running AI analysis to generate XML...');
           const startTime = Date.now();
-          const analysis = await analyzeBankingDocument(filePath);
+          analysis = await analyzeBankingDocument(filePath);
           
           const elapsed = Date.now() - startTime;
           logToFile(`AI analysis completed in ${elapsed}ms`);
@@ -659,7 +660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
 
         // Add processing warning if present
-        if (analysis.processingWarning) {
+        if (analysis && analysis.processingWarning) {
           updateData.processingWarning = analysis.processingWarning;
           logToFile(`Processing warning: ${analysis.processingWarning}`);
         }
