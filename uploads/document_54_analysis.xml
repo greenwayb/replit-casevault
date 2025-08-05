@@ -1,0 +1,78 @@
+<transaction_analysis>
+  <institution>Commonwealth Bank</institution>
+  <account_holders>
+     <account_holder>MR BEN GREENWAY</account_holder>
+  </account_holders>
+  <account_type>Ultimate Awards Credit Card</account_type>
+  <start_date>2024-12-18</start_date>
+  <end_date>2025-03-17</end_date>
+  <account_number>5523 5082 0129 2868</account_number>
+  <account_bsb>Not applicable</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>32,534.00</total_credits>
+  <total_debits>36,648.49</total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date>2025-03-17</transaction_date>
+       <transaction_description>Amaysim Mobile Pty Ltd Sydney</transaction_description>
+       <amount>15.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance>Not specified</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-17</transaction_date>
+       <transaction_description>Amaysim Mobile Pty Ltd Sydney</transaction_description>
+       <amount>15.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance>Not specified</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-16</transaction_date>
+       <transaction_description>F45 South Perth South Perth</transaction_description>
+       <amount>38.00</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance>Not specified</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-15</transaction_date>
+       <transaction_description>Smp*Loves and Leaves Karrawarra</transaction_description>
+       <amount>45.74</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>Not specified</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-15</transaction_date>
+       <transaction_description>Smp*Cyvie Nails and Be South Perth</transaction_description>
+       <amount>71.16</amount>
+       <transaction_category>personal care</transaction_category>
+       <balance>Not specified</balance>
+     </transaction>
+  </transactions>
+  <inflows>
+    <from>
+       <target>Payment Received</target>
+       <total_amount>32534.00</total_amount>
+    </from>
+  </inflows>
+  <outflows>
+    <to>
+       <target>Harvey Norman Av/It West Perth</target>
+       <total_amount>1998.00</total_amount>
+    </to>
+    <to>
+       <target>Ikea Perth Innaloo</target>
+       <total_amount>897.00</total_amount>
+    </to>
+    <to>
+       <target>Mercedes College Perth</target>
+       <total_amount>684.70</total_amount>
+    </to>
+    <to>
+       <target>Department Of Transpor Perth</target>
+       <total_amount>547.75</total_amount>
+    </to>
+  </outflows>
+  <analysis_summary>
+This Commonwealth Bank Ultimate Awards Credit Card statement covers three months (Dec 2024 - Mar 2025) for MR BEN GREENWAY. The account shows active usage with total spending of $36,648.49 and payments received of $32,534.00. Major spending categories include retail purchases, groceries, dining, fuel, medical services, and education fees. The account holder moved from Kensington to South Perth during this period. Regular payments include telecommunications (Amaysim), fitness (F45), streaming services, and meal delivery (Marleyspoon). The account maintains good payment discipline with regular payments received throughout each statement period. International transactions are present with fee waivers applied. The account earns rewards points through the Ultimate Awards program, accumulating over 116,000 points by the end of the period.
+  </analysis_summary>
+</transaction_analysis>

@@ -2,9 +2,8 @@
   <institution>Revolut Payments Australia Pty Ltd</institution>
   <account_holders>
      <account_holder>BEN GREENWAY</account_holder>
-     <account_holder>Holly Greenway</account_holder>
   </account_holders>
-  <account_type>Personal Account (E-Money)</account_type>
+  <account_type>E-Money Account (Personal Account)</account_type>
   <start_date>2025-01-01</start_date>
   <end_date>2025-03-21</end_date>
   <account_number>427955208</account_number>
@@ -43,8 +42,8 @@
      </transaction>
      <transaction>
        <transaction_date>2025-01-03</transaction_date>
-       <transaction_description>Transfer to Revolut user - To Evelyn G (with fee)</transaction_description>
-       <amount>-3378.41</amount>
+       <transaction_description>Transfer to Revolut user - To Evelyn G (Fee: AU$16.72)</transaction_description>
+       <amount>-3361.69</amount>
        <transaction_category>transfer</transaction_category>
        <balance>38.31</balance>
      </transaction>
@@ -59,7 +58,7 @@
        <transaction_date>2025-01-06</transaction_date>
        <transaction_description>Radhe Krishna Venture, Booragoon</transaction_description>
        <amount>-31.00</amount>
-       <transaction_category>shopping</transaction_category>
+       <transaction_category>dining</transaction_category>
        <balance>107.31</balance>
      </transaction>
      <transaction>
@@ -108,19 +107,19 @@
        <transaction_date>2025-02-13</transaction_date>
        <transaction_description>Google Call Recorder</transaction_description>
        <amount>-18.99</amount>
-       <transaction_category>technology</transaction_category>
+       <transaction_category>subscription</transaction_category>
        <balance>2058.60</balance>
      </transaction>
      <transaction>
        <transaction_date>2025-02-23</transaction_date>
-       <transaction_description>Exchanged to AUD (with fee)</transaction_description>
+       <transaction_description>Exchanged to AUD (Fee: AU$0.03)</transaction_description>
        <amount>2.68</amount>
        <transaction_category>currency_exchange</transaction_category>
        <balance>2061.28</balance>
      </transaction>
      <transaction>
        <transaction_date>2025-02-23</transaction_date>
-       <transaction_description>Exchanged to AUD (with fee)</transaction_description>
+       <transaction_description>Exchanged to AUD (Fee: AU$0.27)</transaction_description>
        <amount>26.65</amount>
        <transaction_category>currency_exchange</transaction_category>
        <balance>2087.93</balance>
@@ -255,19 +254,23 @@
   <outflows>
     <to>
        <target>EVELYN GREENWAY</target>
-       <total_amount>6381.25</total_amount>
+       <total_amount>6364.53</total_amount>
     </to>
     <to>
-       <target>Groceries (Coles/Farmer Jacks/Tucker Fresh)</target>
-       <total_amount>588.52</total_amount>
+       <target>Coles (Groceries)</target>
+       <total_amount>598.12</total_amount>
     </to>
     <to>
-       <target>IKEA Perth</target>
+       <target>IKEA</target>
        <total_amount>300.00</total_amount>
     </to>
     <to>
-       <target>Perth Festival (Square)</target>
+       <target>Square Perth Festival</target>
        <total_amount>109.72</total_amount>
+    </to>
+    <to>
+       <target>Farmer Jacks Como</target>
+       <total_amount>53.44</total_amount>
     </to>
     <to>
        <target>Pinto Thai Restaurant</target>
@@ -278,15 +281,19 @@
        <total_amount>31.00</total_amount>
     </to>
     <to>
+       <target>Google Call Recorder</target>
+       <total_amount>18.99</total_amount>
+    </to>
+    <to>
        <target>Kmart</target>
        <total_amount>18.90</total_amount>
     </to>
     <to>
-       <target>Google Call Recorder</target>
-       <total_amount>18.99</total_amount>
+       <target>Tucker Fresh</target>
+       <total_amount>16.90</total_amount>
     </to>
   </outflows>
   <analysis_summary>
-This Revolut statement for Ben Greenway shows activity from January 1 to March 21, 2025. The account primarily shows transfers between Ben and Evelyn Greenway (totaling AU$6,381.25 outbound), regular grocery shopping at Coles and other stores (AU$588.52), and various personal expenses including dining, entertainment, and shopping. The account received AU$8,000 from Ben Greenway himself across multiple transactions and AU$80 from Grant Porter Little. The account maintains a positive balance throughout, ending at AU$1,567.86. The spending pattern suggests typical personal/household expenses with frequent grocery shopping and occasional larger purchases like IKEA furniture.
+This Revolut statement shows Ben Greenway's account activity from January 1 to March 21, 2025. The account started with AU$1,007.48 and ended with AU$1,572.50. Major activity includes multiple large transfers to Evelyn Greenway totaling AU$6,364.53, regular grocery shopping primarily at Coles (AU$598.12), and various personal expenses. Ben received payments totaling AU$8,000 from his own account (likely internal transfers) and AU$80 from Grant Porter Little. The account shows typical personal spending patterns with heavy grocery shopping, some entertainment expenses at Perth Festival, and miscellaneous retail purchases.
   </analysis_summary>
 </transaction_analysis>
