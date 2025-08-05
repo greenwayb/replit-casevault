@@ -127,6 +127,7 @@ export const documents = pgTable("documents", {
   aiProcessingFailed: boolean("ai_processing_failed").default(false),
   fullAnalysisCompleted: boolean("full_analysis_completed").default(false), // Track if Phase 2 analysis is done
   processingError: text("processing_error"),
+  processingWarning: text("processing_warning"), // Store transaction count discrepancy warnings
   
   // CSV generation information
   csvPath: varchar("csv_path", { length: 255 }), // Path to generated CSV file

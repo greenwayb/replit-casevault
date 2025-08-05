@@ -492,6 +492,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Convert basic fields to expected format for confirmation modal
         const accountHolderName = basicFields.accountHolders.join(' & ') || 'Unknown';
         
+        // Calculate time estimate for full analysis
+        const estimatedMinutes = Math.max(1, Math.ceil((basicFields.totalTransactions || 50) / 100) + 1);
+        const timeDescription = `Estimated processing time: ${estimatedMinutes} minutes for ${basicFields.totalTransactions || 0} transactions`;
+
         // Return the basic analysis results for user review - Phase 1 complete
         res.json({
           id: document.id,
@@ -517,7 +521,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           latestTransaction: basicFields.latestTransaction,
           confidence: basicFields.confidence,
           requiresConfirmation: true,
-          analysisPhase: 'basic' // Indicate this is Phase 1 only
+          analysisPhase: 'basic', // Indicate this is Phase 1 only
+          timeEstimate: {
+            estimatedMinutes: estimatedMinutes,
+            description: timeDescription
+          }
         });
 
       } catch (aiError) {
@@ -650,6 +658,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           xmlAnalysisData: xmlAnalysisData,
         };
 
+        // Add processing warning if present
+        if (analysis.processingWarning) {
+          updateData.processingWarning = analysis.processingWarning;
+          logToFile(`Processing warning: ${analysis.processingWarning}`);
+        }
+
         if (analysisError) {
           updateData.analysisError = analysisError;
           updateData.aiProcessingFailed = true;
@@ -666,12 +680,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           xmlInfo,
           xmlAnalysisData,
           analysisError,
+          processingWarning: updateData.processingWarning,
           message: analysisError 
             ? `Analysis completed with errors: ${analysisError}` 
+            : updateData.processingWarning
+            ? `Analysis completed with warnings: ${updateData.processingWarning}`
             : "Full analysis completed successfully",
           processingSteps: {
             xmlGenerated: xmlInfo.xmlGenerated,
-            errorOccurred: !!analysisError
+            errorOccurred: !!analysisError,
+            hasWarnings: !!updateData.processingWarning
           }
         });
 

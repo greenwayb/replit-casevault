@@ -37,6 +37,31 @@ export interface BasicBankingFields {
   latestTransaction?: string;
 }
 
+// Helper function to estimate processing time for full analysis
+function estimateFullAnalysisTime(textLength: number, transactionCount: number): { estimatedMinutes: number; description: string } {
+  // Base time: 1 minute for simple documents
+  let baseTime = 1;
+  
+  // Add time based on text length (1.5 minutes per 50k characters)
+  const textComplexity = Math.ceil(textLength / 50000) * 1.5;
+  
+  // Add time based on transaction count (1 minute per 100 transactions)
+  const transactionComplexity = Math.ceil(transactionCount / 100);
+  
+  const totalMinutes = Math.max(baseTime + textComplexity + transactionComplexity, 1);
+  
+  let description = `Full analysis estimated time: ${totalMinutes} minutes`;
+  if (transactionCount > 200) {
+    description += ` (Large document with ${transactionCount} transactions)`;
+  } else if (transactionCount > 50) {
+    description += ` (Medium complexity with ${transactionCount} transactions)`;
+  } else {
+    description += ` (Standard document with ${transactionCount} transactions)`;
+  }
+  
+  return { estimatedMinutes: totalMinutes, description };
+}
+
 export async function extractBasicBankingFields(filePath: string): Promise<BasicBankingFields> {
   try {
     // Read and parse the PDF file to extract text
@@ -47,6 +72,16 @@ export async function extractBasicBankingFields(filePath: string): Promise<Basic
     if (!pdfText || pdfText.trim().length === 0) {
       throw new Error("Could not extract text from PDF");
     }
+
+    console.log(`PDF text length: ${pdfText.length} characters`);
+    
+    // Count transaction lines to estimate complexity
+    const transactionLineCount = (pdfText.match(/\d{2}\/\d{2}\/\d{4}/g) || []).length;
+    console.log(`Estimated transaction lines in PDF: ${transactionLineCount}`);
+    
+    // Calculate time estimate for full analysis
+    const timeEstimate = estimateFullAnalysisTime(pdfText.length, transactionLineCount);
+    console.log(timeEstimate.description);
 
     const response = await anthropic.messages.create({
       // "claude-sonnet-4-20250514"
