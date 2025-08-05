@@ -8,8 +8,8 @@ interface BankingSankeyDiagramProps {
 }
 
 export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: BankingSankeyDiagramProps) {
-  // Process XML data and create Sankey structure
-  const sankeyData = useMemo(() => {
+  // Process XML data and create Sankey structure - simplified to prevent recursion
+  const processedData = useMemo(() => {
     if (!xmlData) {
       return {
         sankeyData: { nodes: [], links: [] },
@@ -114,22 +114,38 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       const topOutflows = Array.from(outflows.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
       return {
-        sankeyData: { nodes, links },
-        stats: { totalCredits, totalDebits, transactionCount, topInflows, topOutflows }
+        nodes,
+        links,
+        totalCredits,
+        totalDebits,
+        transactionCount,
+        topInflows,
+        topOutflows
       };
     } catch (error) {
       console.error('Error processing Sankey data:', error);
       return {
-        sankeyData: { nodes: [], links: [] },
-        stats: { totalCredits: 0, totalDebits: 0, transactionCount: 0, topInflows: [], topOutflows: [] }
+        nodes: [],
+        links: [],
+        totalCredits: 0,
+        totalDebits: 0,
+        transactionCount: 0,
+        topInflows: [],
+        topOutflows: []
       };
     }
   }, [xmlData, accountName]);
 
-  // Custom Sankey components
-  const CustomNode = ({ payload, ...props }: any) => {
+  // Simple static Sankey data structure
+  const sankeyChartData = useMemo(() => ({
+    nodes: processedData.nodes,
+    links: processedData.links
+  }), [processedData.nodes, processedData.links]);
+
+  // Custom Sankey components - simplified to prevent recursion
+  const CustomNode = React.useCallback(({ payload, ...props }: any) => {
     const { x, y, width, height, index } = props;
-    const node = sankeyData.sankeyData.nodes[index];
+    const node = processedData.nodes[index];
     
     if (!node) return null;
     
@@ -138,7 +154,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
     else if (node.category === 'outflow') fill = '#ffc658';
     else if (node.category === 'account') fill = '#ff7c7c';
     
-    const displayName = node.name.length > 15 ? node.name.substring(0, 13) + '...' : node.name;
+    const displayName = node.name && node.name.length > 15 ? node.name.substring(0, 13) + '...' : (node.name || '');
     
     return (
       <g>
@@ -148,9 +164,9 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         </text>
       </g>
     );
-  };
+  }, [processedData.nodes]);
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = React.useCallback(({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -161,7 +177,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       );
     }
     return null;
-  };
+  }, []);
 
   return (
     <div className="w-full bg-gray-50 p-6">
@@ -170,7 +186,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
           {accountName} - Transaction Flow Analysis
         </h1>
         <p className="text-gray-600 mb-4">
-          {dateRange} | Credits: ${sankeyData.stats.totalCredits.toLocaleString()} | Debits: ${sankeyData.stats.totalDebits.toLocaleString()}
+          {dateRange} | Credits: ${processedData.totalCredits.toLocaleString()} | Debits: ${processedData.totalDebits.toLocaleString()}
         </p>
         
         {/* Legend */}
@@ -195,15 +211,15 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <span className="font-medium text-green-600">Total Credits:</span>
-              <br />${sankeyData.stats.totalCredits.toLocaleString()}
+              <br />${processedData.totalCredits.toLocaleString()}
             </div>
             <div>
               <span className="font-medium text-red-600">Total Debits:</span>
-              <br />${sankeyData.stats.totalDebits.toLocaleString()}
+              <br />${processedData.totalDebits.toLocaleString()}
             </div>
             <div>
               <span className="font-medium text-blue-600">Transaction Count:</span>
-              <br />{sankeyData.stats.transactionCount.toLocaleString()}
+              <br />{processedData.transactionCount.toLocaleString()}
             </div>
           </div>
         </div>
@@ -213,7 +229,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       <div className="bg-white rounded-lg shadow-lg p-4" style={{ height: 'calc(100vh - 300px)' }}>
         <ResponsiveContainer width="100%" height="100%">
           <Sankey
-            data={sankeyData.sankeyData}
+            data={sankeyChartData}
             nodeWidth={120}
             nodePadding={15}
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -229,8 +245,8 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         <div className="bg-green-50 p-4 rounded-lg">
           <h3 className="font-semibold text-green-800 mb-2">Top Inflows</h3>
           <ul className="text-sm space-y-1">
-            {sankeyData.stats.topInflows.map(([name, amount]: [string, number], index: number) => {
-              const percentage = sankeyData.stats.totalCredits > 0 ? ((amount / sankeyData.stats.totalCredits) * 100).toFixed(1) : '0';
+            {processedData.topInflows.map(([name, amount]: [string, number], index: number) => {
+              const percentage = processedData.totalCredits > 0 ? ((amount / processedData.totalCredits) * 100).toFixed(1) : '0';
               return (
                 <li key={index} className="flex justify-between">
                   <span className="truncate mr-2">{name}</span>
@@ -246,8 +262,8 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         <div className="bg-red-50 p-4 rounded-lg">
           <h3 className="font-semibold text-red-800 mb-2">Top Outflows</h3>
           <ul className="text-sm space-y-1">
-            {sankeyData.stats.topOutflows.map(([name, amount]: [string, number], index: number) => {
-              const percentage = sankeyData.stats.totalDebits > 0 ? ((amount / sankeyData.stats.totalDebits) * 100).toFixed(1) : '0';
+            {processedData.topOutflows.map(([name, amount]: [string, number], index: number) => {
+              const percentage = processedData.totalDebits > 0 ? ((amount / processedData.totalDebits) * 100).toFixed(1) : '0';
               return (
                 <li key={index} className="flex justify-between">
                   <span className="truncate mr-2">{name}</span>
