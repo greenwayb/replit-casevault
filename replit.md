@@ -43,6 +43,7 @@ Preferred communication style: Simple, everyday language.
 - **Multi-PDF Detection**: Enhanced initial extraction to process full PDF text, identifying when multiple bank statements are combined into one PDF, with automatic detection of transaction counts, earliest/latest transaction dates, and estimated source PDF count.
 - **Transaction Completeness**: PDF transaction line estimation with XML validation to detect incomplete analysis and ensure all transactions are captured.
 - **Enhanced Error Handling**: Processing failures keep dialog open, log detailed error information to server files, and display log locations to users for debugging.
+- **Transaction Limit Protection**: AI Analysis button becomes disabled with warning tooltip when documents exceed 600 transactions, advising users to split large PDFs for optimal processing.
 
 ## Case Management
 - **Creation**: Unique case number generation, creator assignment

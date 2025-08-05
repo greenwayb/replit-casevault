@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet, AlertTriangle } from "lucide-react";
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
 import { BankingJsonDisplay } from "./banking-json-display";
 import { BankingTransactionChart } from "./banking-transaction-chart";
@@ -31,6 +32,10 @@ export default function BankingDocumentTabs({
   // Check if full analysis is completed
   const isFullAnalysisComplete = document?.fullAnalysisCompleted && xmlData;
   const hasAnalysisError = document?.analysisError || document?.aiProcessingFailed;
+  
+  // Check if document has too many transactions (over 600)
+  const transactionCount = document?.totalTransactions || 0;
+  const hasTooManyTransactions = transactionCount > 600;
 
   const handleDownloadXML = () => {
     if (!xmlData) return;
@@ -52,18 +57,42 @@ export default function BankingDocumentTabs({
     <div className="space-y-4">
       {/* AI Analysis Button */}
       <div className="flex justify-center">
-        <Button 
-          onClick={onFullAnalysis}
-          className={
-            isFullAnalysisComplete 
-              ? "bg-orange-600 hover:bg-orange-700 text-white px-6 py-2"
-              : "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
-          }
-          size="lg"
-        >
-          <BarChart3 className="h-5 w-5 mr-2" />
-          {isFullAnalysisComplete ? "Reprocess PDF" : "AI Analysis"}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <Button 
+                  onClick={hasTooManyTransactions ? undefined : onFullAnalysis}
+                  disabled={hasTooManyTransactions}
+                  className={
+                    hasTooManyTransactions
+                      ? "bg-red-600 hover:bg-red-700 text-white px-6 py-2 cursor-not-allowed"
+                      : isFullAnalysisComplete 
+                        ? "bg-orange-600 hover:bg-orange-700 text-white px-6 py-2"
+                        : "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                  }
+                  size="lg"
+                >
+                  {hasTooManyTransactions ? (
+                    <AlertTriangle className="h-5 w-5 mr-2" />
+                  ) : (
+                    <BarChart3 className="h-5 w-5 mr-2" />
+                  )}
+                  {hasTooManyTransactions 
+                    ? "Too Many Transactions" 
+                    : isFullAnalysisComplete 
+                      ? "Reprocess PDF" 
+                      : "AI Analysis"}
+                </Button>
+              </div>
+            </TooltipTrigger>
+            {hasTooManyTransactions && (
+              <TooltipContent className="max-w-xs">
+                <p>This file has {transactionCount} transactions, which exceeds the 600-transaction limit for successful processing. Please split the PDF into smaller files and re-upload them separately.</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
