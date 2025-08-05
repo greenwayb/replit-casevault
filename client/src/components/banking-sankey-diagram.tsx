@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Sankey, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface BankingSankeyDiagramProps {
   xmlData: string;
@@ -36,47 +37,161 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
     }
   }, [xmlData]);
 
-  // Simple transaction processing for basic stats
-  const basicStats = useMemo(() => {
-    if (!xmlData) return { totalCredits: 0, totalDebits: 0, transactionCount: 0 };
+  // Process transactions and create Sankey data
+  const sankeyData = useMemo(() => {
+    if (!xmlData) return {
+      sankeyData: { nodes: [], links: [] },
+      stats: { totalCredits: 0, totalDebits: 0, transactionCount: 0, topInflows: [], topOutflows: [] }
+    };
     
     try {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
       const transactionNodes = xmlDoc.getElementsByTagName('transaction');
       
+      // Get account info
+      const getElementText = (tagName: string) => {
+        const element = xmlDoc.getElementsByTagName(tagName)[0];
+        return element ? element.textContent?.trim() || '' : '';
+      };
+      
+      const accountNumber = getElementText('account_number');
+      const accountDisplayName = accountNumber ? 
+        `${accountName} (${accountNumber})` : 
+        accountName;
+      
+      // Process transactions
+      const inflows = new Map<string, number>();
+      const outflows = new Map<string, number>();
       let totalCredits = 0;
       let totalDebits = 0;
       let transactionCount = 0;
       
       for (let i = 0; i < transactionNodes.length; i++) {
         const transaction = transactionNodes[i];
-        const amountElement = transaction.getElementsByTagName('amount')[0];
-        const dateElement = transaction.getElementsByTagName('transaction_date')[0];
+        const getTextContent = (tagName: string) => {
+          const element = transaction.getElementsByTagName(tagName)[0];
+          return element ? element.textContent || '' : '';
+        };
         
-        if (amountElement?.textContent && dateElement?.textContent) {
-          const date = dateElement.textContent.trim();
+        const date = getTextContent('transaction_date');
+        const amountStr = getTextContent('amount');
+        
+        // Filter by selected period
+        if (date && amountStr && (selectedPeriod === 'all' || date.startsWith(selectedPeriod))) {
+          const amount = parseFloat(amountStr) || 0;
+          const category = getTextContent('transaction_category') || 'Other';
+          const transferTarget = getTextContent('transfer_target');
           
-          // Filter by selected period
-          if (selectedPeriod === 'all' || date.startsWith(selectedPeriod)) {
-            const amount = parseFloat(amountElement.textContent) || 0;
-            transactionCount++;
-            
-            if (amount > 0) {
-              totalCredits += amount;
-            } else {
-              totalDebits += Math.abs(amount);
-            }
+          transactionCount++;
+          
+          if (amount > 0) {
+            totalCredits += amount;
+            const source = transferTarget || category || 'Other Income';
+            inflows.set(source, (inflows.get(source) || 0) + amount);
+          } else {
+            const absAmount = Math.abs(amount);
+            totalDebits += absAmount;
+            const target = transferTarget || category || 'Other Expenses';
+            outflows.set(target, (outflows.get(target) || 0) + absAmount);
           }
         }
       }
       
-      return { totalCredits, totalDebits, transactionCount };
+      // Build Sankey nodes and links
+      const nodes: Array<{ name: string; category: string }> = [];
+      const links: Array<{ source: number; target: number; value: number }> = [];
+      let nodeIndex = 0;
+      const nodeMap = new Map<string, number>();
+      
+      // Add source nodes (inflows)
+      inflows.forEach((amount, source) => {
+        nodes.push({ name: source, category: 'inflow' });
+        nodeMap.set(source, nodeIndex++);
+      });
+      
+      // Add account node
+      const accountNodeIndex = nodeIndex;
+      nodes.push({ name: accountDisplayName, category: 'account' });
+      nodeIndex++;
+      
+      // Add target nodes (outflows)
+      outflows.forEach((amount, target) => {
+        nodes.push({ name: target, category: 'outflow' });
+        nodeMap.set(target, nodeIndex++);
+      });
+      
+      // Create links from sources to account
+      inflows.forEach((amount, source) => {
+        links.push({
+          source: nodeMap.get(source)!,
+          target: accountNodeIndex,
+          value: amount
+        });
+      });
+      
+      // Create links from account to targets
+      outflows.forEach((amount, target) => {
+        links.push({
+          source: accountNodeIndex,
+          target: nodeMap.get(target)!,
+          value: amount
+        });
+      });
+      
+      // Calculate top flows
+      const topInflows = Array.from(inflows.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const topOutflows = Array.from(outflows.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      
+      return {
+        sankeyData: { nodes, links },
+        stats: { totalCredits, totalDebits, transactionCount, topInflows, topOutflows }
+      };
     } catch (error) {
-      console.error('Error calculating stats:', error);
-      return { totalCredits: 0, totalDebits: 0, transactionCount: 0 };
+      console.error('Error processing Sankey data:', error);
+      return {
+        sankeyData: { nodes: [], links: [] },
+        stats: { totalCredits: 0, totalDebits: 0, transactionCount: 0, topInflows: [], topOutflows: [] }
+      };
     }
-  }, [xmlData, selectedPeriod]);
+  }, [xmlData, selectedPeriod, accountName]);
+
+  // Custom Sankey components
+  const CustomNode = ({ payload, ...props }: any) => {
+    const { x, y, width, height, index } = props;
+    const node = sankeyData.sankeyData.nodes[index];
+    
+    if (!node) return null;
+    
+    let fill = '#8884d8';
+    if (node.category === 'inflow') fill = '#82ca9d';
+    else if (node.category === 'outflow') fill = '#ffc658';
+    else if (node.category === 'account') fill = '#ff7c7c';
+    
+    const displayName = node.name.length > 15 ? node.name.substring(0, 13) + '...' : node.name;
+    
+    return (
+      <g>
+        <rect x={x} y={y} width={width} height={height} fill={fill} stroke="#333" strokeWidth={1} rx={4} />
+        <text x={x + width / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="middle" fontSize={9} fill="#333" fontWeight="bold">
+          {displayName}
+        </text>
+      </g>
+    );
+  };
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
+          <p className="font-semibold">{`${data.source?.name || 'Source'} → ${data.target?.name || 'Target'}`}</p>
+          <p className="text-blue-600">{`Amount: $${data.value?.toLocaleString() || 0}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="w-full bg-gray-50 p-6">
@@ -85,7 +200,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
           {accountName} - Transaction Flow Analysis
         </h1>
         <p className="text-gray-600 mb-4">
-          {dateRange} | Credits: ${basicStats.totalCredits.toLocaleString()} | Debits: ${basicStats.totalDebits.toLocaleString()}
+          {dateRange} | Credits: ${sankeyData.stats.totalCredits.toLocaleString()} | Debits: ${sankeyData.stats.totalDebits.toLocaleString()}
         </p>
         
         {/* Period selector buttons */}
@@ -105,35 +220,91 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
           ))}
         </div>
         
-        {/* Basic stats */}
+        {/* Legend */}
+        <div className="flex gap-6 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-400 rounded"></div>
+            <span className="text-sm">Money In (Inflows)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-400 rounded"></div>
+            <span className="text-sm">Bank Account</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+            <span className="text-sm">Money Out (Outflows)</span>
+          </div>
+        </div>
+        
+        {/* Transaction Summary */}
         <div className="bg-white p-4 rounded-lg shadow mb-4">
           <h3 className="font-semibold mb-2">Transaction Summary ({selectedPeriod}):</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <span className="font-medium text-green-600">Total Credits:</span>
-              <br />${basicStats.totalCredits.toLocaleString()}
+              <br />${sankeyData.stats.totalCredits.toLocaleString()}
             </div>
             <div>
               <span className="font-medium text-red-600">Total Debits:</span>
-              <br />${basicStats.totalDebits.toLocaleString()}
+              <br />${sankeyData.stats.totalDebits.toLocaleString()}
             </div>
             <div>
               <span className="font-medium text-blue-600">Transaction Count:</span>
-              <br />{basicStats.transactionCount.toLocaleString()}
+              <br />{sankeyData.stats.transactionCount.toLocaleString()}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Sankey Diagram Placeholder</h2>
-        <p className="text-gray-500 mb-4">
-          Advanced Sankey visualization will be restored once the period filtering is confirmed working.
-        </p>
-        <div className="text-sm text-gray-400">
-          Current period: {selectedPeriod}<br />
-          Data size: {xmlData.length} characters<br />
-          Available periods: {periodOptions.join(', ')}
+      {/* Sankey Diagram */}
+      <div className="bg-white rounded-lg shadow-lg p-4" style={{ height: 'calc(100vh - 300px)' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <Sankey
+            data={sankeyData.sankeyData}
+            nodeWidth={120}
+            nodePadding={15}
+            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            node={<CustomNode />}
+          >
+            <Tooltip content={<CustomTooltip />} />
+          </Sankey>
+        </ResponsiveContainer>
+      </div>
+      
+      {/* Summary statistics */}
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-green-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-green-800 mb-2">Top Inflows</h3>
+          <ul className="text-sm space-y-1">
+            {sankeyData.stats.topInflows.map(([name, amount], index) => {
+              const percentage = sankeyData.stats.totalCredits > 0 ? ((amount / sankeyData.stats.totalCredits) * 100).toFixed(1) : '0';
+              return (
+                <li key={index} className="flex justify-between">
+                  <span className="truncate mr-2">{name}</span>
+                  <span className="text-green-600 font-medium whitespace-nowrap">
+                    ${amount.toLocaleString()} ({percentage}%)
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        
+        <div className="bg-red-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-red-800 mb-2">Top Outflows</h3>
+          <ul className="text-sm space-y-1">
+            {sankeyData.stats.topOutflows.map(([name, amount], index) => {
+              const percentage = sankeyData.stats.totalDebits > 0 ? ((amount / sankeyData.stats.totalDebits) * 100).toFixed(1) : '0';
+              return (
+                <li key={index} className="flex justify-between">
+                  <span className="truncate mr-2">{name}</span>
+                  <span className="text-red-600 font-medium whitespace-nowrap">
+                    ${amount.toLocaleString()} ({percentage}%)
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     </div>
