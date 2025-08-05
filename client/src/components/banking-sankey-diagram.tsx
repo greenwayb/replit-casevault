@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Sankey, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface Transaction {
@@ -18,7 +18,9 @@ interface BankingSankeyDiagramProps {
 }
 
 export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: BankingSankeyDiagramProps) {
-  const { sankeyData, summaryStats } = useMemo(() => {
+  const [selectedPeriod, setSelectedPeriod] = useState('all');
+
+  const { sankeyData, summaryStats, periodOptions } = useMemo(() => {
     // Parse XML to extract transactions and account info
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
@@ -45,14 +47,32 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       };
       
       transactions.push({
-        date: getTextContent('date'),
-        description: getTextContent('description'),
+        date: getTextContent('transaction_date'),
+        description: getTextContent('transaction_description'),
         amount: parseFloat(getTextContent('amount')) || 0,
         balance: parseFloat(getTextContent('balance')) || 0,
-        category: getTextContent('category'),
+        category: getTextContent('transaction_category'),
         transfer_type: getTextContent('transfer_type'),
         transfer_target: getTextContent('transfer_target')
       });
+    }
+
+    // Generate period options based on available transaction dates  
+    const periods = new Set(['all']);
+    transactions.forEach(t => {
+      if (t.date) {
+        const yearMonth = t.date.substring(0, 7); // YYYY-MM format
+        periods.add(yearMonth);
+      }
+    });
+    const availablePeriods = Array.from(periods).sort();
+
+    // Filter transactions based on selected period
+    let filteredTransactions = transactions;
+    if (selectedPeriod !== 'all') {
+      const year = selectedPeriod.slice(0, 4);
+      const month = selectedPeriod.slice(5, 7);
+      filteredTransactions = transactions.filter(t => t.date.startsWith(`${year}-${month}`));
     }
 
     // Also extract inflows/outflows from XML structure
@@ -91,19 +111,37 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
     
     // Use XML inflows/outflows if available, otherwise parse transactions
     if (inflowsFromXML.size > 0 || outflowsFromXML.size > 0) {
-      // Use the structured inflow/outflow data from XML
-      inflowsFromXML.forEach((amount, source) => {
-        inflows.set(source, amount);
-        totalCredits += amount;
-      });
-      
-      outflowsFromXML.forEach((amount, target) => {
-        outflows.set(target, amount);
-        totalDebits += amount;
-      });
+      // If using XML data and we have a period filter, we need to recalculate from filtered transactions
+      if (selectedPeriod !== 'all') {
+        // Recalculate from filtered transactions instead of using XML totals
+        filteredTransactions.forEach(transaction => {
+          const amount = Math.abs(transaction.amount);
+          
+          if (transaction.amount > 0) {
+            totalCredits += amount;
+            const source = transaction.transfer_target || transaction.category || 'Other Income';
+            inflows.set(source, (inflows.get(source) || 0) + amount);
+          } else {
+            totalDebits += amount;
+            const target = transaction.transfer_target || transaction.category || 'Other Expenses';
+            outflows.set(target, (outflows.get(target) || 0) + amount);
+          }
+        });
+      } else {
+        // Use the structured inflow/outflow data from XML for "all" period
+        inflowsFromXML.forEach((amount, source) => {
+          inflows.set(source, amount);
+          totalCredits += amount;
+        });
+        
+        outflowsFromXML.forEach((amount, target) => {
+          outflows.set(target, amount);
+          totalDebits += amount;
+        });
+      }
     } else {
-      // Fallback to transaction-by-transaction analysis
-      transactions.forEach(transaction => {
+      // Fallback to transaction-by-transaction analysis using filtered transactions
+      filteredTransactions.forEach(transaction => {
         const amount = Math.abs(transaction.amount);
         
         if (transaction.amount > 0) {
@@ -177,9 +215,10 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         topOutflows: sortedOutflows.slice(0, 5),
         largestInflow: sortedInflows[0] || ['', 0],
         largestOutflow: sortedOutflows[0] || ['', 0]
-      }
+      },
+      periodOptions: availablePeriods
     };
-  }, [xmlData, accountName]);
+  }, [xmlData, accountName, selectedPeriod]);
 
   // Custom node component
   const CustomNode = ({ payload, ...props }: any) => {
@@ -256,6 +295,23 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         <p className="text-gray-600 mb-4">
           {dateRange} | Total Credits: ${summaryStats.totalCredits.toLocaleString()} | Total Debits: ${summaryStats.totalDebits.toLocaleString()}
         </p>
+        
+        {/* Period selector buttons */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {periodOptions.map(period => (
+            <button
+              key={period}
+              onClick={() => setSelectedPeriod(period)}
+              className={`px-4 py-2 rounded text-sm ${
+                selectedPeriod === period 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              {period === 'all' ? 'All Period' : new Date(period + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </button>
+          ))}
+        </div>
         
         {/* Legend */}
         <div className="flex gap-6 mb-4">
