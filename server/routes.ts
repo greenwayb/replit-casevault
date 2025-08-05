@@ -614,7 +614,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           logToFile(`AI analysis completed in ${elapsed}ms`);
           
           if (!analysis.xmlAnalysis) {
-            throw new Error('AI analysis did not produce XML data');
+            logToFile(`AI Analysis result: ${JSON.stringify(analysis, null, 2)}`);
+            throw new Error('AI analysis did not produce XML data - check server console for full AI response');
           }
           
           // Generate XML file from analysis

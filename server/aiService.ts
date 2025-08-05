@@ -180,6 +180,21 @@ ${pdfText}`
     const xmlMatch = fullResponse.match(/<transaction_analysis>[\s\S]*?<\/transaction_analysis>/);
     const xmlAnalysis = xmlMatch ? xmlMatch[0] : '';
     
+    // Log the response for debugging if XML is missing
+    if (!xmlAnalysis) {
+      console.log('AI Response length:', fullResponse.length);
+      console.log('AI Response preview (first 500 chars):', fullResponse.substring(0, 500));
+      console.log('Looking for transaction_analysis XML tag...');
+      
+      // Try alternative XML extraction patterns
+      const altXmlMatch = fullResponse.match(/<extraction_process>[\s\S]*?<\/extraction_process>/);
+      if (altXmlMatch) {
+        console.log('Found extraction_process XML instead');
+      } else {
+        console.log('No XML structure found in response');
+      }
+    }
+    
     // Validate and normalize the response
     return {
       accountHolderName: normalizeAccountHolderName(analysisResult.accountHolderName || 'Unknown Holder'),
