@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet } from "lucide-react";
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
+import { SankeyTest } from "./sankey-test";
 import { BankingJsonDisplay } from "./banking-json-display";
 import { BankingTransactionChart } from "./banking-transaction-chart";
 
@@ -117,11 +118,14 @@ export default function BankingDocumentTabs({
 
         <TabsContent value="sankey" className="space-y-4">
           {isFullAnalysisComplete ? (
-            <BankingSankeyDiagram 
-              xmlData={xmlData || ''}
-              accountName={accountName || 'Bank Account'}
-              dateRange={`${document?.transactionDateFrom || ''} - ${document?.transactionDateTo || ''}`}
-            />
+            <div>
+              <SankeyTest />
+              <BankingSankeyDiagram 
+                xmlData={xmlData || ''}
+                accountName={accountName || 'Bank Account'}
+                dateRange={`${document?.transactionDateFrom || ''} - ${document?.transactionDateTo || ''}`}
+              />
+            </div>
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
