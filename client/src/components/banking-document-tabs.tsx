@@ -26,7 +26,7 @@ export default function BankingDocumentTabs({
   accountName,
   onFullAnalysis
 }: BankingDocumentTabsProps) {
-  const [activeTab, setActiveTab] = useState("sankey");
+  const [activeTab, setActiveTab] = useState("pdf");
   
   // Check if full analysis is completed
   const isFullAnalysisComplete = document?.fullAnalysisCompleted && xmlData;
@@ -68,6 +68,18 @@ export default function BankingDocumentTabs({
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="pdf" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            PDF Document
+          </TabsTrigger>
+          <TabsTrigger 
+            value="summary" 
+            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFullAnalysisComplete}
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            Summary
+          </TabsTrigger>
           <TabsTrigger 
             value="sankey" 
             className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -85,14 +97,6 @@ export default function BankingDocumentTabs({
             Transaction Chart
           </TabsTrigger>
           <TabsTrigger 
-            value="summary" 
-            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={!isFullAnalysisComplete}
-          >
-            <FileSpreadsheet className="h-4 w-4" />
-            Summary
-          </TabsTrigger>
-          <TabsTrigger 
             value="json" 
             className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={!isFullAnalysisComplete}
@@ -108,11 +112,13 @@ export default function BankingDocumentTabs({
             <Code2 className="h-4 w-4" />
             XML Data
           </TabsTrigger>
-          <TabsTrigger value="pdf" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            PDF Document
+          <TabsTrigger 
+            value="analysis" 
+            className="flex items-center gap-2"
+          >
+            <BarChart3 className="h-4 w-4" />
+            Bank Info
           </TabsTrigger>
-
         </TabsList>
 
         <TabsContent value="sankey" className="space-y-4">
@@ -297,6 +303,16 @@ export default function BankingDocumentTabs({
                             Estimated PDFs: {document.estimatedPdfCount} statements combined
                           </p>
                         )}
+                        {document?.earliestTransaction && (
+                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                            Earliest Transaction: {document.earliestTransaction}
+                          </p>
+                        )}
+                        {document?.latestTransaction && (
+                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                            Latest Transaction: {document.latestTransaction}
+                          </p>
+                        )}
                       </div>
                       <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                         <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">Analysis Status</h4>
@@ -369,10 +385,57 @@ export default function BankingDocumentTabs({
             </Card>
           ) : (
             <Card>
-              <CardContent className="p-8 text-center">
-                <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">Analysis Data</h3>
-                <p className="text-gray-500 mb-4">Click "AI Analysis" to extract detailed transaction data and analysis</p>
+              <CardContent className="p-6">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Banking Document Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Document Details</h4>
+                        <p className="text-sm text-blue-600 dark:text-blue-300">
+                          Account: {accountName || 'Not specified'}
+                        </p>
+                        <p className="text-sm text-blue-600 dark:text-blue-300">
+                          Document: {documentName}
+                        </p>
+                        {document?.totalTransactions && (
+                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                            Total Transactions: {document.totalTransactions}
+                          </p>
+                        )}
+                        {document?.estimatedPdfCount && document.estimatedPdfCount > 1 && (
+                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                            Estimated PDFs: {document.estimatedPdfCount} statements combined
+                          </p>
+                        )}
+                        {document?.earliestTransaction && (
+                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                            Earliest Transaction: {document.earliestTransaction}
+                          </p>
+                        )}
+                        {document?.latestTransaction && (
+                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                            Latest Transaction: {document.latestTransaction}
+                          </p>
+                        )}
+                      </div>
+                      <div className="p-4 bg-gray-50 dark:bg-gray-900/20 rounded-lg">
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Analysis Status</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          ✓ Basic Information Extracted
+                        </p>
+                        {document?.aiProcessed && (
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            ✓ Initial AI Processing Complete
+                          </p>
+                        )}
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                          Click "AI Analysis" for detailed transaction analysis
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}

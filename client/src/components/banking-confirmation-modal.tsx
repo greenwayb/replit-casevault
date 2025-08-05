@@ -82,8 +82,8 @@ export default function BankingConfirmationModal({
       financialInstitution: bankingInfo.financialInstitution || '',
       accountNumber: bankingInfo.accountNumber || '',
       bsbSortCode: bankingInfo.bsbSortCode || '',
-      transactionDateFrom: bankingInfo.transactionDateFrom || '',
-      transactionDateTo: bankingInfo.transactionDateTo || '',
+      transactionDateFrom: bankingInfo.transactionDateFrom || earliestTransaction || '',
+      transactionDateTo: bankingInfo.transactionDateTo || latestTransaction || '',
     },
   });
 
@@ -95,10 +95,10 @@ export default function BankingConfirmationModal({
       financialInstitution: bankingInfo.financialInstitution || '',
       accountNumber: bankingInfo.accountNumber || '',
       bsbSortCode: bankingInfo.bsbSortCode || '',
-      transactionDateFrom: bankingInfo.transactionDateFrom || '',
-      transactionDateTo: bankingInfo.transactionDateTo || '',
+      transactionDateFrom: bankingInfo.transactionDateFrom || earliestTransaction || '',
+      transactionDateTo: bankingInfo.transactionDateTo || latestTransaction || '',
     });
-  }, [bankingInfo, form]);
+  }, [bankingInfo, form, earliestTransaction, latestTransaction]);
 
   const onSubmit = (data: BankingConfirmationFormData) => {
     onConfirm({

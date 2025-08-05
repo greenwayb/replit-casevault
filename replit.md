@@ -39,7 +39,8 @@ Preferred communication style: Simple, everyday language.
 - **File Types**: PDF-only (50MB limit)
 - **Organization**: Hierarchical categorization (REAL_PROPERTY, BANKING, TAXATION, SUPERANNUATION, EMPLOYMENT, SHARES/INVESTMENTS, VEHICLES) with a comprehensive numbering system (e.g., A1, B1, B1.1)
 - **Access Control**: Case-based permissions with user role assignments
-- **AI Processing**: Advanced Banking document analysis using Claude Sonnet 4 with enhanced completeness validation, generating comprehensive XML analysis with transaction counting and validation to ensure full document processing.
+- **AI Processing**: Advanced Banking document analysis using Claude Sonnet 4 with enhanced completeness validation, generating comprehensive XML analysis with transaction counting and validation to ensure all document processing.
+- **Multi-PDF Detection**: Enhanced initial extraction to process full PDF text, identifying when multiple bank statements are combined into one PDF, with automatic detection of transaction counts, earliest/latest transaction dates, and estimated source PDF count.
 - **Transaction Completeness**: PDF transaction line estimation with XML validation to detect incomplete analysis and ensure all transactions are captured.
 - **Enhanced Error Handling**: Processing failures keep dialog open, log detailed error information to server files, and display log locations to users for debugging.
 
@@ -58,6 +59,7 @@ Preferred communication style: Simple, everyday language.
 - **Upload Progress**: Dual progress bars showing upload and AI processing phases with visual indicators.
 - **Enhanced Sankey Visualization**: Comprehensive banking flow diagram with summary statistics, top inflows/outflows breakdown, color-coded visual design, and detailed analytics matching user style preferences.
 - **CSV Export Removal**: CSV export functionality completely removed per user request, focusing exclusively on XML-based analysis and visualization.
+- **Multi-PDF Transaction Analysis**: Banking confirmation modal and document tabs now display total transaction count, estimated PDF count for combined statements, earliest/latest transaction dates with automatic population of date fields from detected transaction range.
 
 # External Dependencies
 
