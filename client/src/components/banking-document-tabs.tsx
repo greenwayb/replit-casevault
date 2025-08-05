@@ -287,6 +287,16 @@ export default function BankingDocumentTabs({
                         <p className="text-sm text-blue-600 dark:text-blue-300">
                           Document: {documentName}
                         </p>
+                        {document?.totalTransactions && (
+                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                            Total Transactions: {document.totalTransactions}
+                          </p>
+                        )}
+                        {document?.estimatedPdfCount && document.estimatedPdfCount > 1 && (
+                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                            Estimated PDFs: {document.estimatedPdfCount} statements combined
+                          </p>
+                        )}
                       </div>
                       <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                         <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">Analysis Status</h4>

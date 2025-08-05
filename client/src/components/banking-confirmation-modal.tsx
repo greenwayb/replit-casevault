@@ -54,6 +54,10 @@ interface BankingConfirmationModalProps {
   isManualReview?: boolean;
   selectedFile?: File | null;
   analysisPhase?: 'basic' | 'full';
+  totalTransactions?: number;
+  estimatedPdfCount?: number;
+  earliestTransaction?: string;
+  latestTransaction?: string;
 }
 
 export default function BankingConfirmationModal({
@@ -64,7 +68,11 @@ export default function BankingConfirmationModal({
   onReject,
   documentId,
   isManualReview = false,
-  selectedFile = null
+  selectedFile = null,
+  totalTransactions,
+  estimatedPdfCount,
+  earliestTransaction,
+  latestTransaction
 }: BankingConfirmationModalProps) {
   const form = useForm<BankingConfirmationFormData>({
     resolver: zodResolver(bankingConfirmationSchema),
@@ -245,23 +253,40 @@ export default function BankingConfirmationModal({
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="transactionDateFrom"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          Period From
-                        </FormLabel>
-                        <FormControl>
-                          <Input {...field} type="date" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
+
+                {/* Transaction Information Section */}
+                {(totalTransactions || estimatedPdfCount || earliestTransaction || latestTransaction) && (
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-3">Transaction Analysis</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {totalTransactions && (
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300 font-medium">Total Transactions:</span>
+                          <span className="ml-2 text-blue-800 dark:text-blue-200">{totalTransactions}</span>
+                        </div>
+                      )}
+                      {estimatedPdfCount && estimatedPdfCount > 1 && (
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300 font-medium">Estimated PDFs:</span>
+                          <span className="ml-2 text-blue-800 dark:text-blue-200">{estimatedPdfCount} statements combined</span>
+                        </div>
+                      )}
+                      {earliestTransaction && (
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300 font-medium">Earliest Transaction:</span>
+                          <span className="ml-2 text-blue-800 dark:text-blue-200">{earliestTransaction}</span>
+                        </div>
+                      )}
+                      {latestTransaction && (
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300 font-medium">Latest Transaction:</span>
+                          <span className="ml-2 text-blue-800 dark:text-blue-200">{latestTransaction}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex justify-end space-x-3 pt-6">
                   <Button

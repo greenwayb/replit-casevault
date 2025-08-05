@@ -112,6 +112,12 @@ export const documents = pgTable("documents", {
   transactionDateTo: timestamp("transaction_date_to"),
   displayName: varchar("display_name"), // Formatted display name (e.g., "B1 CBA 1234")
   
+  // Multi-PDF document analysis fields
+  totalTransactions: integer("total_transactions"), // Total number of transactions found
+  estimatedPdfCount: integer("estimated_pdf_count"), // Estimated number of source PDFs combined
+  earliestTransaction: varchar("earliest_transaction", { length: 20 }), // Earliest transaction date found
+  latestTransaction: varchar("latest_transaction", { length: 20 }), // Latest transaction date found
+  
   // Hierarchical numbering
   documentNumber: varchar("document_number", { length: 50 }), // e.g., "B1.1", "B1.2", "RP1.1"
   accountGroupNumber: varchar("account_group_number", { length: 20 }), // e.g., "B1", "B2"

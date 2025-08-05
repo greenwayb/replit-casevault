@@ -31,6 +31,10 @@ export interface BasicBankingFields {
   accountNumber?: string;
   accountBsb?: string;
   confidence: number;
+  totalTransactions?: number;
+  estimatedPdfCount?: number;
+  earliestTransaction?: string;
+  latestTransaction?: string;
 }
 
 export async function extractBasicBankingFields(filePath: string): Promise<BasicBankingFields> {
@@ -47,7 +51,7 @@ export async function extractBasicBankingFields(filePath: string): Promise<Basic
     const response = await anthropic.messages.create({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
-      max_tokens: 1000,
+      max_tokens: 2000,
       system: `You are an AI assistant specialized in extracting basic information from bank statement PDFs. Your task is to quickly identify and extract only the essential fields needed to store the document.
 
 Extract ONLY these fields:
@@ -58,6 +62,12 @@ Extract ONLY these fields:
 5. End date of statement period
 6. Account number (if clearly visible)
 7. Account BSB/Sort Code (if clearly visible)
+8. Total number of transactions throughout the entire file
+9. Earliest transaction date found in the document
+10. Latest transaction date found in the document
+11. Estimate of how many separate PDF statements were stitched together
+
+IMPORTANT: This may actually be a few statements stitched into one, can you identify the earliest, and last transaction as well as total how many transactions there are throughout this file. Also please identify the total number of transactions present and an estimate as to the total number of source PDFs rolled into one.
 
 Return the information in this exact XML format:
 <basic_fields>
@@ -70,17 +80,23 @@ Return the information in this exact XML format:
   <end_date>2024-01-31</end_date>
   <account_number>1234567890</account_number>
   <account_bsb>123-456</account_bsb>
+  <total_transactions>150</total_transactions>
+  <earliest_transaction>2024-01-01</earliest_transaction>
+  <latest_transaction>2024-01-31</latest_transaction>
+  <estimated_pdf_count>3</estimated_pdf_count>
 </basic_fields>
 
 Important:
 - Use YYYY-MM-DD format for dates
 - If multiple account holders, list each in separate <account_holder> tags
 - If account number or BSB not clearly visible, omit those fields
-- Focus on accuracy over completeness
-- Do NOT analyze individual transactions - this is just basic field extraction`,
+- Count ALL transactions throughout the entire document
+- Look for patterns that suggest multiple statements (different date ranges, statement headers, etc.)
+- Estimate PDF count based on statement periods, headers, or natural breaks in the document
+- Focus on accuracy over completeness`,
       messages: [{
         role: "user",
-        content: `Please extract the basic banking fields from this bank statement text:\n\n${pdfText.substring(0, 8000)}`
+        content: `Please extract the basic banking fields from this bank statement text. This may be multiple statements stitched together:\n\n${pdfText}`
       }]
     });
 
@@ -109,6 +125,11 @@ Important:
     const accountBsb = getXMLValue(responseText, 'account_bsb') || undefined;
     
     const accountHolders = getXMLArray(responseText, 'account_holders', 'account_holder');
+    
+    const totalTransactions = parseInt(getXMLValue(responseText, 'total_transactions')) || undefined;
+    const estimatedPdfCount = parseInt(getXMLValue(responseText, 'estimated_pdf_count')) || undefined;
+    const earliestTransaction = getXMLValue(responseText, 'earliest_transaction') || undefined;
+    const latestTransaction = getXMLValue(responseText, 'latest_transaction') || undefined;
 
     return {
       financialInstitution: institution,
@@ -118,6 +139,10 @@ Important:
       endDate,
       accountNumber,
       accountBsb,
+      totalTransactions,
+      estimatedPdfCount,
+      earliestTransaction,
+      latestTransaction,
       confidence: 0.85 // Basic extraction confidence
     };
 

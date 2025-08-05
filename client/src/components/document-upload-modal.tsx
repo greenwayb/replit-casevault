@@ -223,6 +223,10 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
             documentNumber: isManual ? 'B1.1' : pendingBankingData.extractedBankingInfo.documentNumber,
             accountGroupNumber: isManual ? '1' : pendingBankingData.extractedBankingInfo.accountGroupNumber,
           },
+          totalTransactions: pendingBankingData.totalTransactions,
+          estimatedPdfCount: pendingBankingData.estimatedPdfCount,
+          earliestTransaction: pendingBankingData.earliestTransaction,
+          latestTransaction: pendingBankingData.latestTransaction,
           csvInfo: pendingBankingData.extractedBankingInfo.csvInfo,
           xmlInfo: pendingBankingData.extractedBankingInfo.xmlInfo,
           xmlAnalysisData: pendingBankingData.extractedBankingInfo.xmlAnalysisData,
@@ -477,6 +481,10 @@ export default function DocumentUploadModal({ open, onOpenChange, caseId }: Docu
             documentId={pendingBankingData.id}
             isManualReview={pendingBankingData.aiProcessingFailed}
             selectedFile={selectedFile}
+            totalTransactions={pendingBankingData.totalTransactions}
+            estimatedPdfCount={pendingBankingData.estimatedPdfCount}
+            earliestTransaction={pendingBankingData.earliestTransaction}
+            latestTransaction={pendingBankingData.latestTransaction}
           />
         )}
       </Dialog>
