@@ -283,7 +283,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         <div className="bg-green-50 p-4 rounded-lg">
           <h3 className="font-semibold text-green-800 mb-2">Top Inflows</h3>
           <ul className="text-sm space-y-1">
-            {currentData.stats.topInflows.map(([name, amount], index) => {
+            {currentData.stats.topInflows.map(([name, amount]: [string, number], index: number) => {
               const percentage = currentData.stats.totalCredits > 0 ? ((amount / currentData.stats.totalCredits) * 100).toFixed(1) : '0';
               return (
                 <li key={index} className="flex justify-between">
@@ -300,7 +300,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         <div className="bg-red-50 p-4 rounded-lg">
           <h3 className="font-semibold text-red-800 mb-2">Top Outflows</h3>
           <ul className="text-sm space-y-1">
-            {currentData.stats.topOutflows.map(([name, amount], index) => {
+            {currentData.stats.topOutflows.map(([name, amount]: [string, number], index: number) => {
               const percentage = currentData.stats.totalDebits > 0 ? ((amount / currentData.stats.totalDebits) * 100).toFixed(1) : '0';
               return (
                 <li key={index} className="flex justify-between">
