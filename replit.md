@@ -56,7 +56,7 @@ Preferred communication style: Simple, everyday language.
 - **Interactive Elements**: TiltedCard component for interactive case cards with 3D tilt effects.
 - **PDF Preview**: Always-on side-by-side PDF preview with extracted information for verification.
 - **Upload Progress**: Dual progress bars showing upload and AI processing phases with visual indicators.
-- **Enhanced Sankey Visualization**: Pre-processed period data architecture eliminates recursion issues by computing all period variations upfront and simply swapping datasets when filtering, providing stable interactive banking flow diagrams with summary statistics and analytics.
+- **Enhanced Sankey Visualization**: Comprehensive banking flow diagram with summary statistics, top inflows/outflows breakdown, color-coded visual design, and detailed analytics matching user style preferences.
 - **CSV Export Removal**: CSV export functionality completely removed per user request, focusing exclusively on XML-based analysis and visualization.
 
 # External Dependencies
