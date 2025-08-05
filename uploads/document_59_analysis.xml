@@ -1,0 +1,2754 @@
+<transaction_analysis>
+  <institution>Commonwealth Bank</institution>
+  <account_holders>
+     <account_holder>MR BEN GREENWAY</account_holder>
+  </account_holders>
+  <account_type>Ultimate Awards Credit Card</account_type>
+  <start_date>2024-12-18</start_date>
+  <end_date>2025-03-17</end_date>
+  <account_number>5523 5082 0129 2868</account_number>
+  <account_bsb>Not specified</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>33034.95</total_credits>
+  <total_debits>36648.49</total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date>2024-12-20</transaction_date>
+       <transaction_description>Mercedes College Perth Perth</transaction_description>
+       <amount>517.04</amount>
+       <transaction_category>education</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-20</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-21</transaction_date>
+       <transaction_description>Suica Mobile Payment Toukiyouto ##0000 1000YEN</transaction_description>
+       <amount>10.26</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-21</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.36 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-21</transaction_date>
+       <transaction_description>Getyourguide Australia Sydney ##0000 12205YEN</transaction_description>
+       <amount>125.26</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-21</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 4.38 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-22</transaction_date>
+       <transaction_description>Viator *It-1593840857 7027495744 ##0000 86.30US DOLLAR</transaction_description>
+       <amount>138.92</amount>
+       <transaction_category>travel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-22</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 4.86 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-23</transaction_date>
+       <transaction_description>Amaysim Mobile Pty Ltd Sydney</transaction_description>
+       <amount>15.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-23</transaction_date>
+       <transaction_description>Amaysim Mobile Pty Ltd Sydney</transaction_description>
+       <amount>15.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-23</transaction_date>
+       <transaction_description>Amaysim Mobile Pty Ltd Sydney</transaction_description>
+       <amount>15.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-23</transaction_date>
+       <transaction_description>Suica Mobile Payment Toukiyouto ##0000 1000YEN</transaction_description>
+       <amount>10.26</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-23</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.36 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-23</transaction_date>
+       <transaction_description>Suica Mobile Payment Toukiyouto ##0000 1000YEN</transaction_description>
+       <amount>10.26</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-23</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.36 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-24</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-300.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-26</transaction_date>
+       <transaction_description>Steamgames.Com 4259522 Bellevue ## USA MERCHANT</transaction_description>
+       <amount>14.75</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-26</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.52 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-26</transaction_date>
+       <transaction_description>Roots Cafe Nagano ##0000 700YEN</transaction_description>
+       <amount>7.17</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-26</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.25 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-26</transaction_date>
+       <transaction_description>Sq*Penke Bar Hakuba Tokyo ##0000 800YEN</transaction_description>
+       <amount>8.19</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-26</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.29 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-26</transaction_date>
+       <transaction_description>Sq*Penke Bar Hakuba Tokyo ##0000 800YEN</transaction_description>
+       <amount>8.19</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-26</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.29 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-27</transaction_date>
+       <transaction_description>Sq*Penke Bar Hakuba Tokyo ##0000 800YEN</transaction_description>
+       <amount>8.17</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-27</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.29 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-27</transaction_date>
+       <transaction_description>Sq*Penke Bar Hakuba Tokyo ##0000 800YEN</transaction_description>
+       <amount>8.17</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-27</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.29 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-28</transaction_date>
+       <transaction_description>Emirates.Com 238264188 Sydney</transaction_description>
+       <amount>3703.84</amount>
+       <transaction_category>travel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Bears Bar Nagano ##0000 1000YEN</transaction_description>
+       <amount>10.23</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.36 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Bears Bar Nagano ##0000 2800YEN</transaction_description>
+       <amount>28.64</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 1.00 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Bears Cafe Sakka Nagano ##0000 900YEN</transaction_description>
+       <amount>9.20</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.32 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Sq*Penke Bar Hakuba Tokyo ##0000 4450YEN</transaction_description>
+       <amount>45.51</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 1.59 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Happo-One Kokusai Tick Nagano ##0000 6600YEN</transaction_description>
+       <amount>67.50</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-29</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 2.36 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-30</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-3900.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-30</transaction_date>
+       <transaction_description>Baitenfutabasanobori Yamanashi ##0000 950YEN</transaction_description>
+       <amount>9.72</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-30</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.34 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-30</transaction_date>
+       <transaction_description>Starbucks Coffee Japan Tokyo ##0000 2117YEN</transaction_description>
+       <amount>21.65</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-30</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.76 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-31</transaction_date>
+       <transaction_description>Tokyodome City Shop&amp;Re Toukiyouto ##0000 2400YEN</transaction_description>
+       <amount>24.46</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-31</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.86 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-31</transaction_date>
+       <transaction_description>Expedia 72996886707075 Expedia.Com ##0000 242.00US DOLLAR</transaction_description>
+       <amount>390.32</amount>
+       <transaction_category>travel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-12-31</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 13.66 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-01</transaction_date>
+       <transaction_description>Marleyspoon.Com.Au Alexandria</transaction_description>
+       <amount>200.35</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-665.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Perth Duty Free Perth Airport</transaction_description>
+       <amount>155.30</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Google One Barangaroo</transaction_description>
+       <amount>12.49</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Turkish Kitchen St James</transaction_description>
+       <amount>70.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Minit Australia Pty Perth</transaction_description>
+       <amount>9.95</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Amazon Web Services Sydney</transaction_description>
+       <amount>3.80</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Coles 0356coles 0356 Karawara</transaction_description>
+       <amount>278.81</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Sq *Ramen Mitsuya Perth</transaction_description>
+       <amount>18.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-04</transaction_date>
+       <transaction_description>Myer Pty Ltd Docklands</transaction_description>
+       <amount>-142.95</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-04</transaction_date>
+       <transaction_description>Uber *Trip Sydney</transaction_description>
+       <amount>10.96</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-04</transaction_date>
+       <transaction_description>Sq *The Beach Bus Mosman Park</transaction_description>
+       <amount>18.19</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-04</transaction_date>
+       <transaction_description>Clancy's Fish Pub Fremantle</transaction_description>
+       <amount>32.50</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-04</transaction_date>
+       <transaction_description>Spa In The Park East Victoria</transaction_description>
+       <amount>38.00</amount>
+       <transaction_category>health</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>Www.Jetpacglobal.Com Singapore ##0000 5.00US DOLLAR</transaction_description>
+       <amount>8.08</amount>
+       <transaction_category>travel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.28 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>Lsp*Hoopla Espresso Kensington</transaction_description>
+       <amount>95.20</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>Coles 0296coles 0296 Angelo Street</transaction_description>
+       <amount>21.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>Coles 0296coles 0296 Angelo Street</transaction_description>
+       <amount>83.33</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>F45 South Perth South Perth</transaction_description>
+       <amount>55.00</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>Farmer Jacks Como Como</transaction_description>
+       <amount>8.07</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-656.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>The Australian Sports Belconnen</transaction_description>
+       <amount>100.00</amount>
+       <transaction_category>sports</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Speedy Spares Kensington</transaction_description>
+       <amount>40.50</amount>
+       <transaction_category>automotive</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Sim Cards, Esim - Sim Central ##0000 22.90US DOLLAR</transaction_description>
+       <amount>37.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 1.30 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>United Perth Airport Perth Airport</transaction_description>
+       <amount>46.95</amount>
+       <transaction_category>travel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Steam Purchase Seattle ## DEU MERCHANT</transaction_description>
+       <amount>12.77</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.45 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>East V West Perth Airport</transaction_description>
+       <amount>10.10</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Post South Perth Angel South Perth</transaction_description>
+       <amount>1.50</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Telstra Services Melbourne</transaction_description>
+       <amount>110.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Steamgames.Com 4259522 Bellevue ## USA MERCHANT</transaction_description>
+       <amount>32.80</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 1.15 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Coles 0296coles 0296 Angelo Street</transaction_description>
+       <amount>82.26</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Southern Clinic Como</transaction_description>
+       <amount>95.00</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-1100.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Marleyspoon.Com.Au Alexandria</transaction_description>
+       <amount>200.35</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Bunnings 392000 East Victoria</transaction_description>
+       <amount>82.18</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Telco Pay Fortitude Val</transaction_description>
+       <amount>24.80</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Officeworks 0601office E Victoria Pk</transaction_description>
+       <amount>17.70</amount>
+       <transaction_category>office</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Bunnings 392000 East Victoria</transaction_description>
+       <amount>50.21</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Aldi Stores - East VIC St James</transaction_description>
+       <amount>41.13</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Movies By Burswood (In Burswood</transaction_description>
+       <amount>14.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Dot - Licensing West Perth</transaction_description>
+       <amount>28.40</amount>
+       <transaction_category>government</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Trainline London ##0000 79.70POUND STERLING</transaction_description>
+       <amount>158.95</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 5.56 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Kmart 1278kmart 1278 E Victoria Pk</transaction_description>
+       <amount>21.15</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>21.50</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Sp City West West Perth</transaction_description>
+       <amount>4.09</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Ikea Perth Innaloo</transaction_description>
+       <amount>41.00</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-10</transaction_date>
+       <transaction_description>Ikea Perth Innaloo</transaction_description>
+       <amount>143.60</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-11</transaction_date>
+       <transaction_description>Farmer Jacks Como Como</transaction_description>
+       <amount>18.74</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-11</transaction_date>
+       <transaction_description>Ikea Pty Ltd Tempe</transaction_description>
+       <amount>13.00</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-12</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>37.49</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-12</transaction_date>
+       <transaction_description>Amazon AU Retail Sydney</transaction_description>
+       <amount>4.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-12</transaction_date>
+       <transaction_description>The Hare and Hounds Lymington ##0000 10.00POUND STERLING</transaction_description>
+       <amount>19.92</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-12</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.70 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-12</transaction_date>
+       <transaction_description>Google Youtubepremium Barangaroo</transaction_description>
+       <amount>32.99</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-12</transaction_date>
+       <transaction_description>Ls North Street Store Cottesloe</transaction_description>
+       <amount>43.43</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-12</transaction_date>
+       <transaction_description>F45 South Perth South Perth</transaction_description>
+       <amount>55.00</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-12</transaction_date>
+       <transaction_description>Wiz Phy Garden 2 Booragoon</transaction_description>
+       <amount>26.94</amount>
+       <transaction_category>health</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Chilliz Karawara Karawara</transaction_description>
+       <amount>24.20</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-950.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Rac Insurance Online West Perth</transaction_description>
+       <amount>131.08</amount>
+       <transaction_category>insurance</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Rac Insurance Qb West Perth</transaction_description>
+       <amount>60.08</amount>
+       <transaction_category>insurance</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Kambarang Garden Cent Bentley</transaction_description>
+       <amount>91.91</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Kambarang Garden Cent Bentley</transaction_description>
+       <amount>52.52</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Farmer Jacks Como Como</transaction_description>
+       <amount>74.42</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-14</transaction_date>
+       <transaction_description>Grilld Pty Ltd Karawara</transaction_description>
+       <amount>33.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-14</transaction_date>
+       <transaction_description>Coles 0356coles 0356 Karawara</transaction_description>
+       <amount>152.18</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-15</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-660.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-15</transaction_date>
+       <transaction_description>Marleyspoon.Com.Au Alexandria</transaction_description>
+       <amount>200.35</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-15</transaction_date>
+       <transaction_description>Gfn By Cloudgg Balcatta</transaction_description>
+       <amount>14.99</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-15</transaction_date>
+       <transaction_description>Woolworths 4333 Victoria Park</transaction_description>
+       <amount>9.50</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-15</transaction_date>
+       <transaction_description>Chemist Warehouse Victoria Park</transaction_description>
+       <amount>100.87</amount>
+       <transaction_category>health</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-15</transaction_date>
+       <transaction_description>Pin* Hockey WA Bentley</transaction_description>
+       <amount>98.57</amount>
+       <transaction_category>sports</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-16</transaction_date>
+       <transaction_description>Central Park Curry Hou Perth</transaction_description>
+       <amount>17.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-16</transaction_date>
+       <transaction_description>Monthly Fee Waived</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Chilliz Karawara Karawara</transaction_description>
+       <amount>23.50</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Gfn By Cloudgg Balcatta</transaction_description>
+       <amount>19.48</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Super Cheap Auto Victoria Park</transaction_description>
+       <amount>6.49</amount>
+       <transaction_category>automotive</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Atlas Fuel WA Welshpool</transaction_description>
+       <amount>47.20</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Tesco Stores 2577 Gravesend ##0000 3.55POUND STERLING</transaction_description>
+       <amount>7.01</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.25 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Made In Italy Gravesend ##0000 48.50POUND STERLING</transaction_description>
+       <amount>95.73</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 3.35 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Kent &amp; Medway Trading Chatham ##0000 6.70POUND STERLING</transaction_description>
+       <amount>13.21</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.46 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Officeworks 0601office E Victoria Pk</transaction_description>
+       <amount>14.23</amount>
+       <transaction_category>office</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Farmer Jacks Como Como</transaction_description>
+       <amount>42.95</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Steam Purchase Seattle ## DEU MERCHANT</transaction_description>
+       <amount>5.49</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.19 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-18</transaction_date>
+       <transaction_description>Optus Stadium Burswood</transaction_description>
+       <amount>42.40</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-18</transaction_date>
+       <transaction_description>Optus Stadium Burswood</transaction_description>
+       <amount>24.10</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-18</transaction_date>
+       <transaction_description>Tfl Travel CH Tfl.Gov.Uk/Cp ##0000 8.10POUND STERLING</transaction_description>
+       <amount>15.99</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-18</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.56 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-18</transaction_date>
+       <transaction_description>Google*Watoday.Com.Au G.Co/Helppay#</transaction_description>
+       <amount>8.65</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>The Little Banksia Kensington</transaction_description>
+       <amount>18.50</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>Ls The Orange Box North Fremant</transaction_description>
+       <amount>70.06</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>Altonapoli London ##0000 15.64POUND STERLING</transaction_description>
+       <amount>30.87</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 1.08 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>F45 South Perth South Perth</transaction_description>
+       <amount>55.00</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>Tfl Travel CH Tfl.Gov.Uk/Cp ##0000 3.10POUND STERLING</transaction_description>
+       <amount>6.12</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.21 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>Zlr*Arik's Kebabs South Perth</transaction_description>
+       <amount>65.99</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>C2 Hi Thai Perth</transaction_description>
+       <amount>17.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-410.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-200.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>Amaysim Mobile Pty Ltd Sydney</transaction_description>
+       <amount>15.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>Amaysim Mobile Pty Ltd Sydney</transaction_description>
+       <amount>15.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>Amaysim Mobile Pty Ltd Sydney</transaction_description>
+       <amount>15.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>Newstime Lottery Centr Perth</transaction_description>
+       <amount>43.70</amount>
+       <transaction_category>lottery</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>Ellenor Bexleyheath ##0000 4.00POUND STERLING</transaction_description>
+       <amount>7.90</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-20</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.28 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-21</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>13.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-21</transaction_date>
+       <transaction_description>Hilton Perth Perth</transaction_description>
+       <amount>48.96</amount>
+       <transaction_category>accommodation</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-21</transaction_date>
+       <transaction_description>Hilton Perth Perth</transaction_description>
+       <amount>27.00</amount>
+       <transaction_category>accommodation</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-21</transaction_date>
+       <transaction_description>Farmer Jacks Como Como</transaction_description>
+       <amount>54.55</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-22</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-650.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-22</transaction_date>
+       <transaction_description>Marleyspoon.Com.Au Alexandria</transaction_description>
+       <amount>208.31</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-22</transaction_date>
+       <transaction_description>Mcdonalds 950294 Perth</transaction_description>
+       <amount>17.85</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-650.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Dicafe Pty Ltd Bentley</transaction_description>
+       <amount>20.22</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>46.15</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Petbarn North Ryde</transaction_description>
+       <amount>181.91</amount>
+       <transaction_category>pets</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>This Above All Kensington</transaction_description>
+       <amount>307.74</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Hockeynz Whangaparaoa ##0000 15.00NZ DOLLAR</transaction_description>
+       <amount>13.60</amount>
+       <transaction_category>sports</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.48 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Lsp*Hoopla Espresso Kensington</transaction_description>
+       <amount>12.30</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Estero Lounge Monmouth ##0000 11.90POUND STERLING</transaction_description>
+       <amount>23.42</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.82 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Estero Lounge Monmouth ##0000 4.10POUND STERLING</transaction_description>
+       <amount>8.09</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.28 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Pet Circle 614383337</transaction_description>
+       <amount>205.397</amount>
+       <transaction_category>pets</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-24</transaction_date>
+       <transaction_description>Nicholas&amp;P Evangelelli Perth</transaction_description>
+       <amount>12.00</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>Venueslive Management Perth</transaction_description>
+       <amount>27.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>Venueslive Management Perth</transaction_description>
+       <amount>14.20</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>Venueslive Management Perth</transaction_description>
+       <amount>6.70</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>Venueslive Management Perth</transaction_description>
+       <amount>23.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>Venueslive Management Perth</transaction_description>
+       <amount>23.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>Uber *Trip Sydney</transaction_description>
+       <amount>15.21</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>The Little Banksia Kensington</transaction_description>
+       <amount>121.10</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>Sq *Rjs Kai Kart Perth</transaction_description>
+       <amount>25.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-26</transaction_date>
+       <transaction_description>Venueslive Management Perth</transaction_description>
+       <amount>11.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-26</transaction_date>
+       <transaction_description>Farmer Jacks Como Como</transaction_description>
+       <amount>24.42</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-26</transaction_date>
+       <transaction_description>Preston Street Iga Como</transaction_description>
+       <amount>29.95</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-26</transaction_date>
+       <transaction_description>Sq *Rjs Kai Kart Perth</transaction_description>
+       <amount>50.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-26</transaction_date>
+       <transaction_description>F45 South Perth South Perth</transaction_description>
+       <amount>55.00</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-27</transaction_date>
+       <transaction_description>Sushi Time East Victoria</transaction_description>
+       <amount>10.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-27</transaction_date>
+       <transaction_description>Donado Pty Ltd East Victoria</transaction_description>
+       <amount>17.05</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-27</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>56.75</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-27</transaction_date>
+       <transaction_description>Coles Express 6909cole E Victoria Pk</transaction_description>
+       <amount>62.85</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-27</transaction_date>
+       <transaction_description>Bunnings 392000 East Victoria</transaction_description>
+       <amount>29.08</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-305.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-300.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Merlin Lewes ##0000 60.00US DOLLAR</transaction_description>
+       <amount>95.65</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 3.35 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Dan Murphy's 4064 Como</transaction_description>
+       <amount>219.89</amount>
+       <transaction_category>alcohol</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>19.98</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Farmer Jacks Como Como</transaction_description>
+       <amount>46.97</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-650.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Cabfare Payments Melbourne</transaction_description>
+       <amount>53.02</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Marleyspoon.Com.Au Alexandria</transaction_description>
+       <amount>200.35</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>6.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Coles 4824coles 4824 Cloverdale</transaction_description>
+       <amount>105.63</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Kmart 1018kmart 1018 Belmont</transaction_description>
+       <amount>43.20</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Big W 0450 Belmont</transaction_description>
+       <amount>5.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Woolworths 4348 Belmont</transaction_description>
+       <amount>70.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Nosh and Co Cloverdale</transaction_description>
+       <amount>10.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Cibo Sano Bicton</transaction_description>
+       <amount>18.19</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>24.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Melville Newspower Bicton</transaction_description>
+       <amount>41.94</amount>
+       <transaction_category>lottery</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Smp*Cyvie Nails and Be South Perth</transaction_description>
+       <amount>71.16</amount>
+       <transaction_category>beauty</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Sq *Zendora Cafe South Perth</transaction_description>
+       <amount>5.50</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>This Above All Kensington</transaction_description>
+       <amount>106.71</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>79.50</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Coles 0352coles 0352 Melville</transaction_description>
+       <amount>37.20</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Muse Studio Collective Applecross</transaction_description>
+       <amount>101.42</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Caltex Como Como</transaction_description>
+       <amount>13.00</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-725.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Atwell Newsagency Atwell</transaction_description>
+       <amount>43.70</amount>
+       <transaction_category>lottery</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Preston Street Iga Como</transaction_description>
+       <amount>67.40</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Kfc South Perth South Perth</transaction_description>
+       <amount>19.90</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Beachpoint Cafe North Coogee</transaction_description>
+       <amount>31.97</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Atwell Fresh Iga Atwell</transaction_description>
+       <amount>6.50</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Como Bowling &amp; Recrea South Perth</transaction_description>
+       <amount>9.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Como Bowling &amp; Recrea South Perth</transaction_description>
+       <amount>9.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Dan Murphy's 4064 Como</transaction_description>
+       <amount>34.99</amount>
+       <transaction_category>alcohol</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Southern Clinic Como</transaction_description>
+       <amount>152.80</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-01</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>24.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-01</transaction_date>
+       <transaction_description>Tucker Fresh Exchang Bentley</transaction_description>
+       <amount>29.95</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-01</transaction_date>
+       <transaction_description>The Groper and His Wi City Beach</transaction_description>
+       <amount>48.52</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-01</transaction_date>
+       <transaction_description>Gelare Cafe South South Perth</transaction_description>
+       <amount>12.40</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-01</transaction_date>
+       <transaction_description>Swan Yacht Club East Fremantl</transaction_description>
+       <amount>20.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Lawleys Bakery Cafe Nedlands</transaction_description>
+       <amount>28.34</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Little Banh Mi East Victoria</transaction_description>
+       <amount>10.67</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>62.62</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>64.10</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Officeworks 0601office E Victoria Pk</transaction_description>
+       <amount>145.19</amount>
+       <transaction_category>office</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Google One Barangaroo</transaction_description>
+       <amount>12.49</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>F45 South Perth South Perth</transaction_description>
+       <amount>55.00</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>The Karalee On Prest Como</transaction_description>
+       <amount>51.99</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-450.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-600.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Amazon Web Services Sydney</transaction_description>
+       <amount>3.88</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Cbcashback*Petbarn Rebate</transaction_description>
+       <amount>-20.00</amount>
+       <transaction_category>rebate</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Jojo and Sky Pty Ltd Victoria Park</transaction_description>
+       <amount>12.13</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Utopia Dfo Perth Airport</transaction_description>
+       <amount>13.72</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>78.45</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Kinky Lizard On Mews Applecross</transaction_description>
+       <amount>9.14</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Chemist Warehouse Victoria Park</transaction_description>
+       <amount>54.47</amount>
+       <transaction_category>health</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Mumbai Rocks Perth Airport</transaction_description>
+       <amount>28.50</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Bunnings 483000 Claremont</transaction_description>
+       <amount>31.63</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Kings Park Kiosk Kings Park</transaction_description>
+       <amount>6.08</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Mcdonalds South Perth South Perth</transaction_description>
+       <amount>6.45</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Pharmacy 777 Cnb Applecross</transaction_description>
+       <amount>15.98</amount>
+       <transaction_category>health</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>Perth Airport Pty Ltd Perth Airport</transaction_description>
+       <amount>17.79</amount>
+       <transaction_category>travel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>37.49</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>Atomic Espresso Cafe South Perth</transaction_description>
+       <amount>5.90</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>Coles 0296coles 0296 Angelo Street</transaction_description>
+       <amount>8.20</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>Sq *Flame 400 Burger C Perth</transaction_description>
+       <amount>19.09</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>South Perth Cycles South Perth</transaction_description>
+       <amount>108.00</amount>
+       <transaction_category>sporting</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>Southern Clinic Como</transaction_description>
+       <amount>145.00</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-1200.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Marleyspoon.Com.Au Alexandria</transaction_description>
+       <amount>149.23</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>C2 Hi Thai Perth</transaction_description>
+       <amount>17.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Ls Olbuoy Pty Ltd Cottesloe</transaction_description>
+       <amount>5.55</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Coles 0296coles 0296 Angelo Street</transaction_description>
+       <amount>266.53</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Woolworths 4301 Perth</transaction_description>
+       <amount>10.25</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Pin* Reduction Revolut Milsons Point</transaction_description>
+       <amount>419.00</amount>
+       <transaction_category>financial</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Master Pop Investments Wangara</transaction_description>
+       <amount>40.00</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Master Pop Investments Wangara</transaction_description>
+       <amount>190.00</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Smp*Delicioso Gelato Victoria Park</transaction_description>
+       <amount>7.01</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Zadarma Burgas ##0000 5.00US DOLLAR</transaction_description>
+       <amount>8.11</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Intnl Transaction Fee $ 0.28 FEE SAVED</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Nextra Cloisters Perth</transaction_description>
+       <amount>40.59</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Crow Books East Victoria</transaction_description>
+       <amount>10.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-450.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>Bunnings 392000 East Victoria</transaction_description>
+       <amount>22.79</amount>
+       <transaction_category>home</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>South Perth Dental South Perth</transaction_description>
+       <amount>166.50</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>Indigo Oscar Cottesloe</transaction_description>
+       <amount>5.55</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>Durty Nelly's App Perth</transaction_description>
+       <amount>13.85</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>Durty Nelly's App Perth</transaction_description>
+       <amount>11.12</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>Durty Nelly's App Perth</transaction_description>
+       <amount>11.12</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>396pin* Herospizza Perth</transaction_description>
+       <amount>53.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>Perth Festival Crawley</transaction_description>
+       <amount>89.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-350.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-850.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>32.49</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Ghanda Cottesloe</transaction_description>
+       <amount>49.95</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Xia~S Investment Ptqps Cottesloe</transaction_description>
+       <amount>20.02</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Cimbalino Espresso Cottesloe</transaction_description>
+       <amount>20.94</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>U Technology Peppermint Gr</transaction_description>
+       <amount>179.00</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Ls Olbuoy Pty Ltd Cottesloe</transaction_description>
+       <amount>5.55</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Woolworths 4356 Cottesloe</transaction_description>
+       <amount>6.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Woolworths 4356 Cottesloe</transaction_description>
+       <amount>110.54</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Woolworths 4303 Booragoon</transaction_description>
+       <amount>17.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Sq *Bubbles &amp; Bites East Perth</transaction_description>
+       <amount>22.42</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>New Edition Bookshop Fremantle</transaction_description>
+       <amount>24.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Cobalt Legal Pty Ltd Perth</transaction_description>
+       <amount>400.00</amount>
+       <transaction_category>legal</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Pline Ph Cottesloe Cottesloe</transaction_description>
+       <amount>22.88</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Southern Clinic Como</transaction_description>
+       <amount>147.00</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Telstra Services Melbourne</transaction_description>
+       <amount>110.00</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>59.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Tm *Ticketmasterau Melbourne</transaction_description>
+       <amount>36.20</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Zambrero Nedlands Nedlands</transaction_description>
+       <amount>16.40</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Sq *The Acai Corner - East Perth</transaction_description>
+       <amount>24.31</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Coles 0296coles 0296 Angelo Street</transaction_description>
+       <amount>71.22</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Telco Pay Fortitude Val</transaction_description>
+       <amount>24.30</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>BP Express 6192 South Perth</transaction_description>
+       <amount>103.25</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Cottesloe Gen Store Cottesloe</transaction_description>
+       <amount>12.37</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Bfwl Pty Ltd Como</transaction_description>
+       <amount>102.00</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>12.55</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>21.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Coles 0296coles 0296 Angelo Street</transaction_description>
+       <amount>2.95</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Coles 0296coles 0296 Angelo Street</transaction_description>
+       <amount>119.19</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Sq *Fremantle Buffalo Fremantle</transaction_description>
+       <amount>3.25</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Sq *Breakfast O'clock Beaconsfield</transaction_description>
+       <amount>28.42</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Sq *Tpg - Idle Hands C West Leedervi</transaction_description>
+       <amount>14.68</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Fremantle Convenienc Fremantle</transaction_description>
+       <amount>13.14</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>F45 South Perth South Perth</transaction_description>
+       <amount>55.00</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>Cicerello 'S (Fremantl Fremantle</transaction_description>
+       <amount>35.39</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>The Hoyts Corporatio Fremantle</transaction_description>
+       <amount>24.60</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-09</transaction_date>
+       <transaction_description>BP Express 6192 South Perth</transaction_description>
+       <amount>60.65</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Payment Received, Thank You</transaction_description>
+       <amount>-700.00</amount>
+       <transaction_category>payment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>21.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Sagepsychservices Spearwood</transaction_description>
+       <amount>150.00</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Wilson Parking Per344 Perth</transaction_description>
+       <amount>15.19</amount>
+       <transaction_category>parking</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Little Banh Mi East Victoria</transaction_description>
+       <amount>10.67</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>The Partisan East Perth</transaction_description>
+       <amount>45.43</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>3.80</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Subway East Victoriapa East Victoria</transaction_description>
+       <amount>18.05</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Easypark Prahran</transaction_description>
+       <amount>10.52</amount>
+       <transaction_category>parking</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Rac Insurance Online West Perth</transaction_description>
+       <amount>131.08</amount>
+       <transaction_category>insurance</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Good Grocer L0031 South Perth</transaction_description>
+       <amount>3.69</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Kings Park Kiosk Kings Park</transaction_description>
+       <amount>19.77</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Pline Ph South Perth South Perth</transaction_description>
+       <amount>13.29</amount>
+       <transaction_category>telecommunications</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Southern Clinic Como</transaction_description>
+       <amount>145.00</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Liquor Barons On Ang South Perth</transaction_description>
+       <amount>16.99</amount>
+       <transaction_category>alcohol</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>BP Express 6192 South Perth</transaction_description>
+       <amount>29.90</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Love &amp; Latte - 2 South Perth</transaction_description>
+       <amount>5.09</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Rph - Retail Cateriqps Perth</transaction_description>
+       <amount>0.40</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Marleyspoon.Com.Au Alexandria</transaction_description>
+       <amount>196.75</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Rph - Retail Cateriqps Perth</transaction_description>
+       <amount>19.30</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Google Youtubepremium Barangaroo</transaction_description>
+       <amount>32.99</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Good Grocer L0031 South Perth</transaction_description>
+       <amount>5.44</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>South Perth Cycles South Perth</transaction_description>
+       <amount>420.00</amount>
+       <transaction_category>sporting</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Swan Taxis Pty Ltd Victoria Park</transaction_description>
+       <amount>21.21</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Varsity Waterford Karawara</transaction_description>
+       <amount>45.54</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Good Grocer L0031 South Perth</transaction_description>
+       <amount>6.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Woolworths 4333 Victoria Park</transaction_description>
+       <amount>62.64</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Southern Clinic Como</transaction_description>
+       <amount>95.00</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Chemist Warehouse Victoria Park</transaction_description>
+       <amount>27.57</amount>
+       <transaction_category>health</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Duongk Holdings Pty Perth</transaction_description>
+       <amount>7.61</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Amazon AU Marketplace Sydney</transaction_description>
+       <amount>32.97</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Rac Insurance Qb West Perth</transaction_description>
+       <amount>59.92</amount>
+       <transaction_category>insurance</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Coles 0356coles 0356 Karawara</transaction_description>
+       <amount>65.35</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Apple R386 Perth City Perth</transaction_description>
+       <amount>58.00</amount>
+       <transaction_category>technology</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>The Little Banksia Kensington</transaction_description>
+       <amount>11.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Sq *Daneechi West Leedervi</transaction_description>
+       <amount>99.95</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-14</transaction_date>
+       <transaction_description>Nicholas&amp;P Evangelelli Perth</transaction_description>
+       <amount>12.00</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-14</transaction_date>
+       <transaction_description>Nicholas&amp;P Evangelelli Perth</transaction_description>
+       <amount>1.50</amount>
+       <transaction_category>services</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-14</transaction_date>
+       <transaction_description>Mercedes College Perth</transaction_description>
+       <amount>684.70</amount>
+       <transaction_category>education</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-14</transaction_date>
+       <transaction_description>Monthly Fee Waived</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>fee</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Jeanswest Park Centre East Victoria</transaction_description>
+       <amount>131.98</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Optus Stadium Burswood</transaction_description>
+       <amount>5.40</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Optus Stadium Burswood</transaction_description>
+       <amount>19.90</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Sr Holdings Hangout Pt Como</transaction_description>
+       <amount>8.09</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Sourdough Bakehouse &amp; East Victoria</transaction_description>
+       <amount>8.94</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Little Banh Mi East Victoria</transaction_description>
+       <amount>25.41</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Coles 0340coles 0340 E Victoria Pk</transaction_description>
+       <amount>96.51</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Sq *Two Slices Sandwic Scarborough</transaction_description>
+       <amount>21.32</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Sushi Time East Victoria</transaction_description>
+       <amount>10.00</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Sagepsychservices Spearwood</transaction_description>
+       <amount>150.00</amount>
+       <transaction_category>medical</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>The Little Banksia Kensington</transaction_description>
+       <amount>41.80</amount>
+       <transaction_category>dining</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Tggef L0879 East Fremantl</transaction_description>
+       <amount>6.89</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Tggef L0879 East Fremantl</transaction_description>
+       <amount>11.47</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>BP Attadale 6188 Attadale</transaction_description>
+       <amount>51.77</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>B Store Claremont</transaction_description>
+       <amount>100.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Spa In The Park East Victoria</transaction_description>
+       <amount>38.00</amount>
+       <transaction_category>health</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>South Perth South Perth</transaction_description>
+       <amount>3.10</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>South Perth South Perth</transaction_description>
+       <amount>3.10</amount>
+       <transaction_category>transport</transaction_category>
+       <balance></balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15
+</transaction_analysis>

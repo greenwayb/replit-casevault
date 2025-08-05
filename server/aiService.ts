@@ -145,7 +145,7 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
     const aiRequestPromise = anthropic.messages.stream({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
-      max_tokens: 32768, // Increased for large documents
+      max_tokens: 64000, // Maximum for Claude Sonnet 4 (64K output tokens)
       system: `You are an AI assistant specialized in extracting and analyzing information from bank statement or bank transaction PDFs. Your task is to carefully examine the provided PDF content and extract specific information.
 
 IMPORTANT: You may be provided with a number of statements combined into one file, which may or may not be in the correct order, so you should carefully analyse the file checking all data and time entries and ensure its resolved consistently across the file. Further some statements such as those used for credit cards may only have one value such as amount, which may be positive or negative. You should determine or locate a payment to the statement to determine which is a credit and which is a debit, because this may be around in a different way to a normal bank statement.
