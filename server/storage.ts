@@ -87,6 +87,7 @@ export interface IStorage {
     documentNumber?: string;
     accountGroupNumber?: string;
     aiProcessed?: boolean;
+    aiProcessingFailed?: boolean;
     fullAnalysisCompleted?: boolean;
     processingError?: string;
     csvPath?: string;
@@ -94,6 +95,10 @@ export interface IStorage {
     csvGenerated?: boolean;
     xmlPath?: string;
     xmlAnalysisData?: string;
+    totalTransactions?: number;
+    estimatedPdfCount?: number;
+    earliestTransaction?: string;
+    latestTransaction?: string;
   }): Promise<void>;
   getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]>;
   updateDocumentStatus(documentId: number, status: string): Promise<Document>;
@@ -514,6 +519,7 @@ export class DatabaseStorage implements IStorage {
       documentNumber?: string;
       accountGroupNumber?: string;
       aiProcessed?: boolean;
+      aiProcessingFailed?: boolean;
       fullAnalysisCompleted?: boolean;
       processingError?: string;
       csvPath?: string;
@@ -521,6 +527,10 @@ export class DatabaseStorage implements IStorage {
       csvGenerated?: boolean;
       xmlPath?: string;
       xmlAnalysisData?: string;
+      totalTransactions?: number;
+      estimatedPdfCount?: number;
+      earliestTransaction?: string;
+      latestTransaction?: string;
     }
   ): Promise<void> {
     const updateData: any = {

@@ -680,9 +680,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Update document to mark analysis as failed
         try {
-          await storage.updateDocumentWithAIAnalysis(documentId, {
+          await storage.updateDocumentWithAIExtraction(documentId, {
             aiProcessingFailed: true,
-            analysisError: `Workflow error: ${error.message}`
+            processingError: `Workflow error: ${error.message}`
           });
         } catch (updateError) {
           console.error("Failed to update document with error status:", updateError);
@@ -1057,7 +1057,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error generating auth URL:', error);
       res.status(500).json({ 
         message: 'Google OAuth credentials not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.',
-        error: error.message 
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -1188,7 +1188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             caseId,
             filename: uniqueFilename,
             originalName,
-            category: 'BANKING', // Default to BANKING for now
+            category: 'BANKING' as const, // Default to BANKING for now
             fileSize: buffer.length,
             mimeType: metadata.mimeType || 'application/pdf',
             uploadedById: userId,
@@ -1199,52 +1199,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Process with AI for banking documents
           if (documentData.category === 'BANKING') {
             try {
-              const documentNumber = await generateDocumentNumber(caseId);
-              const accountGroupNumber = await generateAccountGroupNumber(caseId);
+              const existingGroups = await storage.getExistingAccountGroups(caseId, 'BANKING');
+              const accountGroupNumber = generateAccountGroupNumber(existingGroups, originalName);
+              const documentNumber = generateDocumentNumber('BANKING', accountGroupNumber, 1);
               
-              const analysisResult = await analyzeBankingDocument(filePath, originalName);
+              const analysisResult = await analyzeBankingDocument(filePath);
               
-              if (analysisResult.success && analysisResult.data) {
-                // Generate CSV if transaction data is available
-                let csvPath = null;
-                let csvRowCount = 0;
-                let csvGenerated = false;
-                
-                try {
-                  const csvResult = await generateCSVFromPDF(filePath, originalName);
-                  if (csvResult.success && csvResult.csvPath) {
-                    csvPath = path.basename(csvResult.csvPath);
-                    csvRowCount = csvResult.rowCount || 0;
-                    csvGenerated = true;
-                  }
-                } catch (csvError) {
-                  console.error("CSV generation failed:", csvError);
+              // Generate CSV if transaction data is available
+              let csvPath = null;
+              let csvRowCount = 0;
+              let csvGenerated = false;
+              
+              try {
+                const csvResult = await generateCSVFromPDF(filePath, document.id);
+                if (csvResult.csvPath) {
+                  csvPath = path.basename(csvResult.csvPath);
+                  csvRowCount = csvResult.rowCount || 0;
+                  csvGenerated = true;
                 }
-                
-                // Update document with AI analysis results
-                await storage.updateDocument(document.id, {
-                  ...analysisResult.data,
-                  documentNumber,
-                  accountGroupNumber,
-                  aiProcessed: true,
-                  csvPath,
-                  csvRowCount,
-                  csvGenerated,
-                });
+              } catch (csvError) {
+                console.error("CSV generation failed:", csvError);
               }
-            } catch (aiError) {
+              
+              // Convert date strings to Date objects
+              const updateData: any = {
+                ...analysisResult,
+                documentNumber,
+                accountGroupNumber,
+                aiProcessed: true,
+                csvPath,
+                csvRowCount,
+                csvGenerated,
+              };
+              
+              // Convert date fields properly
+              if (analysisResult.transactionDateFrom) {
+                updateData.transactionDateFrom = new Date(analysisResult.transactionDateFrom);
+              }
+              if (analysisResult.transactionDateTo) {
+                updateData.transactionDateTo = new Date(analysisResult.transactionDateTo);
+              }
+              
+              // Update document with AI analysis results
+              await storage.updateDocumentWithAIExtraction(document.id, updateData);
+            } catch (aiError: unknown) {
               console.error("AI processing failed:", aiError);
-              await storage.updateDocument(document.id, {
+              await storage.updateDocumentWithAIExtraction(document.id, {
                 aiProcessed: false,
-                processingError: aiError.message,
+                aiProcessingFailed: true,
+                processingError: aiError instanceof Error ? aiError.message : 'Unknown error',
               });
             }
           }
           
           importedCount++;
-        } catch (fileError) {
+        } catch (fileError: unknown) {
           console.error(`Failed to import file ${fileId}:`, fileError);
-          errors.push(`Failed to import file: ${fileError.message}`);
+          errors.push(`Failed to import file: ${fileError instanceof Error ? fileError.message : 'Unknown error'}`);
         }
       }
 
@@ -1435,7 +1446,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check permissions based on current status and target status
-      const canUpdateStatus = validateStatusTransition(document.status, status, userRoles);
+      const canUpdateStatus = validateStatusTransition(document.status || 'UPLOADED', status, userRoles);
       if (!canUpdateStatus) {
         return res.status(403).json({ 
           message: `You cannot change document status from ${document.status} to ${status} with roles ${userRoles.join(', ')}` 

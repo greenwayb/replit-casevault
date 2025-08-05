@@ -24,6 +24,22 @@ const anthropic = new Anthropic({
 });
 
 export interface BankingDocumentAnalysis {
+  success?: boolean;
+  data?: {
+    accountHolderName: string;
+    accountName: string;
+    financialInstitution: string;
+    accountNumber?: string;
+    bsbSortCode?: string;
+    transactionDateFrom?: string;
+    transactionDateTo?: string;
+    confidence: number;
+    xmlAnalysis?: string;
+    totalTransactions?: number;
+    estimatedPdfCount?: number;
+    earliestTransaction?: string;
+    latestTransaction?: string;
+  };
   accountHolderName: string;
   accountName: string;
   financialInstitution: string;
@@ -33,6 +49,10 @@ export interface BankingDocumentAnalysis {
   transactionDateTo?: string;
   confidence: number;
   xmlAnalysis?: string; // Full XML analysis data
+  totalTransactions?: number;
+  estimatedPdfCount?: number;
+  earliestTransaction?: string;
+  latestTransaction?: string;
 }
 
 export interface XMLGenerationResult {
@@ -41,6 +61,7 @@ export interface XMLGenerationResult {
 }
 
 export interface CSVGenerationResult {
+  success?: boolean;
   csvPath: string;
   csvContent: string;
   rowCount: number;
