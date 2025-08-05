@@ -8,7 +8,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF } from "./aiService";
+import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF, generateXMLFromAnalysis } from "./aiService";
 import { GoogleDriveService } from "./googleDriveService";
 import { DisclosurePdfService } from "./disclosurePdfService";
 
@@ -458,7 +458,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Processing endpoint for banking documents (step 2)
+  // AI Processing endpoint for banking documents - Phase 1: Basic field extraction
   app.post('/api/documents/:documentId/process-ai', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
@@ -481,72 +481,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "AI processing only available for banking documents" });
       }
 
-      // Process Banking documents with AI
+      // Phase 1: Extract basic banking fields only
       try {
-        const { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber } = await import('./aiService');
+        const { extractBasicBankingFields } = await import('./aiServiceBasic');
         const filePath = path.join(uploadDir, document.filename);
         
-        // Analyze the document with AI
-        const analysis = await analyzeBankingDocument(filePath);
+        // Phase 1: Extract basic fields only
+        const basicFields = await extractBasicBankingFields(filePath);
         
-        // Get existing account groups for this case
-        const existingGroups = await storage.getExistingAccountGroups(document.caseId, 'BANKING');
+        // Convert basic fields to expected format for confirmation modal
+        const accountHolderName = basicFields.accountHolders.join(' & ') || 'Unknown';
         
-        // Check if account holder name already exists
-        const allCaseDocuments = await storage.getDocumentsByCase(document.caseId);
-        const existingAccount = allCaseDocuments.find(doc => 
-          doc.category === 'BANKING' && 
-          doc.accountHolderName?.toLowerCase() === analysis.accountHolderName.toLowerCase()
-        );
-        
-        let accountGroupNumber: string;
-        let documentSequence: number;
-        
-        if (existingAccount && existingAccount.accountGroupNumber) {
-          // Use existing account group
-          accountGroupNumber = existingAccount.accountGroupNumber;
-          const groupDocuments = await storage.getDocumentsByAccountGroup(document.caseId, accountGroupNumber);
-          documentSequence = groupDocuments.length + 1;
-        } else {
-          // Create new account group
-          accountGroupNumber = generateAccountGroupNumber(existingGroups, analysis.accountHolderName);
-          documentSequence = 1;
-        }
-        
-        const documentNumber = generateDocumentNumber('BANKING', accountGroupNumber, documentSequence);
-        
-        // Generate CSV from PDF content
-        let csvInfo = { csvPath: '', csvRowCount: 0, csvGenerated: false };
-        try {
-          const csvResult = await generateCSVFromPDF(filePath, document.id);
-          csvInfo = {
-            csvPath: csvResult.csvPath,
-            csvRowCount: csvResult.rowCount,
-            csvGenerated: !!csvResult.csvContent
-          };
-        } catch (csvError) {
-          console.error("CSV generation failed:", csvError);
-          // Continue without CSV - this is non-critical
-        }
-
-        // Return document with extracted AI analysis for confirmation
+        // Return the basic analysis results for user review - Phase 1 complete
         res.json({
           id: document.id,
           caseId: document.caseId,
           filename: document.filename,
           originalName: document.originalName,
           extractedBankingInfo: {
-            accountHolderName: analysis.accountHolderName,
-            accountName: analysis.accountName,
-            financialInstitution: analysis.financialInstitution,
-            accountNumber: analysis.accountNumber,
-            bsbSortCode: analysis.bsbSortCode,
-            transactionDateFrom: analysis.transactionDateFrom,
-            transactionDateTo: analysis.transactionDateTo,
-            documentNumber,
-            accountGroupNumber,
-            csvInfo
-          }
+            financialInstitution: basicFields.financialInstitution,
+            accountHolderName: accountHolderName,
+            accountName: basicFields.accountType,
+            accountNumber: basicFields.accountNumber,
+            bsbSortCode: basicFields.accountBsb,
+            transactionDateFrom: basicFields.startDate,
+            transactionDateTo: basicFields.endDate,
+            // No CSV, XML or detailed analysis yet - Phase 2 not started
+            csvInfo: null,
+            xmlInfo: null,
+            xmlAnalysisData: null,
+          },
+          totalTransactions: basicFields.totalTransactions,
+          estimatedPdfCount: basicFields.estimatedPdfCount,
+          earliestTransaction: basicFields.earliestTransaction,
+          latestTransaction: basicFields.latestTransaction,
+          confidence: basicFields.confidence,
+          requiresConfirmation: true,
+          analysisPhase: 'basic' // Indicate this is Phase 1 only
         });
 
       } catch (aiError) {
@@ -574,6 +545,162 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error processing AI for document:", error);
       res.status(500).json({ message: "Failed to process document with AI" });
+    }
+  });
+
+  // Phase 2: Full transaction analysis endpoint
+  app.post('/api/documents/:documentId/full-analysis', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const documentId = parseInt(req.params.documentId);
+
+      // Get the document
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check if user has access to this case
+      const userRoles = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
+        return res.status(403).json({ message: "Access denied to this case" });
+      }
+
+      // Only process banking documents
+      if (document.category !== 'BANKING') {
+        return res.status(400).json({ message: "Full analysis only available for banking documents" });
+      }
+
+      // Check if basic analysis was completed
+      if (!document.aiProcessed) {
+        return res.status(400).json({ message: "Basic analysis must be completed first" });
+      }
+
+      // Phase 2: Full transaction analysis - XML-first approach
+      try {
+        const { analyzeBankingDocument, generateCSVFromXML, generateXMLFromAnalysis } = await import('./aiService');
+        const filePath = path.join(uploadDir, document.filename);
+        
+        console.log(`Starting full analysis for document ${documentId}`);
+        
+        // Create log file for detailed AI processing logs
+        const fs = await import('fs');
+        const { fileURLToPath } = await import('url');
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        const logsDir = path.join(__dirname, '../logs');
+        if (!fs.existsSync(logsDir)) {
+          fs.mkdirSync(logsDir, { recursive: true });
+        }
+        const logFile = path.join(logsDir, `ai-processing-${documentId}.log`);
+        
+        const logToFile = (message: string) => {
+          const timestamp = new Date().toISOString();
+          const logMessage = `[${timestamp}] ${message}\n`;
+          fs.appendFileSync(logFile, logMessage);
+          console.log(message); // Also log to console
+        };
+        
+        logToFile(`Starting full analysis for document ${documentId}`);
+        logToFile(`Log file location: ${logFile}`);
+        
+        // Step 1: Generate comprehensive XML analysis first
+        let xmlAnalysisData = '';
+        let xmlInfo = { xmlPath: '', xmlGenerated: false };
+        let analysisError = null;
+        
+        try {
+          logToFile('Step 1: Running AI analysis to generate XML...');
+          const startTime = Date.now();
+          const analysis = await analyzeBankingDocument(filePath);
+          
+          const elapsed = Date.now() - startTime;
+          logToFile(`AI analysis completed in ${elapsed}ms`);
+          
+          if (!analysis.xmlAnalysis) {
+            logToFile(`AI Analysis result: ${JSON.stringify(analysis, null, 2)}`);
+            throw new Error('AI analysis did not produce XML data - check server console for full AI response');
+          }
+          
+          // Generate XML file from analysis
+          const xmlResult = await generateXMLFromAnalysis(analysis.xmlAnalysis, document.id);
+          xmlInfo = {
+            xmlPath: xmlResult.xmlPath,
+            xmlGenerated: !!xmlResult.xmlContent
+          };
+          xmlAnalysisData = xmlResult.xmlContent;
+          logToFile('Step 1: XML generation completed successfully');
+          
+        } catch (xmlError: any) {
+          logToFile(`Step 1: XML generation failed: ${xmlError.message}`);
+          logToFile(`Error stack: ${xmlError.stack}`);
+          analysisError = `XML generation failed: ${xmlError.message}`;
+          xmlAnalysisData = '';
+          xmlInfo = { xmlPath: '', xmlGenerated: false };
+        }
+
+        // Step 2: CSV generation removed as requested by user
+        logToFile('Step 2: CSV generation disabled by user request');
+
+        // Step 3: Update document with results
+        logToFile('Step 3: Updating document with analysis results...');
+        const updateData: any = {
+          fullAnalysisCompleted: !analysisError,
+          xmlPath: xmlInfo.xmlPath,
+          xmlAnalysisData: xmlAnalysisData,
+        };
+
+        if (analysisError) {
+          updateData.analysisError = analysisError;
+          updateData.aiProcessingFailed = true;
+        }
+
+        const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, updateData);
+
+        logToFile('Step 3: Document updated successfully');
+        logToFile(`Analysis completed. Log saved to: ${logFile}`);
+
+        // Return comprehensive response with error details if any
+        res.json({
+          ...updatedDocument,
+          xmlInfo,
+          xmlAnalysisData,
+          analysisError,
+          message: analysisError 
+            ? `Analysis completed with errors: ${analysisError}` 
+            : "Full analysis completed successfully",
+          processingSteps: {
+            xmlGenerated: xmlInfo.xmlGenerated,
+            errorOccurred: !!analysisError
+          }
+        });
+
+      } catch (error: any) {
+        console.error("Full analysis workflow failed:", error);
+        
+        // Update document to mark analysis as failed
+        try {
+          await storage.updateDocumentWithAIExtraction(documentId, {
+            aiProcessingFailed: true,
+            processingError: `Workflow error: ${error.message}`
+          });
+        } catch (updateError) {
+          console.error("Failed to update document with error status:", updateError);
+        }
+        
+        res.status(500).json({ 
+          message: "Failed to complete full analysis",
+          error: error.message,
+          processingSteps: {
+            xmlGenerated: false,
+            errorOccurred: true
+          }
+        });
+      }
+
+    } catch (error) {
+      console.error("Error in full analysis endpoint:", error);
+      res.status(500).json({ message: "Failed to process full analysis" });
     }
   });
 
@@ -645,7 +772,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/documents/:id/confirm-banking", isAuthenticated, async (req: any, res) => {
     try {
       const documentId = parseInt(req.params.id);
-      const { bankingInfo, csvInfo, isManualReview } = req.body;
+      const { bankingInfo, csvInfo, xmlInfo, xmlAnalysisData, isManualReview } = req.body;
       
       const { BankAbbreviationService } = await import('./bankAbbreviationService');
       const { DocumentNumberingService } = await import('./documentNumberingService');
@@ -674,22 +801,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
 
       // Update document with confirmed banking analysis
-      const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, {
+      const updatedDocument = await storage.updateDocumentWithAIExtraction(documentId, {
         accountHolderName: bankingInfo.accountHolderName,
         accountName: bankingInfo.accountName,
         financialInstitution: bankingInfo.financialInstitution,
-        bankAbbreviation,
         accountNumber: bankingInfo.accountNumber,
         bsbSortCode: bankingInfo.bsbSortCode,
-        transactionDateFrom: bankingInfo.transactionDateFrom ? new Date(bankingInfo.transactionDateFrom) : undefined,
-        transactionDateTo: bankingInfo.transactionDateTo ? new Date(bankingInfo.transactionDateTo) : undefined,
+        transactionDateFrom: bankingInfo.transactionDateFrom || undefined,
+        transactionDateTo: bankingInfo.transactionDateTo || undefined,
+        totalTransactions: req.body.totalTransactions,
+        estimatedPdfCount: req.body.estimatedPdfCount,
+        earliestTransaction: req.body.earliestTransaction,
+        latestTransaction: req.body.latestTransaction,
         documentNumber,
         accountGroupNumber: groupNumber,
-        displayName,
         aiProcessed: true,
         csvPath: csvInfo?.csvPath,
         csvRowCount: csvInfo?.csvRowCount,
         csvGenerated: csvInfo?.csvGenerated || false,
+        xmlPath: xmlInfo?.xmlPath,
+        xmlAnalysisData: xmlAnalysisData,
       });
 
       res.json(updatedDocument);
@@ -714,6 +845,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error rejecting banking document:", error);
       res.status(500).json({ message: "Failed to reject banking document" });
+    }
+  });
+
+  // Get XML data for a document
+  app.get("/api/documents/:id/xml", isAuthenticated, async (req: any, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+      const userId = req.user.id;
+
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check user access to the case
+      const userRoles = await storage.getUserCaseRoles(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
+        return res.status(403).json({ message: "Access denied to this case" });
+      }
+
+      if (!document.xmlAnalysisData) {
+        return res.status(404).json({ message: "No XML analysis data available" });
+      }
+
+      res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Content-Disposition', `attachment; filename="document_${documentId}_analysis.xml"`);
+      res.send(document.xmlAnalysisData);
+    } catch (error) {
+      console.error("Error serving XML data:", error);
+      res.status(500).json({ message: "Failed to serve XML data" });
     }
   });
 
@@ -896,7 +1057,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error generating auth URL:', error);
       res.status(500).json({ 
         message: 'Google OAuth credentials not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.',
-        error: error.message 
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -1027,7 +1188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             caseId,
             filename: uniqueFilename,
             originalName,
-            category: 'BANKING', // Default to BANKING for now
+            category: 'BANKING' as const, // Default to BANKING for now
             fileSize: buffer.length,
             mimeType: metadata.mimeType || 'application/pdf',
             uploadedById: userId,
@@ -1038,52 +1199,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Process with AI for banking documents
           if (documentData.category === 'BANKING') {
             try {
-              const documentNumber = await generateDocumentNumber(caseId);
-              const accountGroupNumber = await generateAccountGroupNumber(caseId);
+              const existingGroups = await storage.getExistingAccountGroups(caseId, 'BANKING');
+              const accountGroupNumber = generateAccountGroupNumber(existingGroups, originalName);
+              const documentNumber = generateDocumentNumber('BANKING', accountGroupNumber, 1);
               
-              const analysisResult = await analyzeBankingDocument(filePath, originalName);
+              const analysisResult = await analyzeBankingDocument(filePath);
               
-              if (analysisResult.success && analysisResult.data) {
-                // Generate CSV if transaction data is available
-                let csvPath = null;
-                let csvRowCount = 0;
-                let csvGenerated = false;
-                
-                try {
-                  const csvResult = await generateCSVFromPDF(filePath, originalName);
-                  if (csvResult.success && csvResult.csvPath) {
-                    csvPath = path.basename(csvResult.csvPath);
-                    csvRowCount = csvResult.rowCount || 0;
-                    csvGenerated = true;
-                  }
-                } catch (csvError) {
-                  console.error("CSV generation failed:", csvError);
+              // Generate CSV if transaction data is available
+              let csvPath = null;
+              let csvRowCount = 0;
+              let csvGenerated = false;
+              
+              try {
+                const csvResult = await generateCSVFromPDF(filePath, document.id);
+                if (csvResult.csvPath) {
+                  csvPath = path.basename(csvResult.csvPath);
+                  csvRowCount = csvResult.rowCount || 0;
+                  csvGenerated = true;
                 }
-                
-                // Update document with AI analysis results
-                await storage.updateDocument(document.id, {
-                  ...analysisResult.data,
-                  documentNumber,
-                  accountGroupNumber,
-                  aiProcessed: true,
-                  csvPath,
-                  csvRowCount,
-                  csvGenerated,
-                });
+              } catch (csvError) {
+                console.error("CSV generation failed:", csvError);
               }
-            } catch (aiError) {
+              
+              // Convert date strings to Date objects
+              const updateData: any = {
+                ...analysisResult,
+                documentNumber,
+                accountGroupNumber,
+                aiProcessed: true,
+                csvPath,
+                csvRowCount,
+                csvGenerated,
+              };
+              
+              // Convert date fields properly
+              if (analysisResult.transactionDateFrom) {
+                updateData.transactionDateFrom = new Date(analysisResult.transactionDateFrom);
+              }
+              if (analysisResult.transactionDateTo) {
+                updateData.transactionDateTo = new Date(analysisResult.transactionDateTo);
+              }
+              
+              // Update document with AI analysis results
+              await storage.updateDocumentWithAIExtraction(document.id, updateData);
+            } catch (aiError: unknown) {
               console.error("AI processing failed:", aiError);
-              await storage.updateDocument(document.id, {
+              await storage.updateDocumentWithAIExtraction(document.id, {
                 aiProcessed: false,
-                processingError: aiError.message,
+                aiProcessingFailed: true,
+                processingError: aiError instanceof Error ? aiError.message : 'Unknown error',
               });
             }
           }
           
           importedCount++;
-        } catch (fileError) {
+        } catch (fileError: unknown) {
           console.error(`Failed to import file ${fileId}:`, fileError);
-          errors.push(`Failed to import file: ${fileError.message}`);
+          errors.push(`Failed to import file: ${fileError instanceof Error ? fileError.message : 'Unknown error'}`);
         }
       }
 
@@ -1274,7 +1446,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check permissions based on current status and target status
-      const canUpdateStatus = validateStatusTransition(document.status, status, userRoles);
+      const canUpdateStatus = validateStatusTransition(document.status || 'UPLOADED', status, userRoles);
       if (!canUpdateStatus) {
         return res.status(403).json({ 
           message: `You cannot change document status from ${document.status} to ${status} with roles ${userRoles.join(', ')}` 
@@ -1312,7 +1484,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const caseId = parseInt(req.params.id);
       
       const userRoles = await storage.getUserRolesInCase(userId, caseId);
-      if (userRole !== 'DISCLOSEE') {
+      if (!userRoles.includes('DISCLOSEE')) {
         return res.status(403).json({ message: "This endpoint is only for DISCLOSEE users" });
       }
 

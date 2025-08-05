@@ -1,0 +1,305 @@
+<transaction_analysis>
+  <institution>Revolut Payments Australia Pty Ltd</institution>
+  <account_holders>
+     <account_holder>BEN GREENWAY</account_holder>
+  </account_holders>
+  <account_type>E-Money Account (Revolut Personal Account)</account_type>
+  <start_date>2025-01-03</start_date>
+  <end_date>2025-03-21</end_date>
+  <account_number>427955208</account_number>
+  <account_bsb>772772</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>8109.63</total_credits>
+  <total_debits>-7544.61</total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Transfer to Revolut user - To Evelyn G</transaction_description>
+       <amount>-1002.84</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>0.00</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Payment from Ben Greenway</transaction_description>
+       <amount>2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2000.00</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Transfer to Revolut user - To Evelyn G</transaction_description>
+       <amount>-2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>0.00</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Payment from Ben Greenway</transaction_description>
+       <amount>3400.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3400.00</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Transfer to Revolut user - To Evelyn G (with fee)</transaction_description>
+       <amount>-3378.41</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>38.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-04</transaction_date>
+       <transaction_description>Payment from Ben Greenway</transaction_description>
+       <amount>100.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>138.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Radhe Krishna Venture, Booragoon</transaction_description>
+       <amount>-31.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>107.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Payment from Ben Greenway</transaction_description>
+       <amount>2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2107.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-24</transaction_date>
+       <transaction_description>Transfer from Revolut user - From GRANT PORTER LITTLE</transaction_description>
+       <amount>80.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2187.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Square - Sq *perth Festival Casa M, Crawley</transaction_description>
+       <amount>-24.38</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2162.93</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Square - Sq *perth Festival Casa M, Crawley</transaction_description>
+       <amount>-36.58</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2126.35</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Square - Sq *perth Festival Casa M, Crawley</transaction_description>
+       <amount>-24.38</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2101.97</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Square - Sq *perth Festival Casa M, Crawley</transaction_description>
+       <amount>-24.38</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2077.59</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Google Call Recorder</transaction_description>
+       <amount>-18.99</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>2058.60</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-23</transaction_date>
+       <transaction_description>Exchanged to AUD (from GBP)</transaction_description>
+       <amount>2.68</amount>
+       <transaction_category>currency_exchange</transaction_category>
+       <balance>2061.28</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-23</transaction_date>
+       <transaction_description>Exchanged to AUD (from JPY)</transaction_description>
+       <amount>26.65</amount>
+       <transaction_category>currency_exchange</transaction_category>
+       <balance>2087.93</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-03</transaction_date>
+       <transaction_description>IKEA Perth, Innaloo</transaction_description>
+       <amount>-300.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1787.93</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-04</transaction_date>
+       <transaction_description>Coles 0340, E Victoria Pk</transaction_description>
+       <amount>-258.84</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1529.09</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-05</transaction_date>
+       <transaction_description>Pinto Thai Restaurant, Kensington</transaction_description>
+       <amount>-42.26</amount>
+       <transaction_category>dining</transaction_category>
+       <balance>1486.83</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-05</transaction_date>
+       <transaction_description>Kmart 1278, E Victoria Pk</transaction_description>
+       <amount>-18.90</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1467.93</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-06</transaction_date>
+       <transaction_description>Coles 0340, E Victoria Pk</transaction_description>
+       <amount>-17.90</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1450.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-08</transaction_date>
+       <transaction_description>Farmer Jacks Como, Como</transaction_description>
+       <amount>-53.44</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1396.59</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-08</transaction_date>
+       <transaction_description>Coles 0296, Angelo Street</transaction_description>
+       <amount>-23.45</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1373.14</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-10</transaction_date>
+       <transaction_description>Coles 0296, Angelo Street</transaction_description>
+       <amount>-92.02</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1281.12</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-12</transaction_date>
+       <transaction_description>Coles 0296, Angelo Street</transaction_description>
+       <amount>-15.35</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1265.77</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-13</transaction_date>
+       <transaction_description>Tucker Fresh Exchang, Bentley</transaction_description>
+       <amount>-16.90</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1248.87</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-13</transaction_date>
+       <transaction_description>Coles 0296, Angelo Street</transaction_description>
+       <amount>-86.95</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1161.92</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-18</transaction_date>
+       <transaction_description>Coles 0296, Angelo Street</transaction_description>
+       <amount>-14.67</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1147.25</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-19</transaction_date>
+       <transaction_description>Coles 0296, Angelo Street</transaction_description>
+       <amount>-18.60</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1128.65</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-19</transaction_date>
+       <transaction_description>Coles 0296, Angelo Street</transaction_description>
+       <amount>-19.35</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1109.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-19</transaction_date>
+       <transaction_description>Payment from Ben Greenway</transaction_description>
+       <amount>500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1609.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-21</transaction_date>
+       <transaction_description>Coles 0296, Angelo Street</transaction_description>
+       <amount>-41.44</amount>
+       <transaction_category>groceries</transaction_category>
+       <balance>1567.86</balance>
+     </transaction>
+  </transactions>
+  <inflows>
+    <from>
+       <target>BEN GREENWAY</target>
+       <total_amount>8000.00</total_amount>
+    </from>
+    <from>
+       <target>GRANT PORTER LITTLE</target>
+       <total_amount>80.00</total_amount>
+    </from>
+    <from>
+       <target>Currency Exchange</target>
+       <total_amount>29.33</total_amount>
+    </from>
+  </inflows>
+  <outflows>
+    <to>
+       <target>EVELYN GREENWAY</target>
+       <total_amount>6381.25</total_amount>
+    </to>
+    <to>
+       <target>Coles (various locations)</target>
+       <total_amount>588.17</total_amount>
+    </to>
+    <to>
+       <target>IKEA Perth</target>
+       <total_amount>300.00</total_amount>
+    </to>
+    <to>
+       <target>Perth Festival (Square)</target>
+       <total_amount>109.72</total_amount>
+    </to>
+    <to>
+       <target>Farmer Jacks Como</target>
+       <total_amount>53.44</total_amount>
+    </to>
+    <to>
+       <target>Pinto Thai Restaurant</target>
+       <total_amount>42.26</total_amount>
+    </to>
+    <to>
+       <target>Radhe Krishna Venture</target>
+       <total_amount>31.00</total_amount>
+    </to>
+    <to>
+       <target>Kmart East Victoria Park</target>
+       <total_amount>18.90</total_amount>
+    </to>
+    <to>
+       <target>Google Call Recorder</target>
+       <total_amount>18.99</total_amount>
+    </to>
+    <to>
+       <target>Tucker Fresh</target>
+       <total_amount>16.90</total_amount>
+    </to>
+  </outflows>
+  <analysis_summary>
+  This Revolut bank statement for BEN GREENWAY covers the period from January 3, 2025 to March 21, 2025. The account shows significant transfer activity, particularly large transfers to EVELYN GREENWAY totaling AU$6,381.25. The account received regular payments from Ben Greenway himself (likely internal transfers between accounts) totaling AU$8,000.00. 
+
+  The spending pattern shows frequent grocery shopping at Coles (multiple locations) totaling AU$588.17, indicating regular household expenses. There was one significant purchase at IKEA for AU$300.00 and entertainment expenses at Perth Festival totaling AU$109.72.
+
+  The account maintains a healthy positive balance throughout the period, ending at AU$1,567.86. The statement also shows some currency exchange activity, converting small amounts from GBP and JPY to AUD. There's one pending transaction at Angelo Street Market for AU$4.53 at the time of statement generation.
+
+  Overall, this appears to be a personal spending account with regular funding from the account holder and typical household and personal expenses.
+  </analysis_summary>
+</transaction_analysis>

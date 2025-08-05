@@ -1,0 +1,207 @@
+<transaction_analysis>
+  <institution>Commonwealth Bank</institution>
+  <account_holders>
+     <account_holder>Evelyn Greenway</account_holder>
+  </account_holders>
+  <account_type>Smart Access</account_type>
+  <start_date>2025-03-05</start_date>
+  <end_date>2025-04-26</end_date>
+  <account_number>06 7873 15978048</account_number>
+  <account_bsb>Not found</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>33426.31</total_credits>
+  <total_debits>28365.50</total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date>2025-03-06</transaction_date>
+       <transaction_description>Fast Transfer From MRS LISA J GRANT</transaction_description>
+       <amount>200.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>200.00</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-10</transaction_date>
+       <transaction_description>Transfer from xx8509 CommBank app Bill</transaction_description>
+       <amount>75.79</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>275.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-11</transaction_date>
+       <transaction_description>WWW.9ROUND* WWW.9ROUND</transaction_description>
+       <amount>-98.00</amount>
+       <transaction_category>fitness</transaction_category>
+       <balance>177.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-11</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN & MISS EVELYN CREDIT TO ACCOUNT Bills</transaction_description>
+       <amount>1100.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1277.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-13</transaction_date>
+       <transaction_description>JB HIFI MOBILE SOUTHBANK AUS Card xx9203</transaction_description>
+       <amount>-59.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1218.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-13</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN & MISS EVELYN CREDIT TO ACCOUNT</transaction_description>
+       <amount>2294.31</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3513.10</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-13</transaction_date>
+       <transaction_description>Direct Credit 480392 UNITINGCARE WEST UNITINGWA</transaction_description>
+       <amount>1500.00</amount>
+       <transaction_category>income</transaction_category>
+       <balance>5013.10</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-15</transaction_date>
+       <transaction_description>POST KARAWARA LPO WA AU Card xx9203</transaction_description>
+       <amount>-290.42</amount>
+       <transaction_category>postal</transaction_category>
+       <balance>4722.68</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-17</transaction_date>
+       <transaction_description>OFFICEWORKS 0623 BELMONT AU</transaction_description>
+       <amount>-18.80</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4703.88</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-17</transaction_date>
+       <transaction_description>Transfer from BEN GREENWAY NetBank Settlement Ben</transaction_description>
+       <amount>20000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>24703.88</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-18</transaction_date>
+       <transaction_description>COLES 0356COLES 0356 KARAWARA 06 AUS Card xx9203</transaction_description>
+       <amount>-79.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>24624.88</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-18</transaction_date>
+       <transaction_description>Refund Purchase LEACH LEGAL P/L PERTH WA AU</transaction_description>
+       <amount>748.00</amount>
+       <transaction_category>refund</transaction_category>
+       <balance>25372.88</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-21</transaction_date>
+       <transaction_description>Transfer To JAMES RYAN BOND PayID Phone from CommBank App Training James</transaction_description>
+       <amount>-100.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>25655.39</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-26</transaction_date>
+       <transaction_description>Transfer To allegra family lawyers CommBank App Vee Allegra family lawyers</transaction_description>
+       <amount>-385.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>24414.37</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-27</transaction_date>
+       <transaction_description>Salary DEPT OF EDUCATIO 4076475</transaction_description>
+       <amount>2280.37</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>26501.17</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-04-10</transaction_date>
+       <transaction_description>Salary DEPT OF EDUCATIO 4076475</transaction_description>
+       <amount>2280.37</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>25606.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-04-10</transaction_date>
+       <transaction_description>Transfer To allegra family lawyers CommBank App Evelyn Greenway trust money</transaction_description>
+       <amount>-4995.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>20023.04</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-04-11</transaction_date>
+       <transaction_description>Transfer to other Bank CommBank app Emergency housing</transaction_description>
+       <amount>-750.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>19221.24</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-04-11</transaction_date>
+       <transaction_description>Transfer To lisa grant CommBank App Ubers court plus borrowe...</transaction_description>
+       <amount>-250.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>18971.24</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-04-24</transaction_date>
+       <transaction_description>Salary DEPT OF EDUCATIO 4076475</transaction_description>
+       <amount>2280.37</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>6070.01</balance>
+     </transaction>
+  </transactions>
+  <inflows>
+    <from>
+       <target>BEN GREENWAY</target>
+       <total_amount>20000.00</total_amount>
+    </from>
+    <from>
+       <target>DEPT OF EDUCATION</target>
+       <total_amount>6841.11</total_amount>
+    </from>
+    <from>
+       <target>MR BEN & MISS EVELYN</target>
+       <total_amount>3394.31</total_amount>
+    </from>
+    <from>
+       <target>UNITINGCARE WEST</target>
+       <total_amount>1500.00</total_amount>
+    </from>
+    <from>
+       <target>LEACH LEGAL</target>
+       <total_amount>748.00</total_amount>
+    </from>
+    <from>
+       <target>MRS LISA J GRANT</target>
+       <total_amount>200.00</total_amount>
+    </from>
+    <from>
+       <target>xx8509</target>
+       <total_amount>75.79</total_amount>
+    </from>
+  </inflows>
+  <outflows>
+    <to>
+       <target>allegra family lawyers</target>
+       <total_amount>5380.00</total_amount>
+    </to>
+    <to>
+       <target>other Bank</target>
+       <total_amount>750.00</total_amount>
+    </to>
+    <to>
+       <target>lisa grant</target>
+       <total_amount>250.00</total_amount>
+    </to>
+    <to>
+       <target>JAMES RYAN BOND</target>
+       <total_amount>100.00</total_amount>
+    </to>
+  </outflows>
+  <analysis_summary>
+  This Commonwealth Bank Smart Access account for Evelyn Greenway shows significant financial activity over the period March 5 - April 26, 2025. The account received substantial inflows including a large settlement transfer of $20,000 from Ben Greenway, regular salary payments of $2,280.37 from the Department of Education, and various other transfers totaling over $33,400. Major outflows included $5,380 to allegra family lawyers (likely legal fees), and numerous daily expenses for shopping, dining, fitness, and professional services. The account maintained a healthy positive balance throughout, ending with $5,060.81. Transaction patterns suggest regular employment income supplemented by significant one-time transfers, with spending focused on everyday expenses and professional services.
+  </analysis_summary>
+</transaction_analysis>

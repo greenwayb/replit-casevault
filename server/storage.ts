@@ -48,7 +48,10 @@ export interface IStorage {
   getCasesByUserId(userId: string): Promise<(Case & { roles: Role[]; documentCount: number; totalFileSize: number })[]>;
   getCaseByNumber(caseNumber: string): Promise<Case | undefined>;
   getCaseById(id: number): Promise<Case | undefined>;
+  getCase(id: number): Promise<Case | undefined>;
   getUserRolesInCase(userId: string, caseId: number): Promise<Role[]>;
+  getUserCaseRoles(userId: string, caseId: number): Promise<Role[]>;
+  getUserCaseAccess(userId: string, caseId: number): Promise<{ hasAccess: boolean; roles: Role[] }>;
   deleteCase(id: number): Promise<void>;
   
   // Case user operations
@@ -71,7 +74,32 @@ export interface IStorage {
   getDocumentById(id: number): Promise<Document | undefined>;
   getDocumentsByCategory(caseId: number, category: string): Promise<Document[]>;
   deleteDocument(id: number): Promise<void>;
+  updateDocument(documentId: number, data: Partial<Document>): Promise<Document>;
   updateDocumentWithAIAnalysis(documentId: number, analysis: any): Promise<Document>;
+  updateDocumentWithAIExtraction(documentId: number, data: {
+    accountHolderName?: string;
+    accountName?: string;
+    financialInstitution?: string;
+    accountNumber?: string;
+    bsbSortCode?: string;
+    transactionDateFrom?: string;
+    transactionDateTo?: string;
+    documentNumber?: string;
+    accountGroupNumber?: string;
+    aiProcessed?: boolean;
+    aiProcessingFailed?: boolean;
+    fullAnalysisCompleted?: boolean;
+    processingError?: string;
+    csvPath?: string;
+    csvRowCount?: number;
+    csvGenerated?: boolean;
+    xmlPath?: string;
+    xmlAnalysisData?: string;
+    totalTransactions?: number;
+    estimatedPdfCount?: number;
+    earliestTransaction?: string;
+    latestTransaction?: string;
+  }): Promise<void>;
   getDocumentsByAccountGroup(caseId: number, accountGroupNumber: string): Promise<Document[]>;
   updateDocumentStatus(documentId: number, status: string): Promise<Document>;
   getDocumentsForDisclosee(caseId: number): Promise<Document[]>;
@@ -222,6 +250,22 @@ export class DatabaseStorage implements IStorage {
       .from(caseUsers)
       .where(and(eq(caseUsers.userId, userId), eq(caseUsers.caseId, caseId)));
     return result?.roles || [];
+  }
+
+  async getCase(id: number): Promise<Case | undefined> {
+    return this.getCaseById(id);
+  }
+
+  async getUserCaseRoles(userId: string, caseId: number): Promise<Role[]> {
+    return this.getUserRolesInCase(userId, caseId);
+  }
+
+  async getUserCaseAccess(userId: string, caseId: number): Promise<{ hasAccess: boolean; roles: Role[] }> {
+    const roles = await this.getUserRolesInCase(userId, caseId);
+    return {
+      hasAccess: roles.length > 0,
+      roles
+    };
   }
 
   // Case user operations
@@ -451,6 +495,61 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(documents)
       .where(eq(documents.id, id));
+  }
+
+  async updateDocument(documentId: number, data: Partial<Document>): Promise<Document> {
+    const [updatedDocument] = await db
+      .update(documents)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(documents.id, documentId))
+      .returning();
+    return updatedDocument;
+  }
+
+  async updateDocumentWithAIExtraction(
+    documentId: number, 
+    data: {
+      accountHolderName?: string;
+      accountName?: string;
+      financialInstitution?: string;
+      accountNumber?: string;
+      bsbSortCode?: string;
+      transactionDateFrom?: string;
+      transactionDateTo?: string;
+      documentNumber?: string;
+      accountGroupNumber?: string;
+      aiProcessed?: boolean;
+      aiProcessingFailed?: boolean;
+      fullAnalysisCompleted?: boolean;
+      processingError?: string;
+      csvPath?: string;
+      csvRowCount?: number;
+      csvGenerated?: boolean;
+      xmlPath?: string;
+      xmlAnalysisData?: string;
+      totalTransactions?: number;
+      estimatedPdfCount?: number;
+      earliestTransaction?: string;
+      latestTransaction?: string;
+    }
+  ): Promise<void> {
+    const updateData: any = {
+      ...data,
+      updatedAt: new Date(),
+    };
+    
+    // Convert date strings to Date objects if they exist
+    if (data.transactionDateFrom) {
+      updateData.transactionDateFrom = new Date(data.transactionDateFrom);
+    }
+    if (data.transactionDateTo) {
+      updateData.transactionDateTo = new Date(data.transactionDateTo);
+    }
+    
+    await db
+      .update(documents)
+      .set(updateData)
+      .where(eq(documents.id, documentId));
   }
 
   async deleteCase(id: number): Promise<void> {

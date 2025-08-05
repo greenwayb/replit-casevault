@@ -1,0 +1,292 @@
+import React, { useState, useMemo } from 'react';
+import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
+
+const BalanceTransactionsChart = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState('all');
+
+  // Process transaction data to get daily summaries
+  const dailyData = useMemo(() => {
+    // Raw transaction data with running balance
+    const transactions = [
+      { date: '2025-01-01', credits: 89.78, debits: 0, balance: 3210.64 },
+      { date: '2025-01-02', credits: 2000.00, debits: 993.94, balance: 4216.70 },
+      { date: '2025-01-03', credits: 3400.00, debits: 5428.00, balance: 2168.52 },
+      { date: '2025-01-04', credits: 0, debits: 756.00, balance: 1412.52 },
+      { date: '2025-01-05', credits: 0, debits: 2.10, balance: 1410.42 },
+      { date: '2025-01-06', credits: 72.71, debits: 1.00, balance: 1482.13 },
+      { date: '2025-01-07', credits: 963.85, debits: 8.00, balance: 2437.98 },
+      { date: '2025-01-08', credits: 4715.06, debits: 3142.93, balance: 4010.11 },
+      { date: '2025-01-11', credits: 0, debits: 617.29, balance: 3392.82 },
+      { date: '2025-01-13', credits: 131.08, debits: 950.00, balance: 2573.90 },
+      { date: '2025-01-14', credits: 0, debits: 239.06, balance: 2322.84 },
+      { date: '2025-01-15', credits: 0, debits: 660.00, balance: 1662.84 },
+      { date: '2025-01-16', credits: 2100.00, debits: 358.38, balance: 3404.46 },
+      { date: '2025-01-17', credits: 0, debits: 168.00, balance: 3236.46 },
+      { date: '2025-01-18', credits: 0, debits: 410.00, balance: 2826.46 },
+      { date: '2025-01-19', credits: 0, debits: 200.00, balance: 2626.46 },
+      { date: '2025-01-21', credits: 0, debits: 145.94, balance: 2480.52 },
+      { date: '2025-01-22', credits: 4715.06, debits: 3122.36, balance: 4523.22 },
+      { date: '2025-01-23', credits: 80.00, debits: 841.85, balance: 3761.37 },
+      { date: '2025-01-24', credits: 0, debits: 64.05, balance: 3697.32 },
+      { date: '2025-01-25', credits: 0, debits: 73.70, balance: 3623.62 },
+      { date: '2025-01-26', credits: 0, debits: 305.00, balance: 3318.62 },
+      { date: '2025-01-27', credits: 0, debits: 390.00, balance: 2928.62 },
+      { date: '2025-01-28', credits: 0, debits: 111.06, balance: 2817.56 },
+      { date: '2025-01-29', credits: 0, debits: 650.00, balance: 2167.56 },
+      { date: '2025-01-30', credits: 0, debits: 20.18, balance: 2147.38 },
+      { date: '2025-01-31', credits: 2200.00, debits: 733.00, balance: 3614.38 },
+      { date: '2025-02-02', credits: 0, debits: 603.00, balance: 3011.38 },
+      { date: '2025-02-03', credits: 152.80, debits: 775.94, balance: 2388.24 },
+      { date: '2025-02-04', credits: 82.90, debits: 8.00, balance: 2463.14 },
+      { date: '2025-02-05', credits: 4715.06, debits: 3200.00, balance: 3978.20 },
+      { date: '2025-02-06', credits: 0, debits: 450.00, balance: 3528.20 },
+      { date: '2025-02-07', credits: 1103.70, debits: 1200.00, balance: 3431.90 },
+      { date: '2025-02-08', credits: 0, debits: 700.00, balance: 2731.90 },
+      { date: '2025-02-10', credits: 0, debits: 6362.00, balance: -3630.10 },
+      { date: '2025-02-11', credits: 228.65, debits: 99.06, balance: -3500.51 },
+      { date: '2025-02-12', credits: 125.75, debits: 0, balance: -3374.76 },
+      { date: '2025-02-13', credits: 376.25, debits: 572.29, balance: -1726.87 },
+      { date: '2025-02-14', credits: 85.20, debits: 772.18, balance: -2254.08 },
+      { date: '2025-02-15', credits: 0, debits: 5.00, balance: -2259.08 },
+      { date: '2025-02-16', credits: 0, debits: 1028.26, balance: -3287.34 },
+      { date: '2025-02-17', credits: 96.65, debits: 0, balance: -3190.69 },
+      { date: '2025-02-18', credits: 0, debits: 848.00, balance: -4038.69 },
+      { date: '2025-02-19', credits: 4715.06, debits: 1020.00, balance: -343.63 },
+      { date: '2025-02-21', credits: 0, debits: 262.34, balance: -605.97 },
+      { date: '2025-02-24', credits: 0, debits: 1012.00, balance: -1617.97 },
+      { date: '2025-02-25', credits: 218.80, debits: 1401.06, balance: -3641.38 },
+      { date: '2025-02-26', credits: 0, debits: 130.00, balance: -3629.23 },
+      { date: '2025-02-27', credits: 82.90, debits: 6520.18, balance: -10531.96 },
+      { date: '2025-02-28', credits: 0, debits: 900.00, balance: -11431.96 },
+      { date: '2025-03-01', credits: 0, debits: 5910.88, balance: -17342.84 },
+      { date: '2025-03-06', credits: 96.65, debits: 0, balance: -17246.19 },
+      { date: '2025-03-07', credits: 0, debits: 20.00, balance: -17266.19 },
+      { date: '2025-03-10', credits: 0, debits: 12.00, balance: -17278.19 },
+      { date: '2025-03-11', credits: 0, debits: 91.06, balance: -17369.25 },
+      { date: '2025-03-12', credits: 179.55, debits: 0, balance: -17189.70 },
+      { date: '2025-03-13', credits: 0, debits: 20.18, balance: -17209.88 },
+      { date: '2025-03-14', credits: 0, debits: 0.84, balance: -17210.72 },
+      { date: '2025-03-17', credits: 0, debits: 110.00, balance: -17320.72 },
+      { date: '2025-03-24', credits: 0, debits: 12.00, balance: -17332.72 },
+      { date: '2025-03-25', credits: 0, debits: 91.06, balance: -17423.78 },
+      { date: '2025-03-26', credits: 96.65, debits: 0, balance: -17327.13 },
+      { date: '2025-03-27', credits: 128.05, debits: 20.18, balance: -17219.26 }
+    ];
+
+    // Filter based on selected period
+    let filteredData = transactions;
+    if (selectedPeriod === 'jan') {
+      filteredData = transactions.filter(d => d.date.startsWith('2025-01'));
+    } else if (selectedPeriod === 'feb') {
+      filteredData = transactions.filter(d => d.date.startsWith('2025-02'));
+    } else if (selectedPeriod === 'mar') {
+      filteredData = transactions.filter(d => d.date.startsWith('2025-03'));
+    }
+
+    return filteredData.map(d => ({
+      ...d,
+      date: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      fullDate: d.date,
+      // For stacked chart - make debits negative for visual separation
+      debitsNeg: -d.debits
+    }));
+  }, [selectedPeriod]);
+
+  // Custom tooltip
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
+          <p className="font-semibold mb-2">{`Date: ${label}`}</p>
+          <p className="text-blue-600">{`End of Day Balance: $${data.balance.toLocaleString()}`}</p>
+          <p className="text-green-600">{`Credits: $${data.credits.toLocaleString()}`}</p>
+          <p className="text-red-600">{`Debits: $${data.debits.toLocaleString()}`}</p>
+          <p className="text-gray-600">{`Net Change: $${(data.credits - data.debits).toLocaleString()}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Find key dates for annotations
+  const keyEvents = [
+    { date: '2025-02-10', label: 'Account goes negative', balance: -3630.10 },
+    { date: '2025-03-01', label: 'Large retail purchases', balance: -17342.84 }
+  ];
+
+  return (
+    <div className="w-full bg-gray-50 p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          Commonwealth Bank Account - Daily Balance & Transaction Analysis
+        </h1>
+        <p className="text-gray-600 mb-4">
+          Line shows end-of-day balance | Bars show daily credits (green) and debits (red)
+        </p>
+        
+        {/* Period selector */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setSelectedPeriod('all')}
+            className={`px-4 py-2 rounded ${selectedPeriod === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            All Period
+          </button>
+          <button
+            onClick={() => setSelectedPeriod('jan')}
+            className={`px-4 py-2 rounded ${selectedPeriod === 'jan' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            January
+          </button>
+          <button
+            onClick={() => setSelectedPeriod('feb')}
+            className={`px-4 py-2 rounded ${selectedPeriod === 'feb' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            February
+          </button>
+          <button
+            onClick={() => setSelectedPeriod('mar')}
+            className={`px-4 py-2 rounded ${selectedPeriod === 'mar' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            March
+          </button>
+        </div>
+
+        {/* Summary stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="font-semibold text-gray-700">Starting Balance</h3>
+            <p className="text-xl font-bold text-green-600">$3,120.86</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="font-semibold text-gray-700">Ending Balance</h3>
+            <p className="text-xl font-bold text-red-600">-$17,219.26</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="font-semibold text-gray-700">Total Credits</h3>
+            <p className="text-xl font-bold text-green-600">$34,955.86</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="font-semibold text-gray-700">Total Debits</h3>
+            <p className="text-xl font-bold text-red-600">$55,295.98</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Chart */}
+      <div className="bg-white rounded-lg shadow-lg p-6" style={{ height: '600px' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart
+            data={dailyData}
+            margin={{ top: 20, right: 30, left: 40, bottom: 60 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <XAxis 
+              dataKey="date" 
+              angle={-45}
+              textAnchor="end"
+              height={80}
+              fontSize={12}
+            />
+            <YAxis 
+              yAxisId="balance"
+              orientation="left"
+              domain={['dataMin - 2000', 'dataMax + 2000']}
+              tickFormatter={(value) => `$${value.toLocaleString()}`}
+              fontSize={12}
+            />
+            <YAxis 
+              yAxisId="transactions"
+              orientation="right"
+              domain={[-8000, 8000]}
+              tickFormatter={(value) => `$${Math.abs(value).toLocaleString()}`}
+              fontSize={12}
+            />
+            
+            {/* Reference line at zero for balance */}
+            <ReferenceLine 
+              yAxisId="balance" 
+              y={0} 
+              stroke="#666" 
+              strokeDasharray="2 2" 
+              label={{ value: "Zero Balance", position: "topRight" }}
+            />
+            
+            {/* Transaction bars */}
+            <Bar 
+              yAxisId="transactions"
+              dataKey="credits" 
+              fill="#22c55e" 
+              name="Credits"
+              radius={[2, 2, 0, 0]}
+            />
+            <Bar 
+              yAxisId="transactions"
+              dataKey="debitsNeg" 
+              fill="#ef4444" 
+              name="Debits"
+              radius={[0, 0, 2, 2]}
+            />
+            
+            {/* Balance line */}
+            <Line 
+              yAxisId="balance"
+              type="monotone" 
+              dataKey="balance" 
+              stroke="#2563eb" 
+              strokeWidth={3}
+              dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
+              name="End of Day Balance"
+            />
+            
+            <Tooltip content={<CustomTooltip />} />
+            <Legend 
+              verticalAlign="top" 
+              height={36}
+              iconType="rect"
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Key insights */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="font-semibold text-gray-800 mb-3">Critical Events</h3>
+          <ul className="space-y-2 text-sm">
+            <li className="flex justify-between">
+              <span>Account went negative:</span>
+              <span className="font-medium text-red-600">Feb 10, 2025</span>
+            </li>
+            <li className="flex justify-between">
+              <span>Largest single day debit:</span>
+              <span className="font-medium text-red-600">Mar 1: $5,910.88</span>
+            </li>
+            <li className="flex justify-between">
+              <span>Largest single day credit:</span>
+              <span className="font-medium text-green-600">Jan 8: $4,715.06</span>
+            </li>
+            <li className="flex justify-between">
+              <span>Most volatile period:</span>
+              <span className="font-medium text-orange-600">February 2025</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="font-semibold text-gray-800 mb-3">Patterns Observed</h3>
+          <ul className="space-y-2 text-sm">
+            <li>• Regular salary payments create positive spikes</li>
+            <li>• Credit card payments (xx2868) create consistent outflows</li>
+            <li>• Large retail purchases in March caused major deterioration</li>
+            <li>• Account balance became increasingly volatile after Feb 10</li>
+            <li>• Recovery attempts through internal transfers insufficient</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BalanceTransactionsChart;

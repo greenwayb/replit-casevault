@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Download, Maximize2, FileText, Calendar, FileSpreadsheet, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useQuery } from "@tanstack/react-query";
-import BankingBalanceChart from "./banking-balance-chart";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import BankingDocumentTabs from "./banking-document-tabs";
+import FullAnalysisDialog from "./full-analysis-dialog";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { StatusSelect } from "@/components/ui/status-select";
 
@@ -31,6 +33,9 @@ interface Document {
   csvPath?: string;
   csvRowCount?: number;
   csvGenerated?: boolean;
+  xmlPath?: string;
+  xmlAnalysisData?: string;
+  fullAnalysisCompleted?: boolean;
 }
 
 interface DocumentViewerProps {
@@ -41,8 +46,10 @@ interface DocumentViewerProps {
 
 export default function DocumentViewer({ document, userRole, onDocumentUpdate }: DocumentViewerProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [isFullAnalysisDialogOpen, setIsFullAnalysisDialogOpen] = useState(false);
 
-  // Fetch CSV data for banking documents to show balance chart
+  // Fetch CSV data for banking documents
   const { data: csvData } = useQuery({
     queryKey: ['/api/documents', document?.id, 'csv-data'],
     enabled: document?.category === 'BANKING' && document?.csvGenerated === true,
@@ -133,6 +140,36 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const handleFullAnalysis = () => {
+    setIsFullAnalysisDialogOpen(true);
+  };
+
+  const handleFullAnalysisComplete = (analysisData: any) => {
+    // Update the document with full analysis data
+    if (onDocumentUpdate && document) {
+      const updatedDocument = {
+        ...document,
+        fullAnalysisCompleted: true,
+        csvPath: analysisData.csvInfo?.csvPath,
+        csvRowCount: analysisData.csvInfo?.csvRowCount,
+        csvGenerated: analysisData.csvInfo?.csvGenerated,
+        xmlPath: analysisData.xmlInfo?.xmlPath,
+        xmlAnalysisData: analysisData.xmlAnalysisData,
+      };
+      onDocumentUpdate(updatedDocument);
+    }
+    
+    // Invalidate queries to refresh data
+    queryClient.invalidateQueries({
+      queryKey: ['/api/documents', document?.id]
+    });
+    
+    toast({
+      title: "Full Analysis Complete",
+      description: "The banking document has been fully analyzed. All tabs are now available.",
+    });
   };
 
   if (!document) {
@@ -228,6 +265,18 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
                       <span className="font-medium text-slate-700">CSV Data:</span> {document.csvRowCount} transaction rows extracted
                     </div>
                   )}
+                  {(document as any).totalTransactions && (
+                    <div><span className="font-medium text-slate-700">Total Transactions:</span> {(document as any).totalTransactions}</div>
+                  )}
+                  {(document as any).estimatedPdfCount && (document as any).estimatedPdfCount > 1 && (
+                    <div><span className="font-medium text-slate-700">Estimated PDFs:</span> {(document as any).estimatedPdfCount} statements combined</div>
+                  )}
+                  {(document as any).earliestTransaction && (
+                    <div><span className="font-medium text-slate-700">Earliest Transaction:</span> {(document as any).earliestTransaction}</div>
+                  )}
+                  {(document as any).latestTransaction && (
+                    <div><span className="font-medium text-slate-700">Latest Transaction:</span> {(document as any).latestTransaction}</div>
+                  )}
                 </div>
               </div>
             )}
@@ -269,25 +318,40 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
         </div>
       </div>
       
-      {/* PDF Viewer Area */}
-      <div className="flex-1 p-6 space-y-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-350px)] min-h-[500px]">
-          <iframe
-            src={`/api/documents/${document.id}/view`}
-            className="w-full h-full rounded-lg"
-            title={document.originalName}
-          />
-        </div>
-        
-        {/* Banking Balance Chart for Banking Documents */}
-        {document.category === 'BANKING' && document.csvGenerated && (
-          <BankingBalanceChart 
-            csvData={(csvData as any)?.csvData}
+      {/* Banking Document Tabs Section */}
+      {document.category === 'BANKING' ? (
+        <div className="flex-1 p-6">
+          <BankingDocumentTabs 
+            document={document}
+            pdfUrl={`/api/documents/${document.id}/view`}
+            xmlData={document.xmlAnalysisData}
             documentName={document.originalName}
             accountName={document.accountName}
+            onFullAnalysis={handleFullAnalysis}
           />
-        )}
-      </div>
+        </div>
+      ) : (
+        /* PDF Viewer Area for non-banking documents */
+        <div className="flex-1 p-6 space-y-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-350px)] min-h-[500px]">
+            <iframe
+              src={`/api/documents/${document.id}/view`}
+              className="w-full h-full rounded-lg"
+              title={document.originalName}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Full Analysis Dialog */}
+      {document && (
+        <FullAnalysisDialog
+          isOpen={isFullAnalysisDialogOpen}
+          onClose={() => setIsFullAnalysisDialogOpen(false)}
+          documentId={document.id}
+          onComplete={handleFullAnalysisComplete}
+        />
+      )}
     </div>
   );
 }

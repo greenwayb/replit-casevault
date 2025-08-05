@@ -20,11 +20,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Building, User, CreditCard, Calendar } from "lucide-react";
+import { Building, User, CreditCard, Calendar, Plus, X } from "lucide-react";
 
 const bankingConfirmationSchema = z.object({
   accountHolderName: z.string().min(1, "Account holder name is required"),
-  accountName: z.string().min(1, "Account name is required"),
+  accountName: z.string().min(1, "Account type is required"),
   financialInstitution: z.string().min(1, "Financial institution is required"),
   accountNumber: z.string().optional(),
   bsbSortCode: z.string().optional(),
@@ -53,6 +53,11 @@ interface BankingConfirmationModalProps {
   documentId?: number;
   isManualReview?: boolean;
   selectedFile?: File | null;
+  analysisPhase?: 'basic' | 'full';
+  totalTransactions?: number;
+  estimatedPdfCount?: number;
+  earliestTransaction?: string;
+  latestTransaction?: string;
 }
 
 export default function BankingConfirmationModal({
@@ -63,7 +68,11 @@ export default function BankingConfirmationModal({
   onReject,
   documentId,
   isManualReview = false,
-  selectedFile = null
+  selectedFile = null,
+  totalTransactions,
+  estimatedPdfCount,
+  earliestTransaction,
+  latestTransaction
 }: BankingConfirmationModalProps) {
   const form = useForm<BankingConfirmationFormData>({
     resolver: zodResolver(bankingConfirmationSchema),
@@ -73,8 +82,8 @@ export default function BankingConfirmationModal({
       financialInstitution: bankingInfo.financialInstitution || '',
       accountNumber: bankingInfo.accountNumber || '',
       bsbSortCode: bankingInfo.bsbSortCode || '',
-      transactionDateFrom: bankingInfo.transactionDateFrom || '',
-      transactionDateTo: bankingInfo.transactionDateTo || '',
+      transactionDateFrom: bankingInfo.transactionDateFrom || earliestTransaction || '',
+      transactionDateTo: bankingInfo.transactionDateTo || latestTransaction || '',
     },
   });
 
@@ -86,10 +95,10 @@ export default function BankingConfirmationModal({
       financialInstitution: bankingInfo.financialInstitution || '',
       accountNumber: bankingInfo.accountNumber || '',
       bsbSortCode: bankingInfo.bsbSortCode || '',
-      transactionDateFrom: bankingInfo.transactionDateFrom || '',
-      transactionDateTo: bankingInfo.transactionDateTo || '',
+      transactionDateFrom: bankingInfo.transactionDateFrom || earliestTransaction || '',
+      transactionDateTo: bankingInfo.transactionDateTo || latestTransaction || '',
     });
-  }, [bankingInfo, form]);
+  }, [bankingInfo, form, earliestTransaction, latestTransaction]);
 
   const onSubmit = (data: BankingConfirmationFormData) => {
     onConfirm({
@@ -141,7 +150,7 @@ export default function BankingConfirmationModal({
                           Account Holder Name
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="e.g., John Smith" />
+                          <Input {...field} placeholder="e.g., John Smith & Jane Smith" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -155,7 +164,7 @@ export default function BankingConfirmationModal({
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
                           <CreditCard className="h-4 w-4" />
-                          Account Name
+                          Account Type
                         </FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="e.g., Business Transaction Account" />
@@ -172,7 +181,7 @@ export default function BankingConfirmationModal({
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
                           <Building className="h-4 w-4" />
-                          Financial Institution
+                          Institution
                         </FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="e.g., Commonwealth Bank" />
@@ -212,12 +221,12 @@ export default function BankingConfirmationModal({
 
                   <FormField
                     control={form.control}
-                    name="transactionDateTo"
+                    name="transactionDateFrom"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
-                          Period To
+                          Start Date
                         </FormLabel>
                         <FormControl>
                           <Input {...field} type="date" />
@@ -229,12 +238,12 @@ export default function BankingConfirmationModal({
 
                   <FormField
                     control={form.control}
-                    name="transactionDateFrom"
+                    name="transactionDateTo"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
-                          Period From
+                          End Date
                         </FormLabel>
                         <FormControl>
                           <Input {...field} type="date" />
@@ -243,7 +252,41 @@ export default function BankingConfirmationModal({
                       </FormItem>
                     )}
                   />
+
                 </div>
+
+                {/* Transaction Information Section */}
+                {(totalTransactions || estimatedPdfCount || earliestTransaction || latestTransaction) && (
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-3">Transaction Analysis</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {totalTransactions && (
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300 font-medium">Total Transactions:</span>
+                          <span className="ml-2 text-blue-800 dark:text-blue-200">{totalTransactions}</span>
+                        </div>
+                      )}
+                      {estimatedPdfCount && estimatedPdfCount > 1 && (
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300 font-medium">Estimated PDFs:</span>
+                          <span className="ml-2 text-blue-800 dark:text-blue-200">{estimatedPdfCount} statements combined</span>
+                        </div>
+                      )}
+                      {earliestTransaction && (
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300 font-medium">Earliest Transaction:</span>
+                          <span className="ml-2 text-blue-800 dark:text-blue-200">{earliestTransaction}</span>
+                        </div>
+                      )}
+                      {latestTransaction && (
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300 font-medium">Latest Transaction:</span>
+                          <span className="ml-2 text-blue-800 dark:text-blue-200">{latestTransaction}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex justify-end space-x-3 pt-6">
                   <Button

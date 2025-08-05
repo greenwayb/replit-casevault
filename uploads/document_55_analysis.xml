@@ -1,0 +1,1229 @@
+<transaction_analysis>
+  <institution>Commonwealth Bank</institution>
+  <account_holders>
+     <account_holder>MS EVELYN GREENWAY</account_holder>
+     <account_holder>BEN GREENWAY</account_holder>
+  </account_holders>
+  <account_type>Viridian Line of Credit</account_type>
+  <start_date>2025-01-01</start_date>
+  <end_date>2025-03-31</end_date>
+  <account_number>06 6000 11372992</account_number>
+  <account_bsb>Not specified</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>34955.86</total_credits>
+  <total_debits>-55295.98</total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date>2025-01-01</transaction_date>
+       <transaction_description>OPENING BALANCE</transaction_description>
+       <amount>3120.86</amount>
+       <transaction_category>opening_balance</transaction_category>
+       <balance>3120.86</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-01</transaction_date>
+       <transaction_description>Fast Transfer From HOLLY GREENWAY Daiso</transaction_description>
+       <amount>25.35</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3146.21</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-01</transaction_date>
+       <transaction_description>Fast Transfer From HOLLY GREENWAY Don ke hoti</transaction_description>
+       <amount>64.43</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3210.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Transfer to xx1915 NetBank</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3209.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Transfer to xx8494 NetBank</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3208.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Transfer to xx0085 NetBank regular</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3207.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN &amp; MISS EVELYN Bills</transaction_description>
+       <amount>2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>5207.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-665.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4542.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Direct Debit 382220 FREMANTLE EDUCAT 172393060</transaction_description>
+       <amount>-325.94</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>4216.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-02</transaction_date>
+       <transaction_description>Direct Debit 060046 SSTUWA 0653986</transaction_description>
+       <amount>-20.18</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>4196.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685609</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>4188.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Direct Debit 209033 SMARTRIDER #017233784250103412</transaction_description>
+       <amount>-20.00</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>4168.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App uk</transaction_description>
+       <amount>-2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2168.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN &amp; MISS EVELYN Ev uk</transaction_description>
+       <amount>3400.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>5568.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-03</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App ev uk</transaction_description>
+       <amount>-3400.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2168.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-04</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-656.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1512.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-04</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App money</transaction_description>
+       <amount>-100.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1412.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>Transfer To evelyn revolut NetBank commbank ben</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1411.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-05</transaction_date>
+       <transaction_description>Transfer To evelyn greenway revolut CommBank App Commbank ev</transaction_description>
+       <amount>-1.10</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1410.42</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Fast Transfer From Ladbrokes CT.14fii4 Ladbrokes withdrawal CT.14fii4</transaction_description>
+       <amount>72.71</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1483.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-06</transaction_date>
+       <transaction_description>Transfer To Evelyn Greenway Reolut NetBank Commbank Ben</transaction_description>
+       <amount>-21.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1482.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Pocket Money</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1474.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Transfer from xx7560 CommBank app</transaction_description>
+       <amount>921.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2395.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-07</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 983130976 IYWQ</transaction_description>
+       <amount>42.85</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>2437.98</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>FARMER JACKS COMO COMO WA AUS Card xx3156 Value Date: 05/01/2025</transaction_description>
+       <amount>-36.93</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2401.05</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Payroll</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>7116.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-1100.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>6016.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Transfer to CBA A/c CommBank app</transaction_description>
+       <amount>-6.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>6010.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-08</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App revolut</transaction_description>
+       <amount>-2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4010.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-11</transaction_date>
+       <transaction_description>Transfer To evelyn greenway revolut CommBank App Uk</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3510.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-11</transaction_date>
+       <transaction_description>Transfer To Austin Jarvis NetBank Farmer Jacks</transaction_description>
+       <amount>-77.99</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3432.12</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-11</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank uno game</transaction_description>
+       <amount>-39.30</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3392.82</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Transfer to xx2868 NetBank cc pay</transaction_description>
+       <amount>-950.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2442.82</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Fast Transfer From SUMMER GREENWAY Car insurance</transaction_description>
+       <amount>131.08</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2573.90</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-13</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685502</transaction_description>
+       <amount>-12.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>2561.90</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-14</transaction_date>
+       <transaction_description>Direct Debit 000793 BUPA AUSTRALIA 4489073900000890009</transaction_description>
+       <amount>-91.06</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>2470.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-14</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Pocket Money</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2462.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-14</transaction_date>
+       <transaction_description>Transfer to xx9058 CommBank app</transaction_description>
+       <amount>-140.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2322.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-15</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-660.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1662.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-16</transaction_date>
+       <transaction_description>Alinta Sales Pty Ltd NetBank BPAY 2733 451999907127</transaction_description>
+       <amount>-278.20</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>1384.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-16</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN &amp; MISS EVELYN Bills</transaction_description>
+       <amount>2100.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3484.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-16</transaction_date>
+       <transaction_description>Wdl ATM CBA ATM 95WILLIAM ST D WA 60006</transaction_description>
+       <amount>-60.00</amount>
+       <transaction_category>ATM</transaction_category>
+       <balance>3424.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-16</transaction_date>
+       <transaction_description>Direct Debit 060046 SSTUWA 0653986</transaction_description>
+       <amount>-20.18</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>3404.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Transfer to CBA A/c CommBank app</transaction_description>
+       <amount>-160.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3244.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-17</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685609</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>3236.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-18</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-410.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2826.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-19</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-200.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2626.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-21</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Pocket Money</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2618.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-21</transaction_date>
+       <transaction_description>Transfer To Summer Greenway CommBank App farmer jacks</transaction_description>
+       <amount>-11.48</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2606.98</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-21</transaction_date>
+       <transaction_description>Transfer To Summer Greenway CommBank App coles</transaction_description>
+       <amount>-36.46</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2570.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-21</transaction_date>
+       <transaction_description>Wdl ATM CBA ATM 95WILLIAM ST A WA 60009</transaction_description>
+       <amount>-90.00</amount>
+       <transaction_category>ATM</transaction_category>
+       <balance>2480.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-22</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Payroll</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>7195.58</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-22</transaction_date>
+       <transaction_description>Transfer to CBA A/c CommBank app</transaction_description>
+       <amount>-22.36</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>7173.22</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-22</transaction_date>
+       <transaction_description>Transfer to xx2868 NetBank CC Pay</transaction_description>
+       <amount>-650.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>6523.22</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-22</transaction_date>
+       <transaction_description>Transfer to xx4432 NetBank Savings</transaction_description>
+       <amount>-2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4523.22</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Transfer to xx2868 NetBank CC Pay</transaction_description>
+       <amount>-650.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3873.22</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Fast Transfer From WENZEL JOUBERT to PayID Phone 7s rugby</transaction_description>
+       <amount>80.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3953.22</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Transfer To Jamie Clark NetBank Rugby 7s BenWenzel</transaction_description>
+       <amount>-80.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3873.22</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Transfer To Summer Greenway CommBank App toni goal bag</transaction_description>
+       <amount>-95.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3778.22</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-23</transaction_date>
+       <transaction_description>Transfer To Summer Greenway CommBank App farmer jacks</transaction_description>
+       <amount>-16.85</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3761.37</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-24</transaction_date>
+       <transaction_description>SYNERGY CommBank app BPAY 2 46539713296</transaction_description>
+       <amount>-64.05</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>3697.32</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-25</transaction_date>
+       <transaction_description>Transfer To Summer Greenway CommBank App shopping</transaction_description>
+       <amount>-73.70</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3623.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-26</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-305.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3318.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-27</transaction_date>
+       <transaction_description>Wdl ATM CBA ATM EAST VICT PK B WA 61289</transaction_description>
+       <amount>-90.00</amount>
+       <transaction_category>ATM</transaction_category>
+       <balance>3228.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-27</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-300.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2928.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Pocket Money</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2920.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685502</transaction_description>
+       <amount>-12.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>2908.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-28</transaction_date>
+       <transaction_description>Direct Debit 000793 BUPA AUSTRALIA 4489073900000900009</transaction_description>
+       <amount>-91.06</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>2817.56</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-29</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-650.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2167.56</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-30</transaction_date>
+       <transaction_description>Direct Debit 060046 SSTUWA 0653986</transaction_description>
+       <amount>-20.18</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>2147.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN &amp; MISS EVELYN Bills</transaction_description>
+       <amount>2200.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4347.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-725.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3622.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-01-31</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685609</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>3614.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Transfer to xx1915 NetBank</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3613.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Transfer to xx8494 NetBank</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3612.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Transfer to xx0085 NetBank regular</transaction_description>
+       <amount>-1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3611.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-02</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-600.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3011.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-450.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2561.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 391052122 IYWQ</transaction_description>
+       <amount>152.80</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>2714.18</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-03</transaction_date>
+       <transaction_description>Direct Debit 382220 FREMANTLE EDUCAT 174718864</transaction_description>
+       <amount>-325.94</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>2388.24</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Pocket Money</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2380.24</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-04</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 003098942 IYWQ</transaction_description>
+       <amount>82.90</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>2463.14</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Payroll</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>7178.20</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-1200.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>5978.20</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-05</transaction_date>
+       <transaction_description>Transfer to xx4432 CommBank app</transaction_description>
+       <amount>-2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3978.20</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-06</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-450.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3528.20</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-350.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3178.20</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Transfer In Admin 637685502</transaction_description>
+       <amount>1000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4178.20</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-850.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3328.20</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-07</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 006183256 IYWQ</transaction_description>
+       <amount>103.70</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>3431.90</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-08</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-700.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2731.90</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Transfer To evelyn greenway revolut CommBank App Shopping</transaction_description>
+       <amount>-850.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1881.90</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Transfer To Nick WArd CommBank App Commbank ev</transaction_description>
+       <amount>-5000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-3118.10</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Home Loan Pymt CommBank app</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>-3618.10</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-10</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685502</transaction_description>
+       <amount>-12.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>-3630.10</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Direct Debit 000793 BUPA AUSTRALIA 4489073900000910009</transaction_description>
+       <amount>-91.06</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>-3721.16</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Pocket Money</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-3729.16</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 397009542 AYWQ</transaction_description>
+       <amount>96.65</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-3632.51</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-11</transaction_date>
+       <transaction_description>Fast Transfer From SUMMER GREENWAY Car insurance</transaction_description>
+       <amount>132.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-3500.51</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 398009354 IYWQ</transaction_description>
+       <amount>82.90</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-3417.61</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-12</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 009129948 IYWQ</transaction_description>
+       <amount>42.85</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-3374.76</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>CITY OF SOUTH PERTH NetBank BPAY 192294 000000626772</transaction_description>
+       <amount>-552.11</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>-3926.87</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Fast Transfer From MR BEN &amp; MISS EVELYN Bills</transaction_description>
+       <amount>2200.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-1726.87</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Direct Credit 507141 TixelticketsRoyk Tixeltick_RkzhdDoN</transaction_description>
+       <amount>83.30</amount>
+       <transaction_category>other</transaction_category>
+       <balance>-1643.57</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Direct Debit 060046 SSTUWA 0653986</transaction_description>
+       <amount>-20.18</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>-1663.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-13</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 010186935 IYWQ</transaction_description>
+       <amount>96.65</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-1567.10</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-14</transaction_date>
+       <transaction_description>Transfer to CBA A/c CommBank app</transaction_description>
+       <amount>-76.95</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-1644.05</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-14</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 400011275 IYWQ</transaction_description>
+       <amount>85.20</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-1558.85</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-14</transaction_date>
+       <transaction_description>Direct Debit 208343 WATER CORP 900512426569</transaction_description>
+       <amount>-695.23</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>-2254.08</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-15</transaction_date>
+       <transaction_description>Transfer To Ladbrokes PayID Email from CommBank App rugby</transaction_description>
+       <amount>-5.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-2259.08</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-16</transaction_date>
+       <transaction_description>Transfer To summer Greenway CommBank App Banh mi</transaction_description>
+       <amount>-28.26</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-2287.34</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-16</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-1000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-3287.34</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-17</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 401049617 AYWQ</transaction_description>
+       <amount>96.65</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-3190.69</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-18</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Pocket Money</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-3198.69</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-18</transaction_date>
+       <transaction_description>Wdl ATM CBA ATM 95WILLIAM ST C WA 60009</transaction_description>
+       <amount>-90.00</amount>
+       <transaction_category>ATM</transaction_category>
+       <balance>-3288.69</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-18</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-750.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-4038.69</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-19</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-1000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-5038.69</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-19</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Payroll</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>-323.63</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-19</transaction_date>
+       <transaction_description>Direct Debit 209033 SMARTRIDER #017233784250218332</transaction_description>
+       <amount>-20.00</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>-343.63</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-21</transaction_date>
+       <transaction_description>Transfer To summer Greenway CommBank App Uni shopping and Cole_s</transaction_description>
+       <amount>-262.34</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-605.97</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-24</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-1000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-1605.97</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-24</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685502</transaction_description>
+       <amount>-12.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>-1617.97</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Direct Debit 000793 BUPA AUSTRALIA 4489073900000920009</transaction_description>
+       <amount>-91.06</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>-1709.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Pocket Money</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-1717.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Transfer To WENZEL JOUBERT PayID Phone from CommBank App lunch</transaction_description>
+       <amount>-16.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-1733.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Transfer To Summer Greenway CommBank App iron infusion</transaction_description>
+       <amount>-355.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-2088.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Transfer To evelyn greenway revolut CommBank App Shopping</transaction_description>
+       <amount>-850.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-2938.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Transfer To evelyn greenway revolut CommBank App Uni shopping and Cole_s</transaction_description>
+       <amount>-550.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-3488.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Transfer To evelyn greenway revolut CommBank App Commbank ev</transaction_description>
+       <amount>-250.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-3738.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 018130918 AYWQ</transaction_description>
+       <amount>96.65</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-3641.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-25</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 018228110 IYWQ</transaction_description>
+       <amount>122.15</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-3519.23</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-26</transaction_date>
+       <transaction_description>Wdl ATM CBA ATM 95WILLIAM ST B WA 60009</transaction_description>
+       <amount>-90.00</amount>
+       <transaction_category>ATM</transaction_category>
+       <balance>-3609.23</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-26</transaction_date>
+       <transaction_description>Wdl ATM CBA ATM 95WILLIAM ST B WA 60002</transaction_description>
+       <amount>-20.00</amount>
+       <transaction_category>ATM</transaction_category>
+       <balance>-3629.23</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-26</transaction_date>
+       <transaction_description>Direct Debit 209033 SMARTRIDER #017233784250225522</transaction_description>
+       <amount>-20.00</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>-3649.23</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-26</transaction_date>
+       <transaction_description>Transfer to xx2868 NetBank Mazda Rego</transaction_description>
+       <amount>-445.45</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-4094.68</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-27</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-4594.68</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-27</transaction_date>
+       <transaction_description>Transfer to xx2868 CommBank app</transaction_description>
+       <amount>-6000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-10594.68</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-27</transaction_date>
+       <transaction_description>Direct Debit 060046 SSTUWA 0653986</transaction_description>
+       <amount>-20.18</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>-10614.86</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-27</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 020154099 IYWQ</transaction_description>
+       <amount>82.90</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-10531.96</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-02-28</transaction_date>
+       <transaction_description>Transfer to xx2868 NetBank CC Pay Rego</transaction_description>
+       <amount>-900.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>-11431.96</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-01</transaction_date>
+       <transaction_description>Debit Interest</transaction_description>
+       <amount>-13.88</amount>
+       <transaction_category>interest</transaction_category>
+       <balance>-11445.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-01</transaction_date>
+       <transaction_description>HARVEY NORMAN AV/IT WEST PERTH WA AUS Card xx3156 Value Date: 27/02/2025</transaction_description>
+       <amount>-673.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>-12118.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-01</transaction_date>
+       <transaction_description>HARVEY NORMAN AV/IT WEST PERTH WA AUS Card xx3156 Value Date: 27/02/2025</transaction_description>
+       <amount>-1720.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>-13838.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-01</transaction_date>
+       <transaction_description>HARVEY NORMAN AV/IT WEST PERTH WA AUS Card xx3156 Value Date: 27/02/2025</transaction_description>
+       <amount>-508.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>-14346.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-01</transaction_date>
+       <transaction_description>DOMAYNE BEDDING CITY WEST PERTH WA AUS Card xx3156 Value Date: 27/02/2025</transaction_description>
+       <amount>-2996.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>-17342.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-06</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 025186445 IYWQ</transaction_description>
+       <amount>96.65</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-17246.19</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-07</transaction_date>
+       <transaction_description>Direct Debit 209033 SMARTRIDER #017233784250306342</transaction_description>
+       <amount>-20.00</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>-17266.19</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-10</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685502</transaction_description>
+       <amount>-12.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>-17278.19</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-11</transaction_date>
+       <transaction_description>Direct Debit 000793 BUPA AUSTRALIA 4489073900000930009</transaction_description>
+       <amount>-91.06</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>-17369.25</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-12</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 418008652 AYWQ</transaction_description>
+       <amount>96.65</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-17272.60</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-12</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 029103171 IYWQ</transaction_description>
+       <amount>82.90</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-17189.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-13</transaction_date>
+       <transaction_description>Direct Debit 060046 SSTUWA 0653986</transaction_description>
+       <amount>-20.18</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>-17209.88</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-14</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685609</transaction_description>
+       <amount>-0.84</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>-17210.72</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-17</transaction_date>
+       <transaction_description>OFFICEWORKS 0601 E VICTORIA PKAU Cash Out $50.00</transaction_description>
+       <amount>-50.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>-17260.72</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-17</transaction_date>
+       <transaction_description>OFFICEWORKS 0601 E VICTORIA PKAU Cash Out $60.00</transaction_description>
+       <amount>-60.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>-17320.72</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-24</transaction_date>
+       <transaction_description>Loan Repayment LN REPAY 637685502</transaction_description>
+       <amount>-12.00</amount>
+       <transaction_category>loan</transaction_category>
+       <balance>-17332.72</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-25</transaction_date>
+       <transaction_description>Direct Debit 000793 BUPA AUSTRALIA 4489073900000940009</transaction_description>
+       <amount>-91.06</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>-17423.78</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-26</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 428009547 AYWQ</transaction_description>
+       <amount>96.65</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-17327.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-27</transaction_date>
+       <transaction_description>Direct Debit 060046 SSTUWA 0653986</transaction_description>
+       <amount>-20.18</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>-17347.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-27</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 040209829 IYWQ</transaction_description>
+       <amount>42.85</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-17304.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-03-27</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 040127439 IYWQ</transaction_description>
+       <amount>85.20</amount>
+       <transaction_category>benefit</transaction_category>
+       <balance>-17219.26</balance>
+     </transaction>
+  </transactions>
+  <inflows>
+    <from>
+       <target>Australian Investment Exchange (AUSIEX Payroll)</target>
+       <total_amount>14145.18</total_amount>
+    </from>
+    <from>
+       <target>MR BEN &amp; MISS EVELYN</target>
+       <total_amount>8700.00</total_amount>
+    </from>
+    <from>
+       <target>MCARE BENEFITS</target>
+       <total_amount>1892.80</total_amount>
+    </from>
+    <from>
+       <target>Transfer In Admin</target>
+       <total_amount>1000.00</total_amount>
+    </from>
+    <from>
+       <target>Transfer from xx7560</target>
+       <total_amount>921.00</total_amount>
+    </from>
+    <from>
+       <target>SUMMER GREENWAY</target>
+       <total_amount>263.08</total_amount>
+    </from>
+    <from>
+       <target>TixelticketsRoyk</target>
+       <total_amount>83.30</total_amount>
+    </from>
+    <from>
+       <target>WENZEL JOUBERT</target>
+       <total_amount>80.00</total_amount>
+    </from>
+    <from>
+       <target>Ladbrokes</target>
+       <total_amount>72.71</total_amount>
+    </from>
+    <from>
+       <target>HOLLY GREENWAY</target>
+       <total_amount>89.78</total_amount>
+    </from>
+  </inflows>
+  <outflows>
+    <to>
+       <target>Transfer to xx2868 (Credit Card)</target>
+       <total_amount>-23635.45</total_amount>
+    </to>
+    <to>
+       <target>evelyn greenway revolut</target>
+       <total_amount>-9152.20</total_amount>
+    </to>
+    <to>
+       <target>Harvey Norman/Domayne Shopping</target>
+       <total_amount>-5897.00</total_amount>
+    </to>
+    <to>
+       <target>Nick Ward</target>
+       <total_amount>-5000.00</total_amount>
+    </to>
+    <to>
+       <target>Ben Greenway Revolut</target>
+       <total_amount>-7501.10</total_amount>
+    </to>
+    <to>
+       <target>Transfer to xx4432 (Savings)</target>
+       <total_amount>-4000.00</total_amount>
+    </to>
+    <to>
+       <target>BUPA AUSTRALIA (Health Insurance)</target>
+       <total_amount>-546.36</total_amount>
+    </to>
+    <to>
+       <target>Water Corp</target>
+       <total_amount>-695.23</total_amount>
+    </to>
+    <to>
+       <target>FREMANTLE EDUCAT</target>
+       <total_amount>-651.88</total_amount>
+    </to>
+    <to>
+       <target>City of South Perth</target>
+       <total_amount>-552.11</total_amount>
+    </to>
+  </outflows>
+  
+</transaction_analysis>

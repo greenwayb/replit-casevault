@@ -1,8 +1,6 @@
 # Overview
 
-DocuFlow is an AI-powered document management system built for legal and business document workflows. The application provides secure case-based document organization with role-based access control, allowing users to create cases, upload PDF documents, and manage access permissions across different user roles (DISCLOSER, REVIEWER, DISCLOSEE, CASEADMIN). 
-
-The system features AI-powered Banking document analysis that automatically extracts financial metadata and generates CSV files from PDF uploads, organizing documents with hierarchical numbering (B1, B1.1, B1.2, etc.).
+DocuFlow is an AI-powered document management system designed for legal and business document workflows. It provides secure, case-based document organization with role-based access control (DISCLOSER, REVIEWER, DISCLOSEE, CASEADMIN). Key capabilities include creating cases, uploading PDF documents, and managing access permissions. A core feature is AI-powered Banking document analysis, which extracts financial metadata, generates CSV files from PDF uploads, and organizes documents with a hierarchical numbering system. The system's business vision is to streamline document management and analysis, particularly for legal and financial contexts.
 
 # User Preferences
 
@@ -10,123 +8,85 @@ Preferred communication style: Simple, everyday language.
 
 # System Architecture
 
-## Frontend Architecture
-- **Framework**: React with TypeScript using Vite as the build tool
-- **UI Components**: Radix UI primitives with shadcn/ui component library
-- **Styling**: Tailwind CSS with CSS variables for theming support
-- **State Management**: TanStack Query (React Query) for server state management
-- **Routing**: Wouter for client-side routing
+## Frontend
+- **Framework**: React with TypeScript (Vite build tool)
+- **UI Components**: Radix UI primitives, shadcn/ui
+- **Styling**: Tailwind CSS with CSS variables
+- **State Management**: TanStack Query (React Query)
+- **Routing**: Wouter
 - **Form Handling**: React Hook Form with Zod validation
 
-## Backend Architecture
-- **Runtime**: Node.js with Express.js framework
-- **Language**: TypeScript with ES modules
-- **API Pattern**: RESTful API with file upload capabilities using Multer
-- **Session Management**: Express sessions with PostgreSQL session store
-- **Error Handling**: Centralized error handling middleware with structured error responses
+## Backend
+- **Runtime**: Node.js with Express.js
+- **Language**: TypeScript (ES modules)
+- **API Pattern**: RESTful API (Multer for file uploads)
+- **Session Management**: Express sessions with PostgreSQL store
+- **Error Handling**: Centralized middleware with structured responses
 
 ## Data Storage
-- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
+- **Database**: PostgreSQL with Drizzle ORM
 - **Connection Pool**: Neon serverless PostgreSQL connection pooling
-- **Schema Management**: Drizzle Kit for migrations and schema management
-- **File Storage**: Local filesystem storage for uploaded PDF documents
+- **Schema Management**: Drizzle Kit for migrations
+- **File Storage**: Local filesystem for PDF documents
 
 ## Authentication & Authorization
-- **Authentication Provider**: Replit OpenID Connect (OIDC) integration
-- **Session Storage**: PostgreSQL-backed sessions with connect-pg-simple
+- **Authentication Provider**: Replit OpenID Connect (OIDC)
+- **Session Storage**: PostgreSQL-backed sessions (connect-pg-simple)
 - **Authorization**: Role-based access control with enum-defined roles
-- **Security**: HTTP-only cookies with secure session management
+- **Security**: HTTP-only cookies
 
 ## Document Management
-- **File Types**: PDF-only document uploads with 50MB size limit
-- **Organization**: Hierarchical categorization (REAL_PROPERTY, BANKING)
+- **File Types**: PDF-only (50MB limit)
+- **Organization**: Hierarchical categorization (REAL_PROPERTY, BANKING, TAXATION, SUPERANNUATION, EMPLOYMENT, SHARES/INVESTMENTS, VEHICLES) with a comprehensive numbering system (e.g., A1, B1, B1.1)
 - **Access Control**: Case-based permissions with user role assignments
-- **File Operations**: Upload, download, and metadata management
-- **AI Processing**: Automatic Banking document analysis with OpenAI GPT-4o
-- **CSV Generation**: Automatic extraction of transaction data into downloadable CSV files
-- **Hierarchical Numbering**: Documents organized by category with comprehensive numbering system:
-  - A) Real Property: A1, A2, A3...
-  - B) Banking: B1 (account holders), B1.1/B1.2 (individual documents)
-  - C) Taxation: C1, C2, C3...
-  - D) Superannuation: D1, D2, D3...
-  - E) Employment: E1, E2, E3...
-  - F) Shares/Investments: F1, F2, F3...
-  - G) Vehicles: G1, G2, G3...
+- **AI Processing**: Advanced Banking document analysis using Claude Sonnet 4 with enhanced completeness validation, generating comprehensive XML analysis with transaction counting and validation to ensure all document processing.
+- **Multi-PDF Detection**: Enhanced initial extraction to process full PDF text, identifying when multiple bank statements are combined into one PDF, with automatic detection of transaction counts, earliest/latest transaction dates, and estimated source PDF count.
+- **Transaction Completeness**: PDF transaction line estimation with XML validation to detect incomplete analysis and ensure all transactions are captured.
+- **Enhanced Error Handling**: Processing failures keep dialog open, log detailed error information to server files, and display log locations to users for debugging.
 
 ## Case Management
-- **Case Creation**: Unique case number generation with creator assignment
+- **Creation**: Unique case number generation, creator assignment
 - **Status Tracking**: Enum-based status system (ACTIVE, UNDER_REVIEW, IN_PROGRESS, COMPLETED, ARCHIVED)
-- **User Association**: Many-to-many relationship between users and cases with role assignments
-- **Document Association**: One-to-many relationship between cases and documents
+- **User Association**: Many-to-many relationship with role assignments
+- **Document Association**: One-to-many relationship
+- **Member Management**: Add existing users or invite new users via email with multi-role assignment capabilities.
+- **Activity Tracking**: Comprehensive logging of case creation, document uploads, and user actions.
 
-# Recent Changes
-
-## August 2, 2025 (Latest Updates)
-- **Enhanced Banking Document Upload Process**: Implemented dual progress bars showing separate upload and AI processing phases with visual status indicators, animated progress feedback, and colored status dots to clearly communicate each stage of the workflow
-- **Always-On PDF Preview**: Modified banking confirmation dialog to always display PDF preview side-by-side with extracted information form, allowing users to visually verify AI-extracted data against the original document for both uploaded files and processed documents
-- **Improved Upload UI**: Enhanced progress display with better styling, status animations, and clearer phase indicators during file upload and AI processing stages
-- **Fixed Document Status Update UI Issue**: Resolved issue where document status changes weren't reflected in the UI immediately. Added onDocumentUpdate callback to DocumentViewer component to properly update local state when status changes occur, ensuring the UI displays the current status after successful updates.
-- **Enhanced Status Update Cache Invalidation**: Improved cache invalidation strategy in StatusSelect component to ensure all related queries are refreshed when document status is updated.
-- **Persistent SignOut Button**: Added TopNav component that appears in the top right corner of all authenticated pages, displaying user information and sign out functionality
-- **Enhanced CASEADMIN Permissions**: Updated document status system so CASEADMIN users can change document status from any state to any other state, providing full administrative control over document workflow
-- **Multi-Role User System**: Implemented comprehensive multi-role assignment capability:
-  - Updated database schema to support arrays of roles per user per case
-  - Created new MultiRoleSelector component with searchable dropdown and badge display
-  - Updated case member management interface to show multiple roles as colored badges
-  - Users can now be assigned multiple roles simultaneously (e.g., both REVIEWER and DISCLOSER)
-  - Form validation ensures at least one role is selected when adding users or sending invitations
-
-## August 2, 2025 (Earlier Updates)
-- **Case Member Management System**: Implemented comprehensive case member management with user assignment and email invitation capabilities. Case admins can now add existing users to cases with specific roles or invite new users via email.
-- **Extended Database Schema**: Added caseInvitations table to support email-based user invitations to cases with token-based acceptance system. Extended storage interface with methods for managing case members, invitations, and role assignments.
-- **Case Member Management UI**: Created comprehensive case member management component with table-based user listing, role assignment, invitation system, and pending invitation tracking. Users can have multiple roles simultaneously.
-- **File Size Tracking**: Added total file size calculation and display functionality for case storage usage tracking. Dashboard case cards now show both document count and total storage size.
-- **API Routes Enhancement**: Added new API endpoints for case member management including /api/cases/:id/members, /api/cases/:id/invite, /api/cases/:id/invitations, and /api/users for comprehensive case user management.
-- **UI Components**: Created reusable Table and Badge components following shadcn/ui patterns for consistent user interface elements.
-- **SendGrid Integration Ready**: Framework prepared for SendGrid email invitation system with proper error handling and token-based invitation acceptance flow.
-- **User Management System**: Implemented comprehensive user signup with first name, surname, email, password collection
-- **Legal Organizations**: Created 30 WA family law firms database including Hickman Family Law, plus "Self Represented" and "Not Applicable" options
-- **Autocomplete Organization Selector**: Built intelligent autocomplete component allowing search of existing organizations or creation of new ones
-- **Sample User Creation**: Seeded 30 sample users with 10 tied to legal organizations and varying authentication providers
-- **OAuth Integration Framework**: Added support infrastructure for Google, Facebook, and GitHub OAuth authentication
-- **Database Schema Enhancement**: Extended users table with legal organization relationships and authentication provider tracking
-- **Signup UI Components**: Created responsive signup form with legal organization selector and oauth buttons
-
-## August 1, 2025
-- **Fixed Case Number Validation**: Updated case number validation to allow forward slashes (/) in case numbers like "12222/2025"
-- **Enhanced UI Layout**: Moved disclosure PDF manager to right-hand panel with navigation controls to preserve document tree functionality
-- **Logo Integration**: Added Family Court Doco logo throughout application (landing page, sidebar, PDF documents)
-- **PDF Generation**: Fixed jsPDF constructor issues and integrated logo into generated disclosure PDFs
-- **Enhanced Case Cards**: Installed framer-motion dependency and implemented TiltedCard component for interactive case cards with 3D tilt effects and hover animations
-- **Expanded Disclosure Tree**: Extended document categorization system to include 7 categories: Real Property (A), Banking (B), Taxation (C), Superannuation (D), Employment (E), Shares/Investments (F), and Vehicles (G) with hierarchical numbering system
-- **Case Title Field**: Added required case title field during case creation (e.g., "Smith J & Smith M") with database schema updates and form validation
-- **Activity Tracking System**: Implemented comprehensive activity logging with database storage for case creation, document uploads, and user actions. Real-time activity feed displays recent user actions across all accessible cases on the dashboard
+## UI/UX Decisions
+- **Branding**: "Family Court Documentation" branding and logo integrated into top navigation and generated PDFs.
+- **Interactive Elements**: TiltedCard component for interactive case cards with 3D tilt effects.
+- **PDF Preview**: Always-on side-by-side PDF preview with extracted information for verification.
+- **Upload Progress**: Dual progress bars showing upload and AI processing phases with visual indicators.
+- **Enhanced Sankey Visualization**: Comprehensive banking flow diagram with summary statistics, top inflows/outflows breakdown, color-coded visual design, and detailed analytics matching user style preferences.
+- **CSV Export Removal**: CSV export functionality completely removed per user request, focusing exclusively on XML-based analysis and visualization.
+- **Multi-PDF Transaction Analysis**: Banking confirmation modal and document tabs now display total transaction count, estimated PDF count for combined statements, earliest/latest transaction dates with automatic population of date fields from detected transaction range.
 
 # External Dependencies
 
 ## Database Services
-- **Neon Database**: Serverless PostgreSQL hosting with connection pooling
-- **connect-pg-simple**: PostgreSQL session store for Express sessions
+- **Neon Database**: Serverless PostgreSQL hosting
+- **connect-pg-simple**: PostgreSQL session store
 
 ## Authentication Services
-- **Replit Auth**: OpenID Connect provider for user authentication
-- **Passport.js**: Authentication middleware with OpenID Connect strategy
+- **Replit Auth**: OpenID Connect provider
+- **Passport.js**: Authentication middleware
 
 ## UI & Styling
-- **Radix UI**: Headless UI components for accessibility and functionality
-- **Tailwind CSS**: Utility-first CSS framework with custom design system
-- **Lucide React**: Icon library for consistent iconography
+- **Radix UI**: Headless UI components
+- **Tailwind CSS**: Utility-first CSS framework
+- **Lucide React**: Icon library
 
 ## Development Tools
-- **Vite**: Build tool with development server and HMR
-- **Replit Plugins**: Development environment integration (@replit/vite-plugin-cartographer, @replit/vite-plugin-runtime-error-modal)
-- **TypeScript**: Type checking and development tooling
+- **Vite**: Build tool
+- **Replit Plugins**: Development environment integration
+- **TypeScript**: Type checking
 
 ## Validation & Forms
-- **Zod**: Runtime type validation and schema definition
-- **React Hook Form**: Form state management and validation integration
+- **Zod**: Runtime type validation
+- **React Hook Form**: Form state management
 - **@hookform/resolvers**: Zod resolver for form validation
 
 ## File Processing
-- **Multer**: Multipart form data handling for file uploads
+- **Multer**: Multipart form data handling
 - **File System**: Node.js fs module for local file operations
+- **OpenAI GPT-4o**: For AI-powered banking document analysis.
