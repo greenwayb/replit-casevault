@@ -265,6 +265,18 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
                       <span className="font-medium text-slate-700">CSV Data:</span> {document.csvRowCount} transaction rows extracted
                     </div>
                   )}
+                  {(document as any).totalTransactions && (
+                    <div><span className="font-medium text-slate-700">Total Transactions:</span> {(document as any).totalTransactions}</div>
+                  )}
+                  {(document as any).estimatedPdfCount && (document as any).estimatedPdfCount > 1 && (
+                    <div><span className="font-medium text-slate-700">Estimated PDFs:</span> {(document as any).estimatedPdfCount} statements combined</div>
+                  )}
+                  {(document as any).earliestTransaction && (
+                    <div><span className="font-medium text-slate-700">Earliest Transaction:</span> {(document as any).earliestTransaction}</div>
+                  )}
+                  {(document as any).latestTransaction && (
+                    <div><span className="font-medium text-slate-700">Latest Transaction:</span> {(document as any).latestTransaction}</div>
+                  )}
                 </div>
               </div>
             )}
@@ -313,7 +325,6 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
             document={document}
             pdfUrl={`/api/documents/${document.id}/view`}
             xmlData={document.xmlAnalysisData}
-            csvData={(csvData as any)?.csvData}
             documentName={document.originalName}
             accountName={document.accountName}
             onFullAnalysis={handleFullAnalysis}

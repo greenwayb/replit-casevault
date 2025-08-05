@@ -67,7 +67,7 @@ export default function BankingDocumentTabs({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="pdf" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             PDF Document
@@ -111,13 +111,6 @@ export default function BankingDocumentTabs({
           >
             <Code2 className="h-4 w-4" />
             XML Data
-          </TabsTrigger>
-          <TabsTrigger 
-            value="analysis" 
-            className="flex items-center gap-2"
-          >
-            <BarChart3 className="h-4 w-4" />
-            Bank Info
           </TabsTrigger>
         </TabsList>
 
@@ -277,169 +270,7 @@ export default function BankingDocumentTabs({
           )}
         </TabsContent>
 
-        <TabsContent value="analysis" className="space-y-4">
-          {isFullAnalysisComplete ? (
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Document Analysis Summary</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                        <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Account Information</h4>
-                        <p className="text-sm text-blue-600 dark:text-blue-300">
-                          Account: {accountName || 'Not specified'}
-                        </p>
-                        <p className="text-sm text-blue-600 dark:text-blue-300">
-                          Document: {documentName}
-                        </p>
-                        {document?.totalTransactions && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Total Transactions: {document.totalTransactions}
-                          </p>
-                        )}
-                        {document?.estimatedPdfCount && document.estimatedPdfCount > 1 && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Estimated PDFs: {document.estimatedPdfCount} statements combined
-                          </p>
-                        )}
-                        {document?.earliestTransaction && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Earliest Transaction: {document.earliestTransaction}
-                          </p>
-                        )}
-                        {document?.latestTransaction && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Latest Transaction: {document.latestTransaction}
-                          </p>
-                        )}
-                      </div>
-                      <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                        <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">Analysis Status</h4>
-                        <p className="text-sm text-green-600 dark:text-green-300">
-                          ✓ XML Analysis Complete
-                        </p>
-                        <p className="text-sm text-green-600 dark:text-green-300">
-                          ✓ Transaction Data Extracted
-                        </p>
 
-                      </div>
-                    </div>
-                  </div>
-                  
-
-                </div>
-              </CardContent>
-            </Card>
-          ) : hasAnalysisError ? (
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <div className="h-12 w-12 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                      <BarChart3 className="h-6 w-6 text-red-600" />
-                    </div>
-                    <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">Analysis Error</h3>
-                    <p className="text-sm text-red-600 dark:text-red-300 mb-4">
-                      {document?.analysisError || 'AI processing failed'}
-                    </p>
-                  </div>
-                  
-                  {/* Processing Steps Status */}
-                  <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
-                    <h4 className="font-medium text-red-800 dark:text-red-200 mb-3">Processing Status:</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        {document?.xmlGenerated ? 
-                          <span className="text-green-600">✓</span> : 
-                          <span className="text-red-600">✗</span>
-                        }
-                        <span className={document?.xmlGenerated ? 'text-green-700 dark:text-green-300' : 'text-red-600 dark:text-red-400'}>
-                          XML Analysis Generation
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {document?.csvGenerated ? 
-                          <span className="text-green-600">✓</span> : 
-                          <span className="text-red-600">✗</span>
-                        }
-                        <span className={document?.csvGenerated ? 'text-green-700 dark:text-green-300' : 'text-red-600 dark:text-red-400'}>
-                          CSV Data Extraction
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center">
-                    <Button 
-                      onClick={onFullAnalysis}
-                      variant="outline"
-                      className="border-red-300 text-red-600 hover:bg-red-50"
-                    >
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Retry Analysis
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Banking Document Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                        <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Document Details</h4>
-                        <p className="text-sm text-blue-600 dark:text-blue-300">
-                          Account: {accountName || 'Not specified'}
-                        </p>
-                        <p className="text-sm text-blue-600 dark:text-blue-300">
-                          Document: {documentName}
-                        </p>
-                        {document?.totalTransactions && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Total Transactions: {document.totalTransactions}
-                          </p>
-                        )}
-                        {document?.estimatedPdfCount && document.estimatedPdfCount > 1 && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Estimated PDFs: {document.estimatedPdfCount} statements combined
-                          </p>
-                        )}
-                        {document?.earliestTransaction && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Earliest Transaction: {document.earliestTransaction}
-                          </p>
-                        )}
-                        {document?.latestTransaction && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Latest Transaction: {document.latestTransaction}
-                          </p>
-                        )}
-                      </div>
-                      <div className="p-4 bg-gray-50 dark:bg-gray-900/20 rounded-lg">
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Analysis Status</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          ✓ Basic Information Extracted
-                        </p>
-                        {document?.aiProcessed && (
-                          <p className="text-sm text-gray-600 dark:text-gray-300">
-                            ✓ Initial AI Processing Complete
-                          </p>
-                        )}
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                          Click "AI Analysis" for detailed transaction analysis
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
 
         <TabsContent value="pdf" className="space-y-4">
           <Card>
