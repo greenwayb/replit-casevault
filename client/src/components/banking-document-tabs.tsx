@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet } from "lucide-react";
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
+import { BankingJsonDisplay } from "./banking-json-display";
+import { BankingTransactionChart } from "./banking-transaction-chart";
 
 interface BankingDocumentTabsProps {
   document: any;
@@ -80,7 +82,7 @@ export default function BankingDocumentTabs({
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger 
             value="sankey" 
             className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -88,6 +90,14 @@ export default function BankingDocumentTabs({
           >
             <TrendingUp className="h-4 w-4" />
             Sankey Flow
+          </TabsTrigger>
+          <TabsTrigger 
+            value="chart" 
+            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFullAnalysisComplete}
+          >
+            <BarChart3 className="h-4 w-4" />
+            Transaction Chart
           </TabsTrigger>
           <TabsTrigger 
             value="summary" 
@@ -98,16 +108,12 @@ export default function BankingDocumentTabs({
             Summary
           </TabsTrigger>
           <TabsTrigger 
-            value="analysis" 
+            value="json" 
             className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={!isFullAnalysisComplete}
           >
-            <BarChart3 className="h-4 w-4" />
-            Analysis Data
-          </TabsTrigger>
-          <TabsTrigger value="pdf" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            PDF Document
+            <Code2 className="h-4 w-4" />
+            JSON Data
           </TabsTrigger>
           <TabsTrigger 
             value="xml" 
@@ -116,6 +122,18 @@ export default function BankingDocumentTabs({
           >
             <Code2 className="h-4 w-4" />
             XML Data
+          </TabsTrigger>
+          <TabsTrigger value="pdf" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            PDF Document
+          </TabsTrigger>
+          <TabsTrigger 
+            value="csv" 
+            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFullAnalysisComplete}
+          >
+            <Download className="h-4 w-4" />
+            CSV Export
           </TabsTrigger>
         </TabsList>
 
@@ -132,6 +150,51 @@ export default function BankingDocumentTabs({
                 <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-medium text-gray-600 mb-2">Transaction Flow Analysis</h3>
                 <p className="text-gray-500 mb-4">Click "AI Analysis" to analyze transaction flows and generate the Sankey diagram</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="chart" className="space-y-4">
+          {isFullAnalysisComplete ? (
+            <BankingTransactionChart 
+              xmlData={xmlData || ''}
+              accountName={accountName || 'Bank Account'}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">Transaction Chart Analysis</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to generate interactive transaction charts and balance trends</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="json" className="space-y-4">
+          {isFullAnalysisComplete ? (
+            <BankingJsonDisplay xmlData={xmlData || ''} />
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Code2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">JSON Data Export</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to convert XML analysis into structured JSON format</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="json" className="space-y-4">
+          {isFullAnalysisComplete ? (
+            <BankingJsonDisplay xmlData={xmlData || ''} />
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Code2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">JSON Data Export</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to convert XML analysis into structured JSON format</p>
               </CardContent>
             </Card>
           )}
@@ -365,66 +428,104 @@ export default function BankingDocumentTabs({
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">XML Analysis Data</h3>
                   <div className="flex gap-2">
-                    {csvData && (
+                    {xmlData && (
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        onClick={handleDownloadCSV}
-                      className="flex items-center gap-2"
-                    >
-                      <Download className="h-4 w-4" />
-                      Download CSV
-                    </Button>
-                  )}
-                  {xmlData && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleDownloadXML}
-                      className="flex items-center gap-2"
-                    >
-                      <Download className="h-4 w-4" />
-                      Download XML
-                    </Button>
-                  )}
+                        onClick={handleDownloadXML}
+                        className="flex items-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Download XML
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              
-              {xmlData ? (
-                <div className="space-y-4">
+                
+                {xmlData ? (
                   <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-96 overflow-y-auto">
                     <pre className="text-sm font-mono whitespace-pre-wrap break-words">
                       {xmlData}
                     </pre>
                   </div>
-                  
-                  {csvData && (
-                    <div className="space-y-2">
-                      <h4 className="font-medium">Generated CSV Preview</h4>
-                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-48 overflow-y-auto">
-                        <pre className="text-sm font-mono whitespace-pre-wrap break-words">
-                          {csvData.split('\n').slice(0, 10).join('\n')}
-                          {csvData.split('\n').length > 10 && '\n... (showing first 10 rows)'}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Code2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>No XML analysis data available</p>
-                  <p className="text-sm">Upload and process a banking document to see analysis data</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Code2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>No XML analysis data available</p>
+                    <p className="text-sm">Upload and process a banking document to see analysis data</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
                 <Code2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-medium text-gray-600 mb-2">XML Analysis Data</h3>
                 <p className="text-gray-500 mb-4">Click "AI Analysis" to generate detailed XML transaction analysis</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="csv" className="space-y-4">
+          {isFullAnalysisComplete ? (
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">CSV Transaction Export</h3>
+                  <div className="flex gap-2">
+                    {csvData && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleDownloadCSV}
+                        className="flex items-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Download CSV
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                
+                {csvData ? (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">CSV Export Ready</h4>
+                      <p className="text-sm text-green-700 dark:text-green-300">
+                        Transaction data has been successfully extracted and formatted as CSV
+                      </p>
+                      <p className="text-sm text-green-600 dark:text-green-400 mt-1">
+                        Rows: {csvData.split('\n').length - 1} transactions
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <h4 className="font-medium">CSV Preview (First 10 rows)</h4>
+                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-64 overflow-y-auto">
+                        <pre className="text-sm font-mono whitespace-pre-wrap break-words">
+                          {csvData.split('\n').slice(0, 11).join('\n')}
+                          {csvData.split('\n').length > 11 && '\n... (download full file to see all data)'}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileSpreadsheet className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>No CSV data available</p>
+                    <p className="text-sm">CSV will be generated automatically during AI analysis</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Download className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">CSV Transaction Export</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to extract transactions and generate downloadable CSV file</p>
               </CardContent>
             </Card>
           )}
