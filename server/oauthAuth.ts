@@ -100,7 +100,7 @@ export async function setupOAuthAuth(app: Express) {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: "/auth/github/callback"
-    }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
+    }, async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
         

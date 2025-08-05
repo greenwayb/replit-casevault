@@ -3,9 +3,7 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
-// Configure WebSocket for Neon with better error handling
 neonConfig.webSocketConstructor = ws;
-neonConfig.useSecureWebSocket = true;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -13,17 +11,5 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Create pool with retry configuration and error handling
-export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
-});
-
-// Add error event listener to handle connection issues
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-});
-
+export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 export const db = drizzle({ client: pool, schema });
