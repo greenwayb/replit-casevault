@@ -165,7 +165,7 @@ ${pdfText}`
     const fullResponse = response.content[0].type === 'text' ? response.content[0].text : '';
     
     // Extract JSON from the response for backward compatibility
-    let analysisResult = {};
+    let analysisResult: any = {};
     try {
       // Look for JSON in the response
       const jsonMatch = fullResponse.match(/\{[\s\S]*\}/);

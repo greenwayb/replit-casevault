@@ -1491,7 +1491,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const caseId = parseInt(req.params.id);
       
       const userRoles = await storage.getUserRolesInCase(userId, caseId);
-      if (userRole !== 'DISCLOSEE') {
+      if (!userRoles.includes('DISCLOSEE')) {
         return res.status(403).json({ message: "This endpoint is only for DISCLOSEE users" });
       }
 

@@ -11,7 +11,7 @@ interface BankingDocumentTabsProps {
   document: any;
   pdfUrl: string;
   xmlData?: string;
-  csvData?: string;
+  csvData?: string | any[];
   documentName: string;
   accountName?: string;
   onFullAnalysis?: () => void;
@@ -499,7 +499,7 @@ export default function BankingDocumentTabs({
                         Transaction data has been successfully extracted and formatted as CSV
                       </p>
                       <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                        Rows: {csvData.split('\n').length - 1} transactions
+                        Rows: {(typeof csvData === 'string' ? csvData.split('\n').length - 1 : Array.isArray(csvData) ? csvData.length : 0)} transactions
                       </p>
                     </div>
                     
@@ -507,8 +507,13 @@ export default function BankingDocumentTabs({
                       <h4 className="font-medium">CSV Preview (First 10 rows)</h4>
                       <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-64 overflow-y-auto">
                         <pre className="text-sm font-mono whitespace-pre-wrap break-words">
-                          {csvData.split('\n').slice(0, 11).join('\n')}
-                          {csvData.split('\n').length > 11 && '\n... (download full file to see all data)'}
+                          {typeof csvData === 'string' 
+                            ? csvData.split('\n').slice(0, 11).join('\n')
+                            : Array.isArray(csvData) 
+                              ? csvData.slice(0, 11).map(row => typeof row === 'object' ? Object.values(row).join(',') : String(row)).join('\n')
+                              : 'Invalid CSV data format'
+                          }
+                          {((typeof csvData === 'string' ? csvData.split('\n').length : Array.isArray(csvData) ? csvData.length : 0) > 11) && '\n... (download full file to see all data)'}
                         </pre>
                       </div>
                     </div>
