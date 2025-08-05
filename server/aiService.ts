@@ -67,7 +67,7 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
     const aiRequestPromise = anthropic.messages.create({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
-      max_tokens: 8000,
+      max_tokens: 8192,
       system: `You are an AI assistant specialized in extracting and analyzing information from bank statement or bank transaction PDFs. Your task is to carefully examine the provided PDF content and extract specific information.
 
 IMPORTANT: You may be provided with a number of statements combined into one file, which may or may not be in the correct order, so you should carefully analyse the file checking all data and time entries and ensure its resolved consistently across the file. Further some statements such as those used for credit cards may only have one value such as amount, which may be positive or negative. You should determine or locate a payment to the statement to determine which is a credit and which is a debit, because this may be around in a different way to a normal bank statement.
@@ -210,16 +210,27 @@ ${pdfText}`
         xmlAnalysis = afterExtractionMatch[1];
         console.log('Found transaction_analysis XML after extraction_process');
       } else {
-        // Try to find any XML-like structure that might be the analysis
-        const anyXmlMatch = fullResponse.match(/<[^>]+>[\s\S]*?<\/[^>]+>/);
-        if (anyXmlMatch) {
-          console.log('Found some XML structure, but not transaction_analysis format');
-          console.log('Full AI response:', fullResponse);
+        // The response might be cut off - look for partial XML
+        const partialXmlMatch = fullResponse.match(/<transaction_analysis>[\s\S]*/);
+        if (partialXmlMatch) {
+          console.log('Found partial transaction_analysis XML - response may be truncated');
+          // Try to reconstruct the XML by adding closing tag if missing
+          let partialXml = partialXmlMatch[0];
+          if (!partialXml.includes('</transaction_analysis>')) {
+            partialXml += '\n</transaction_analysis>';
+          }
+          xmlAnalysis = partialXml;
+          console.log('Reconstructed XML from partial response');
         } else {
-          console.log('No XML structure found in response at all');
-          console.log('Full AI response:', fullResponse);
+          console.log('No transaction_analysis XML found in response');
         }
       }
+    }
+    
+    // If we couldn't extract proper XML but have good data, create minimal XML from the analysis
+    if (!xmlAnalysis && analysisResult.accountHolderName) {
+      console.log('Creating minimal XML from extracted data');
+      xmlAnalysis = createMinimalXMLFromData(analysisResult, fullResponse);
     }
     
     // Validate and normalize the response
@@ -297,6 +308,62 @@ function extractDataFromText(text: string): any {
   result.confidence = 0.7; // Medium confidence for text extraction
   
   return result;
+}
+
+// Helper function to create minimal XML from extracted data when full XML fails
+function createMinimalXMLFromData(analysisResult: any, fullResponse: string): string {
+  try {
+    // Extract basic transaction information from the response text
+    const transactionMatches = fullResponse.match(/<transaction>[\s\S]*?<\/transaction>/g) || [];
+    
+    let transactionsXml = '';
+    transactionMatches.forEach(transaction => {
+      transactionsXml += `     ${transaction}\n`;
+    });
+    
+    // If no transactions found in XML format, try to extract from text patterns
+    if (!transactionsXml) {
+      const lines = fullResponse.split('\n');
+      let foundTransactionSection = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.includes('transaction_date') || line.includes('transaction_description')) {
+          foundTransactionSection = true;
+        }
+        // Add basic transaction extraction logic here if needed
+      }
+    }
+    
+    const xml = `<transaction_analysis>
+  <institution>${escapeXML(analysisResult.financialInstitution || 'Unknown')}</institution>
+  <account_holders>
+     <account_holder>${escapeXML(analysisResult.accountHolderName || 'Unknown')}</account_holder>
+  </account_holders>
+  <account_type>${escapeXML(analysisResult.accountName || 'Unknown')}</account_type>
+  <start_date>${analysisResult.transactionDateFrom || 'Unknown'}</start_date>
+  <end_date>${analysisResult.transactionDateTo || 'Unknown'}</end_date>
+  <account_number>${escapeXML(analysisResult.accountNumber || 'Unknown')}</account_number>
+  <account_bsb>${escapeXML(analysisResult.bsbSortCode || 'Unknown')}</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>0.00</total_credits>
+  <total_debits>0.00</total_debits>
+  <transactions>
+${transactionsXml}  </transactions>
+  <inflows>
+  </inflows>
+  <outflows>
+  </outflows>
+  <analysis_summary>
+    Minimal XML structure created from extracted account information. Full transaction analysis may require manual processing of the original document.
+  </analysis_summary>
+</transaction_analysis>`;
+    
+    return xml;
+  } catch (error) {
+    console.error('Error creating minimal XML:', error);
+    return '';
+  }
 }
 
 // Helper function to convert various date formats to ISO format
