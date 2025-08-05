@@ -10,39 +10,9 @@ interface BankingSankeyDiagramProps {
 export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: BankingSankeyDiagramProps) {
   const [selectedPeriod, setSelectedPeriod] = useState('all');
 
-  // Extract period options from XML data
-  const periodOptions = useMemo(() => {
-    if (!xmlData) return ['all'];
-    
-    try {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
-      const transactionNodes = xmlDoc.getElementsByTagName('transaction');
-      
-      const periods = new Set<string>(['all']);
-      for (let i = 0; i < transactionNodes.length; i++) {
-        const dateElement = transactionNodes[i].getElementsByTagName('transaction_date')[0];
-        if (dateElement?.textContent) {
-          const date = dateElement.textContent.trim();
-          if (date.length >= 7) {
-            periods.add(date.substring(0, 7));
-          }
-        }
-      }
-      
-      return Array.from(periods).sort();
-    } catch (error) {
-      console.error('Error parsing XML:', error);
-      return ['all'];
-    }
-  }, [xmlData]);
-
-  // Process transactions and create Sankey data
-  const sankeyData = useMemo(() => {
-    if (!xmlData) return {
-      sankeyData: { nodes: [], links: [] },
-      stats: { totalCredits: 0, totalDebits: 0, transactionCount: 0, topInflows: [], topOutflows: [] }
-    };
+  // Pre-process ALL period data once - no dependencies on selectedPeriod
+  const allPeriodData = useMemo(() => {
+    if (!xmlData) return {};
     
     try {
       const parser = new DOMParser();
@@ -60,12 +30,8 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         `${accountName} (${accountNumber})` : 
         accountName;
       
-      // Process transactions
-      const inflows = new Map<string, number>();
-      const outflows = new Map<string, number>();
-      let totalCredits = 0;
-      let totalDebits = 0;
-      let transactionCount = 0;
+      // Group transactions by period
+      const periodGroups: { [key: string]: any[] } = { 'all': [] };
       
       for (let i = 0; i < transactionNodes.length; i++) {
         const transaction = transactionNodes[i];
@@ -77,89 +43,130 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         const date = getTextContent('transaction_date');
         const amountStr = getTextContent('amount');
         
-        // Filter by selected period
-        if (date && amountStr && (selectedPeriod === 'all' || date.startsWith(selectedPeriod))) {
+        if (date && amountStr) {
           const amount = parseFloat(amountStr) || 0;
           const category = getTextContent('transaction_category') || 'Other';
           const transferTarget = getTextContent('transfer_target');
           
-          transactionCount++;
+          const transactionData = {
+            date,
+            amount,
+            category,
+            transferTarget
+          };
           
-          if (amount > 0) {
-            totalCredits += amount;
-            const source = transferTarget || category || 'Other Income';
-            inflows.set(source, (inflows.get(source) || 0) + amount);
-          } else {
-            const absAmount = Math.abs(amount);
-            totalDebits += absAmount;
-            const target = transferTarget || category || 'Other Expenses';
-            outflows.set(target, (outflows.get(target) || 0) + absAmount);
+          // Add to 'all' period
+          periodGroups['all'].push(transactionData);
+          
+          // Add to specific month period
+          const period = date.substring(0, 7);
+          if (!periodGroups[period]) {
+            periodGroups[period] = [];
           }
+          periodGroups[period].push(transactionData);
         }
       }
       
-      // Build Sankey nodes and links
-      const nodes: Array<{ name: string; category: string }> = [];
-      const links: Array<{ source: number; target: number; value: number }> = [];
-      let nodeIndex = 0;
-      const nodeMap = new Map<string, number>();
+      // Create Sankey data for each period
+      const periodData: { [key: string]: any } = {};
       
-      // Add source nodes (inflows)
-      inflows.forEach((amount, source) => {
-        nodes.push({ name: source, category: 'inflow' });
-        nodeMap.set(source, nodeIndex++);
-      });
-      
-      // Add account node
-      const accountNodeIndex = nodeIndex;
-      nodes.push({ name: accountDisplayName, category: 'account' });
-      nodeIndex++;
-      
-      // Add target nodes (outflows)
-      outflows.forEach((amount, target) => {
-        nodes.push({ name: target, category: 'outflow' });
-        nodeMap.set(target, nodeIndex++);
-      });
-      
-      // Create links from sources to account
-      inflows.forEach((amount, source) => {
-        links.push({
-          source: nodeMap.get(source)!,
-          target: accountNodeIndex,
-          value: amount
+      Object.keys(periodGroups).forEach(period => {
+        const transactions = periodGroups[period];
+        
+        const inflows = new Map<string, number>();
+        const outflows = new Map<string, number>();
+        let totalCredits = 0;
+        let totalDebits = 0;
+        
+        transactions.forEach(transaction => {
+          if (transaction.amount > 0) {
+            totalCredits += transaction.amount;
+            const source = transaction.transferTarget || transaction.category || 'Other Income';
+            inflows.set(source, (inflows.get(source) || 0) + transaction.amount);
+          } else {
+            const absAmount = Math.abs(transaction.amount);
+            totalDebits += absAmount;
+            const target = transaction.transferTarget || transaction.category || 'Other Expenses';
+            outflows.set(target, (outflows.get(target) || 0) + absAmount);
+          }
         });
-      });
-      
-      // Create links from account to targets
-      outflows.forEach((amount, target) => {
-        links.push({
-          source: accountNodeIndex,
-          target: nodeMap.get(target)!,
-          value: amount
+        
+        // Build Sankey structure
+        const nodes: Array<{ name: string; category: string }> = [];
+        const links: Array<{ source: number; target: number; value: number }> = [];
+        let nodeIndex = 0;
+        const nodeMap = new Map<string, number>();
+        
+        // Add source nodes
+        inflows.forEach((amount, source) => {
+          nodes.push({ name: source, category: 'inflow' });
+          nodeMap.set(source, nodeIndex++);
         });
+        
+        // Add account node
+        const accountNodeIndex = nodeIndex;
+        nodes.push({ name: accountDisplayName, category: 'account' });
+        nodeIndex++;
+        
+        // Add target nodes
+        outflows.forEach((amount, target) => {
+          nodes.push({ name: target, category: 'outflow' });
+          nodeMap.set(target, nodeIndex++);
+        });
+        
+        // Create links
+        inflows.forEach((amount, source) => {
+          links.push({
+            source: nodeMap.get(source)!,
+            target: accountNodeIndex,
+            value: amount
+          });
+        });
+        
+        outflows.forEach((amount, target) => {
+          links.push({
+            source: accountNodeIndex,
+            target: nodeMap.get(target)!,
+            value: amount
+          });
+        });
+        
+        const topInflows = Array.from(inflows.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const topOutflows = Array.from(outflows.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        
+        periodData[period] = {
+          sankeyData: { nodes, links },
+          stats: {
+            totalCredits,
+            totalDebits,
+            transactionCount: transactions.length,
+            topInflows,
+            topOutflows
+          }
+        };
       });
-      
-      // Calculate top flows
-      const topInflows = Array.from(inflows.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      const topOutflows = Array.from(outflows.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5);
       
       return {
-        sankeyData: { nodes, links },
-        stats: { totalCredits, totalDebits, transactionCount, topInflows, topOutflows }
+        periodData,
+        periodOptions: Object.keys(periodGroups).sort()
       };
     } catch (error) {
-      console.error('Error processing Sankey data:', error);
-      return {
-        sankeyData: { nodes: [], links: [] },
-        stats: { totalCredits: 0, totalDebits: 0, transactionCount: 0, topInflows: [], topOutflows: [] }
-      };
+      console.error('Error processing data:', error);
+      return {};
     }
-  }, [xmlData, selectedPeriod, accountName]);
+  }, [xmlData, accountName]);
 
-  // Custom Sankey components
+  // Simply get the current period's pre-processed data
+  const currentData = allPeriodData.periodData?.[selectedPeriod] || {
+    sankeyData: { nodes: [], links: [] },
+    stats: { totalCredits: 0, totalDebits: 0, transactionCount: 0, topInflows: [], topOutflows: [] }
+  };
+
+  const periodOptions = allPeriodData.periodOptions || ['all'];
+
   const CustomNode = ({ payload, ...props }: any) => {
     const { x, y, width, height, index } = props;
-    const node = sankeyData.sankeyData.nodes[index];
+    const node = currentData.sankeyData.nodes[index];
     
     if (!node) return null;
     
@@ -200,7 +207,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
           {accountName} - Transaction Flow Analysis
         </h1>
         <p className="text-gray-600 mb-4">
-          {dateRange} | Credits: ${sankeyData.stats.totalCredits.toLocaleString()} | Debits: ${sankeyData.stats.totalDebits.toLocaleString()}
+          {dateRange} | Credits: ${currentData.stats.totalCredits.toLocaleString()} | Debits: ${currentData.stats.totalDebits.toLocaleString()}
         </p>
         
         {/* Period selector buttons */}
@@ -242,15 +249,15 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <span className="font-medium text-green-600">Total Credits:</span>
-              <br />${sankeyData.stats.totalCredits.toLocaleString()}
+              <br />${currentData.stats.totalCredits.toLocaleString()}
             </div>
             <div>
               <span className="font-medium text-red-600">Total Debits:</span>
-              <br />${sankeyData.stats.totalDebits.toLocaleString()}
+              <br />${currentData.stats.totalDebits.toLocaleString()}
             </div>
             <div>
               <span className="font-medium text-blue-600">Transaction Count:</span>
-              <br />{sankeyData.stats.transactionCount.toLocaleString()}
+              <br />{currentData.stats.transactionCount.toLocaleString()}
             </div>
           </div>
         </div>
@@ -260,7 +267,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       <div className="bg-white rounded-lg shadow-lg p-4" style={{ height: 'calc(100vh - 300px)' }}>
         <ResponsiveContainer width="100%" height="100%">
           <Sankey
-            data={sankeyData.sankeyData}
+            data={currentData.sankeyData}
             nodeWidth={120}
             nodePadding={15}
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -276,8 +283,8 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         <div className="bg-green-50 p-4 rounded-lg">
           <h3 className="font-semibold text-green-800 mb-2">Top Inflows</h3>
           <ul className="text-sm space-y-1">
-            {sankeyData.stats.topInflows.map(([name, amount], index) => {
-              const percentage = sankeyData.stats.totalCredits > 0 ? ((amount / sankeyData.stats.totalCredits) * 100).toFixed(1) : '0';
+            {currentData.stats.topInflows.map(([name, amount], index) => {
+              const percentage = currentData.stats.totalCredits > 0 ? ((amount / currentData.stats.totalCredits) * 100).toFixed(1) : '0';
               return (
                 <li key={index} className="flex justify-between">
                   <span className="truncate mr-2">{name}</span>
@@ -293,8 +300,8 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         <div className="bg-red-50 p-4 rounded-lg">
           <h3 className="font-semibold text-red-800 mb-2">Top Outflows</h3>
           <ul className="text-sm space-y-1">
-            {sankeyData.stats.topOutflows.map(([name, amount], index) => {
-              const percentage = sankeyData.stats.totalDebits > 0 ? ((amount / sankeyData.stats.totalDebits) * 100).toFixed(1) : '0';
+            {currentData.stats.topOutflows.map(([name, amount], index) => {
+              const percentage = currentData.stats.totalDebits > 0 ? ((amount / currentData.stats.totalDebits) * 100).toFixed(1) : '0';
               return (
                 <li key={index} className="flex justify-between">
                   <span className="truncate mr-2">{name}</span>
