@@ -39,24 +39,16 @@ export interface BasicBankingFields {
 
 // Helper function to estimate processing time for full analysis
 function estimateFullAnalysisTime(textLength: number, transactionCount: number): { estimatedMinutes: number; description: string } {
-  // Base time: 1 minute for simple documents
-  let baseTime = 1;
+  // Formula: 1 + ceiling(transaction_count / 80) minutes
+  const totalMinutes = 1 + Math.ceil(transactionCount / 80);
   
-  // Add time based on text length (1.5 minutes per 50k characters)
-  const textComplexity = Math.ceil(textLength / 50000) * 1.5;
-  
-  // Add time based on transaction count (1 minute per 100 transactions)
-  const transactionComplexity = Math.ceil(transactionCount / 100);
-  
-  const totalMinutes = Math.max(baseTime + textComplexity + transactionComplexity, 1);
-  
-  let description = `Full analysis estimated time: ${totalMinutes} minutes`;
+  let description = `Full analysis estimated time: ${totalMinutes} minutes (1 + ceiling(${transactionCount} / 80))`;
   if (transactionCount > 200) {
-    description += ` (Large document with ${transactionCount} transactions)`;
+    description += ` - Large document`;
   } else if (transactionCount > 50) {
-    description += ` (Medium complexity with ${transactionCount} transactions)`;
+    description += ` - Medium complexity`;
   } else {
-    description += ` (Standard document with ${transactionCount} transactions)`;
+    description += ` - Standard document`;
   }
   
   return { estimatedMinutes: totalMinutes, description };

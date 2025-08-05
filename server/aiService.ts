@@ -70,24 +70,16 @@ export interface CSVGenerationResult {
 
 // Helper function to estimate processing time based on document complexity
 function estimateProcessingTime(textLength: number, transactionCount: number): { estimatedMinutes: number; description: string } {
-  // Base time: 30 seconds for simple documents
-  let baseTime = 0.5;
+  // Formula: 1 + ceiling(transaction_count / 80) minutes
+  const totalMinutes = 1 + Math.ceil(transactionCount / 80);
   
-  // Add time based on text length (2 minutes per 50k characters for large files)
-  const textComplexity = Math.ceil(textLength / 50000) * 2;
-  
-  // Add time based on transaction count (1 minute per 100 transactions)
-  const transactionComplexity = Math.ceil(transactionCount / 100);
-  
-  const totalMinutes = Math.max(baseTime + textComplexity + transactionComplexity, 2); // Minimum 2 minutes
-  
-  let description = `Document analysis estimated time: ${totalMinutes} minutes`;
+  let description = `Document analysis estimated time: ${totalMinutes} minutes (1 + ceiling(${transactionCount} / 80))`;
   if (transactionCount > 200) {
-    description += ` (Large document with ${transactionCount} transactions)`;
+    description += ` - Large document`;
   } else if (transactionCount > 50) {
-    description += ` (Medium complexity with ${transactionCount} transactions)`;
+    description += ` - Medium complexity`;
   } else {
-    description += ` (Standard document with ${transactionCount} transactions)`;
+    description += ` - Standard document`;
   }
   
   return { estimatedMinutes: totalMinutes, description };
