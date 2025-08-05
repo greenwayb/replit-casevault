@@ -57,6 +57,12 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
       throw new Error("Could not extract text from PDF");
     }
 
+    console.log(`PDF text length: ${pdfText.length} characters`);
+    
+    // Count transaction lines in PDF to set expectations
+    const transactionLineCount = (pdfText.match(/\d{2}\/\d{2}\/\d{4}/g) || []).length;
+    console.log(`Estimated transaction lines in PDF: ${transactionLineCount}`);
+
     // Add timeout wrapper for AI request - increased for complex documents
     const TIMEOUT_MS = 300000; // 5 minutes timeout
     
@@ -67,7 +73,7 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
     const aiRequestPromise = anthropic.messages.create({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
-      max_tokens: 8192,
+      max_tokens: 16384,
       system: `You are an AI assistant specialized in extracting and analyzing information from bank statement or bank transaction PDFs. Your task is to carefully examine the provided PDF content and extract specific information.
 
 IMPORTANT: You may be provided with a number of statements combined into one file, which may or may not be in the correct order, so you should carefully analyse the file checking all data and time entries and ensure its resolved consistently across the file. Further some statements such as those used for credit cards may only have one value such as amount, which may be positive or negative. You should determine or locate a payment to the statement to determine which is a credit and which is a debit, because this may be around in a different way to a normal bank statement.
@@ -94,11 +100,13 @@ Your goal is to extract the following information:
    11.7 Balance after transaction if available
 12. Provide the information and analysis summary of your findings
 
-CRITICAL REQUIREMENTS:
-1. MUST process ALL transactions in the document from start to end date - do not truncate or summarize
-2. MUST capture every single transaction line, no matter how many there are
-3. If you reach token limits, prioritize transaction completeness over verbose descriptions
-4. MUST provide response in this EXACT format:
+CRITICAL REQUIREMENTS - READ CAREFULLY:
+1. MUST process ALL transactions in the ENTIRE document from first to last page - do not stop early
+2. MUST capture EVERY SINGLE transaction line, no matter how many there are (50, 100, 200+ transactions)
+3. If approaching token limits, use shorter descriptions but include ALL transactions
+4. Scan the ENTIRE PDF text - look for transaction patterns throughout the full document
+5. Count transactions as you process them to ensure completeness
+6. MUST provide response in this EXACT format:
 
 First, provide your working analysis inside <extraction_process> tags
 Then, provide the JSON data for backward compatibility  
@@ -163,7 +171,9 @@ Then provide the findings using the following XML structure (inflows and outflow
       messages: [
         {
           role: "user",
-          content: `Please analyze this banking document text and extract the key information according to the schema provided. Here is the document text:
+          content: `Please analyze this banking document text and extract the key information according to the schema provided. The PDF contains approximately ${transactionLineCount} transaction lines based on date patterns - ensure you process ALL of them without truncation.
+
+Here is the document text:
 
 ${pdfText}`
         }
@@ -205,6 +215,24 @@ ${pdfText}`
     
     // Extract XML analysis from the response - try multiple patterns
     let xmlMatch = fullResponse.match(/<transaction_analysis>[\s\S]*?<\/transaction_analysis>/);
+    
+    if (xmlMatch) {
+      const xmlAnalysis = xmlMatch[0];
+      analysisResult.xmlAnalysis = xmlAnalysis;
+      
+      // Count transactions in XML and compare to PDF expectation
+      const xmlTransactionCount = (xmlAnalysis.match(/<transaction>/g) || []).length;
+      console.log(`Successfully extracted XML analysis from AI response`);
+      console.log(`PDF estimated transactions: ${transactionLineCount}, XML extracted transactions: ${xmlTransactionCount}`);
+      
+      if (xmlTransactionCount < transactionLineCount * 0.8) {
+        console.warn(`Warning: XML may be incomplete. Expected ~${transactionLineCount} transactions, got ${xmlTransactionCount}`);
+      }
+    } else {
+      console.warn('Could not find XML analysis in AI response');
+      console.log('Full response preview:', fullResponse.substring(0, 500));
+    }
+    
     let xmlAnalysis = xmlMatch ? xmlMatch[0] : '';
     
     // If transaction_analysis not found, look for it after extraction_process

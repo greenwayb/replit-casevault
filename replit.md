@@ -39,8 +39,8 @@ Preferred communication style: Simple, everyday language.
 - **File Types**: PDF-only (50MB limit)
 - **Organization**: Hierarchical categorization (REAL_PROPERTY, BANKING, TAXATION, SUPERANNUATION, EMPLOYMENT, SHARES/INVESTMENTS, VEHICLES) with a comprehensive numbering system (e.g., A1, B1, B1.1)
 - **Access Control**: Case-based permissions with user role assignments
-- **AI Processing**: Automatic Banking document analysis using Claude Sonnet 4, generating XML first, then CSV from XML with comprehensive error handling and timeout protection.
-- **CSV Generation**: Automatic extraction of transaction data into downloadable CSV files.
+- **AI Processing**: Advanced Banking document analysis using Claude Sonnet 4 with enhanced completeness validation, generating comprehensive XML analysis with transaction counting and validation to ensure full document processing.
+- **Transaction Completeness**: PDF transaction line estimation with XML validation to detect incomplete analysis and ensure all transactions are captured.
 - **Enhanced Error Handling**: Processing failures keep dialog open, log detailed error information to server files, and display log locations to users for debugging.
 
 ## Case Management
@@ -57,6 +57,7 @@ Preferred communication style: Simple, everyday language.
 - **PDF Preview**: Always-on side-by-side PDF preview with extracted information for verification.
 - **Upload Progress**: Dual progress bars showing upload and AI processing phases with visual indicators.
 - **Enhanced Sankey Visualization**: Comprehensive banking flow diagram with summary statistics, top inflows/outflows breakdown, color-coded visual design, and detailed analytics matching user style preferences.
+- **CSV Export Removal**: CSV export functionality completely removed per user request, focusing exclusively on XML-based analysis and visualization.
 
 # External Dependencies
 

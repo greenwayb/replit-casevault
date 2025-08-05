@@ -387,7 +387,14 @@ export default function BankingDocumentTabs({
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">XML Analysis Data</h3>
+                  <h3 className="text-lg font-semibold">
+                    XML Analysis Data 
+                    {xmlData && (() => {
+                      const transactionMatches = xmlData.match(/<transaction>/g);
+                      const transactionCount = transactionMatches ? transactionMatches.length : 0;
+                      return transactionCount > 0 ? ` (${transactionCount} transactions)` : '';
+                    })()}
+                  </h3>
                   <div className="flex gap-2">
                     {xmlData && (
                       <Button 
