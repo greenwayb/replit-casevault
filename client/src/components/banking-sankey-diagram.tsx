@@ -76,8 +76,10 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       const toNode = outflowNodes[i];
       const target = toNode.getElementsByTagName('target')[0]?.textContent?.trim() || '';
       const amount = parseFloat(toNode.getElementsByTagName('total_amount')[0]?.textContent || '0');
-      if (target && amount > 0) {
-        outflowsFromXML.set(target, amount);
+      // Handle negative outflow amounts by converting to positive
+      const positiveAmount = Math.abs(amount);
+      if (target && positiveAmount > 0) {
+        outflowsFromXML.set(target, positiveAmount);
       }
     }
 

@@ -532,13 +532,13 @@ export async function generateCSVFromXML(xmlData: string, documentId: number): P
         return match ? match[1].trim() : '';
       };
       
-      const date = extractField('date');
-      const description = extractField('description');
+      const date = extractField('transaction_date');
+      const description = extractField('transaction_description');
       const amount = extractField('amount');
       const balance = extractField('balance');
-      const category = extractField('category');
-      const transferType = extractField('transfer_type');
-      const transferTarget = extractField('transfer_target');
+      const category = extractField('transaction_category');
+      const transferType = extractField('transfer_type') || '';
+      const transferTarget = extractField('transfer_target') || '';
       
       // Escape CSV values (handle commas and quotes)
       const escapeCsvValue = (value: string) => {
