@@ -39,7 +39,7 @@ Preferred communication style: Simple, everyday language.
 - **File Types**: PDF-only (50MB limit)
 - **Organization**: Hierarchical categorization (REAL_PROPERTY, BANKING, TAXATION, SUPERANNUATION, EMPLOYMENT, SHARES/INVESTMENTS, VEHICLES) with a comprehensive numbering system (e.g., A1, B1, B1.1)
 - **Access Control**: Case-based permissions with user role assignments
-- **AI Processing**: Advanced Banking document analysis using Claude Sonnet 4 with enhanced completeness validation, generating comprehensive XML analysis with transaction counting and validation to ensure all document processing.
+- **AI Processing**: Advanced Banking document analysis using Claude Sonnet 4 with streaming support for large files, enhanced completeness validation, generating comprehensive XML analysis with transaction counting and validation to ensure all document processing. Supports documents up to 6MB+ with 500+ transactions using dynamic timeout scaling (up to 20 minutes) and 32K token limits.
 - **Multi-PDF Detection**: Enhanced initial extraction to process full PDF text, identifying when multiple bank statements are combined into one PDF, with automatic detection of transaction counts, earliest/latest transaction dates, and estimated source PDF count.
 - **Transaction Completeness**: PDF transaction line estimation with XML validation to detect incomplete analysis and ensure all transactions are captured.
 - **Enhanced Error Handling**: Processing failures keep dialog open, log detailed error information to server files, and display log locations to users for debugging.

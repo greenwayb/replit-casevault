@@ -104,7 +104,7 @@ export async function extractBasicBankingFields(filePath: string): Promise<Basic
     const timeEstimate = estimateFullAnalysisTime(pdfText.length, transactionLineCount);
     console.log(timeEstimate.description);
 
-    const response = await anthropic.messages.create({
+    const streamResponse = await anthropic.messages.stream({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
       max_tokens: 2000,
@@ -156,7 +156,13 @@ Important:
       }]
     });
 
-    const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
+    // Collect streaming response
+    let responseText = '';
+    for await (const chunk of streamResponse) {
+      if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+        responseText += chunk.delta.text;
+      }
+    }
     
     // Parse the XML response (browser DOMParser not available in Node.js)
     // Simple XML parsing for our specific format

@@ -142,7 +142,7 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
       setTimeout(() => reject(new Error(`AI request timed out after ${Math.round(TIMEOUT_MS/60000)} minutes`)), TIMEOUT_MS);
     });
     
-    const aiRequestPromise = anthropic.messages.create({
+    const aiRequestPromise = anthropic.messages.stream({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
       max_tokens: 32768, // Increased for large documents
@@ -253,9 +253,15 @@ ${pdfText}`
     });
 
     // Race between AI request and timeout
-    const response = await Promise.race([aiRequestPromise, timeoutPromise]) as any;
+    const streamResponse = await Promise.race([aiRequestPromise, timeoutPromise]) as any;
 
-    const fullResponse = response.content[0].type === 'text' ? response.content[0].text : '';
+    // Collect streaming response
+    let fullResponse = '';
+    for await (const chunk of streamResponse) {
+      if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+        fullResponse += chunk.delta.text;
+      }
+    }
     
     // Extract JSON from the response for backward compatibility
     let analysisResult: any = {};
