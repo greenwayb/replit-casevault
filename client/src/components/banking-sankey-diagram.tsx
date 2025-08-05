@@ -20,7 +20,8 @@ interface BankingSankeyDiagramProps {
 export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: BankingSankeyDiagramProps) {
   const [selectedPeriod, setSelectedPeriod] = useState('all');
 
-  const { sankeyData, summaryStats, periodOptions } = useMemo(() => {
+  // First, parse the base data without filtering (no circular dependency)
+  const { transactions, periodOptions, accountDisplayName, inflowsFromXML, outflowsFromXML } = useMemo(() => {
     // Parse XML to extract transactions and account info
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
@@ -67,14 +68,6 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
     });
     const availablePeriods = Array.from(periods).sort();
 
-    // Filter transactions based on selected period
-    let filteredTransactions = transactions;
-    if (selectedPeriod !== 'all') {
-      const year = selectedPeriod.slice(0, 4);
-      const month = selectedPeriod.slice(5, 7);
-      filteredTransactions = transactions.filter(t => t.date.startsWith(`${year}-${month}`));
-    }
-
     // Also extract inflows/outflows from XML structure
     const inflowsFromXML = new Map<string, number>();
     const outflowsFromXML = new Map<string, number>();
@@ -101,6 +94,25 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       if (target && positiveAmount > 0) {
         outflowsFromXML.set(target, positiveAmount);
       }
+    }
+
+    return {
+      transactions,
+      periodOptions: availablePeriods,
+      accountDisplayName,
+      inflowsFromXML,
+      outflowsFromXML
+    };
+  }, [xmlData, accountName]);
+
+  // Second, process the filtered data (this safely depends on selectedPeriod)
+  const { sankeyData, summaryStats } = useMemo(() => {
+    // Filter transactions based on selected period
+    let filteredTransactions = transactions;
+    if (selectedPeriod !== 'all') {
+      const year = selectedPeriod.slice(0, 4);
+      const month = selectedPeriod.slice(5, 7);
+      filteredTransactions = transactions.filter(t => t.date.startsWith(`${year}-${month}`));
     }
 
     // Group transactions by type and target (fallback if XML structure doesn't have inflows/outflows)
@@ -215,10 +227,9 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
         topOutflows: sortedOutflows.slice(0, 5),
         largestInflow: sortedInflows[0] || ['', 0],
         largestOutflow: sortedOutflows[0] || ['', 0]
-      },
-      periodOptions: availablePeriods
+      }
     };
-  }, [xmlData, accountName, selectedPeriod]);
+  }, [transactions, selectedPeriod, accountDisplayName, inflowsFromXML, outflowsFromXML]);
 
   // Custom node component
   const CustomNode = ({ payload, ...props }: any) => {
@@ -373,8 +384,11 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
             {summaryStats.topInflows.map(([name, amount], index) => {
               const percentage = ((amount / summaryStats.totalCredits) * 100).toFixed(1);
               return (
-                <li key={index}>
-                  {index + 1}. {name}: ${amount.toLocaleString()} ({percentage}%)
+                <li key={index} className="flex justify-between">
+                  <span className="truncate mr-2">{name}</span>
+                  <span className="text-green-600 font-medium whitespace-nowrap">
+                    ${amount.toLocaleString()} ({percentage}%)
+                  </span>
                 </li>
               );
             })}
@@ -387,8 +401,11 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
             {summaryStats.topOutflows.map(([name, amount], index) => {
               const percentage = ((amount / summaryStats.totalDebits) * 100).toFixed(1);
               return (
-                <li key={index}>
-                  {index + 1}. {name}: ${amount.toLocaleString()} ({percentage}%)
+                <li key={index} className="flex justify-between">
+                  <span className="truncate mr-2">{name}</span>
+                  <span className="text-red-600 font-medium whitespace-nowrap">
+                    ${amount.toLocaleString()} ({percentage}%)
+                  </span>
                 </li>
               );
             })}
@@ -398,5 +415,3 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
     </div>
   );
 }
-
-export default BankingSankeyDiagram;
