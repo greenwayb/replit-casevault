@@ -67,19 +67,21 @@ export default function BankingDocumentTabs({
 
   return (
     <div className="space-y-4">
-      {/* AI Analysis Button - only show if full analysis not completed */}
-      {!isFullAnalysisComplete && (
-        <div className="flex justify-center">
-          <Button 
-            onClick={onFullAnalysis}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
-            size="lg"
-          >
-            <BarChart3 className="h-5 w-5 mr-2" />
-            AI Analysis
-          </Button>
-        </div>
-      )}
+      {/* AI Analysis Button */}
+      <div className="flex justify-center">
+        <Button 
+          onClick={onFullAnalysis}
+          className={
+            isFullAnalysisComplete 
+              ? "bg-orange-600 hover:bg-orange-700 text-white px-6 py-2"
+              : "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+          }
+          size="lg"
+        >
+          <BarChart3 className="h-5 w-5 mr-2" />
+          {isFullAnalysisComplete ? "Reprocess PDF" : "AI Analysis"}
+        </Button>
+      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-7">
