@@ -11,7 +11,7 @@ interface BankingDocumentTabsProps {
   document: any;
   pdfUrl: string;
   xmlData?: string;
-  csvData?: string | any[];
+
   documentName: string;
   accountName?: string;
   onFullAnalysis?: () => void;
@@ -21,7 +21,7 @@ export default function BankingDocumentTabs({
   document, 
   pdfUrl, 
   xmlData, 
-  csvData, 
+
   documentName, 
   accountName,
   onFullAnalysis
@@ -46,24 +46,7 @@ export default function BankingDocumentTabs({
     URL.revokeObjectURL(url);
   };
 
-  const handleDownloadCSV = () => {
-    if (!csvData) return;
-    
-    // Check if csvData is a string or array format
-    const csvContent = typeof csvData === 'string' ? csvData : 
-                      Array.isArray(csvData) ? csvData.map(row => Object.values(row).join(',')).join('\n') : 
-                      '';
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${documentName}_transactions.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+
 
   return (
     <div className="space-y-4">
@@ -129,14 +112,7 @@ export default function BankingDocumentTabs({
             <FileText className="h-4 w-4" />
             PDF Document
           </TabsTrigger>
-          <TabsTrigger 
-            value="csv" 
-            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={!isFullAnalysisComplete}
-          >
-            <Download className="h-4 w-4" />
-            CSV Export
-          </TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="sankey" className="space-y-4">
@@ -320,29 +296,12 @@ export default function BankingDocumentTabs({
                         <p className="text-sm text-green-600 dark:text-green-300">
                           ✓ Transaction Data Extracted
                         </p>
-                        {document?.csvGenerated && (
-                          <p className="text-sm text-green-600 dark:text-green-300">
-                            ✓ CSV File Generated ({document.csvRowCount || 0} transactions)
-                          </p>
-                        )}
+
                       </div>
                     </div>
                   </div>
                   
-                  {csvData && (
-                    <div>
-                      <h4 className="font-medium mb-2">Transaction Preview</h4>
-                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-48 overflow-y-auto">
-                        <pre className="text-sm font-mono whitespace-pre-wrap break-words">
-                          {typeof csvData === 'string' ? 
-                            csvData.split('\n').slice(0, 5).join('\n') + 
-                            (csvData.split('\n').length > 5 ? '\n... (showing first 5 rows)' : '') :
-                            'CSV data format not recognized'
-                          }
-                        </pre>
-                      </div>
-                    </div>
-                  )}
+
                 </div>
               </CardContent>
             </Card>
@@ -470,73 +429,7 @@ export default function BankingDocumentTabs({
           )}
         </TabsContent>
 
-        <TabsContent value="csv" className="space-y-4">
-          {isFullAnalysisComplete ? (
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">CSV Transaction Export</h3>
-                  <div className="flex gap-2">
-                    {csvData && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={handleDownloadCSV}
-                        className="flex items-center gap-2"
-                      >
-                        <Download className="h-4 w-4" />
-                        Download CSV
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                
-                {csvData ? (
-                  <div className="space-y-4">
-                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                      <h4 className="font-medium text-green-800 dark:text-green-200 mb-2">CSV Export Ready</h4>
-                      <p className="text-sm text-green-700 dark:text-green-300">
-                        Transaction data has been successfully extracted and formatted as CSV
-                      </p>
-                      <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                        Rows: {(typeof csvData === 'string' ? csvData.split('\n').length - 1 : Array.isArray(csvData) ? csvData.length : 0)} transactions
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h4 className="font-medium">CSV Preview (First 10 rows)</h4>
-                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-64 overflow-y-auto">
-                        <pre className="text-sm font-mono whitespace-pre-wrap break-words">
-                          {typeof csvData === 'string' 
-                            ? csvData.split('\n').slice(0, 11).join('\n')
-                            : Array.isArray(csvData) 
-                              ? csvData.slice(0, 11).map(row => typeof row === 'object' ? Object.values(row).join(',') : String(row)).join('\n')
-                              : 'Invalid CSV data format'
-                          }
-                          {((typeof csvData === 'string' ? csvData.split('\n').length : Array.isArray(csvData) ? csvData.length : 0) > 11) && '\n... (download full file to see all data)'}
-                        </pre>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <FileSpreadsheet className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>No CSV data available</p>
-                    <p className="text-sm">CSV will be generated automatically during AI analysis</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Download className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">CSV Transaction Export</h3>
-                <p className="text-gray-500 mb-4">Click "AI Analysis" to extract transactions and generate downloadable CSV file</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
+
       </Tabs>
     </div>
   );

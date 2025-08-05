@@ -635,36 +635,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           xmlInfo = { xmlPath: '', xmlGenerated: false };
         }
 
-        // Step 2: Generate CSV from XML data (if XML was created successfully)
-        let csvInfo = { csvPath: '', csvRowCount: 0, csvGenerated: false };
-        
-        if (xmlAnalysisData) {
-          try {
-            logToFile('Step 2: Generating CSV from XML data...');
-            const csvResult = await generateCSVFromXML(xmlAnalysisData, document.id);
-            csvInfo = {
-              csvPath: csvResult.csvPath,
-              csvRowCount: csvResult.rowCount,
-              csvGenerated: !!csvResult.csvContent
-            };
-            logToFile(`Step 2: CSV generation completed - ${csvInfo.csvRowCount} rows`);
-          } catch (csvError: any) {
-            logToFile(`Step 2: CSV generation from XML failed: ${csvError.message}`);
-            if (!analysisError) {
-              analysisError = `CSV generation failed: ${csvError.message}`;
-            }
-          }
-        } else {
-          logToFile('Step 2: Skipping CSV generation - no XML data available');
-        }
+        // Step 2: CSV generation removed as requested by user
+        logToFile('Step 2: CSV generation disabled by user request');
 
         // Step 3: Update document with results
         logToFile('Step 3: Updating document with analysis results...');
         const updateData: any = {
           fullAnalysisCompleted: !analysisError,
-          csvPath: csvInfo.csvPath,
-          csvRowCount: csvInfo.csvRowCount,
-          csvGenerated: csvInfo.csvGenerated,
           xmlPath: xmlInfo.xmlPath,
           xmlAnalysisData: xmlAnalysisData,
         };

@@ -57,8 +57,8 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
       throw new Error("Could not extract text from PDF");
     }
 
-    // Add timeout wrapper for AI request
-    const TIMEOUT_MS = 180000; // 3 minutes timeout
+    // Add timeout wrapper for AI request - increased for complex documents
+    const TIMEOUT_MS = 300000; // 5 minutes timeout
     
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('AI request timed out after 3 minutes')), TIMEOUT_MS);
@@ -84,20 +84,25 @@ Your goal is to extract the following information:
 8. The statement currency
 9. The total of all credits
 10. The total of all debits
-11. Attempt to resolve all transactions that occur, creating a list of transaction lines, each should identify:
-   11.1 The transaction date
-   11.2 The transaction description
-   11.3 The amount, where debits are negative and credits positive
-   11.4 If present identify transfers, so that you can identify a transfer_out or transfer_in. A transfer out might look like "Transfer To <TARGET>" (eg Transfer to xx2868). A transfer in might look like "Transfer from <Target>". For all the same Transfers to, complete the inflows section.
-   11.5 Direct credits should be considered as an inflow and accounted for in the inflow section
-   11.6 Attempt to identify the transaction category as best you can, for example shopping, medical, bill, transfer, ATM, etc use well known logical categories.
+11. Process EVERY SINGLE transaction in the document - no exceptions:
+   11.1 The transaction date (convert to YYYY-MM-DD format)
+   11.2 The complete transaction description (preserve full details)
+   11.3 The amount (debits negative, credits positive)
+   11.4 If present identify transfers: transfer_out = "Transfer To <TARGET>", transfer_in = "Transfer from <TARGET>"
+   11.5 Direct credits = inflows, Direct debits = outflows  
+   11.6 Category: shopping, medical, bill, transfer, ATM, salary, etc.
+   11.7 Balance after transaction if available
 12. Provide the information and analysis summary of your findings
 
-IMPORTANT: You must provide your response in EXACTLY this format:
+CRITICAL REQUIREMENTS:
+1. MUST process ALL transactions in the document from start to end date - do not truncate or summarize
+2. MUST capture every single transaction line, no matter how many there are
+3. If you reach token limits, prioritize transaction completeness over verbose descriptions
+4. MUST provide response in this EXACT format:
 
-1. First, provide your working analysis inside <extraction_process> tags
-2. Then, provide the JSON data for backward compatibility
-3. Finally, provide the XML structure with the transaction analysis
+First, provide your working analysis inside <extraction_process> tags
+Then, provide the JSON data for backward compatibility  
+Finally, provide the XML structure with ALL transactions
 
 The response must contain both JSON and XML. Here's the exact format you must follow:
 
