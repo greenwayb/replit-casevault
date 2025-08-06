@@ -62,8 +62,10 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
       }
       
       // Invalidate and refetch queries to refresh the tree immediately
-      await queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId] });
-      await queryClient.refetchQueries({ queryKey: ["/api/cases", caseId] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId.toString()] });
+      await queryClient.refetchQueries({ queryKey: ["/api/cases", caseId.toString()] });
+      // Also invalidate the general cases list
+      await queryClient.invalidateQueries({ queryKey: ["/api/cases"] });
       
       toast({
         title: "Success",
