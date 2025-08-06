@@ -319,7 +319,7 @@ export default function FullAnalysisDialog({
                 )}
                 
                 <p className="text-xs text-muted-foreground">
-                  Estimated time: {1 + Math.ceil(transactionCount / 80)} minutes (1 + ceiling({transactionCount} / 80)). You can cancel at any time.
+                  Estimated time: {1 + Math.ceil(transactionCount / 80)} minutes. You can cancel at any time.
                 </p>
               </div>
             </div>

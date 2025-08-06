@@ -1,0 +1,141 @@
+<transaction_analysis>
+  <institution>Commonwealth Bank</institution>
+  <account_holders>
+     <account_holder>BEN GREENWAY</account_holder>
+  </account_holders>
+  <account_type>GoalSaver</account_type>
+  <start_date>2024-05-11</start_date>
+  <end_date>2024-11-30</end_date>
+  <account_number>06 7873 10390085</account_number>
+  <account_bsb>Not specified</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>4039.28</total_credits>
+  <total_debits>0.00</total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date>2024-05-11</transaction_date>
+       <transaction_description>OPENING BALANCE</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>opening_balance</transaction_category>
+       <balance>0.00</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-08-06</transaction_date>
+       <transaction_description>Transfer from xx2992 NetBank Mini Savings</transaction_description>
+       <amount>10.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>10.00</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-09-01</transaction_date>
+       <transaction_description>Bonus Interest</transaction_description>
+       <amount>0.03</amount>
+       <transaction_category>interest</transaction_category>
+       <balance>10.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-09-05</transaction_date>
+       <transaction_description>Transfer from xx2992 CommBank app savings</transaction_description>
+       <amount>2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2010.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-09-18</transaction_date>
+       <transaction_description>Transfer from xx2992 CommBank app holiday savings</transaction_description>
+       <amount>2000.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4010.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-10-01</transaction_date>
+       <transaction_description>Credit Interest</transaction_description>
+       <amount>0.86</amount>
+       <transaction_category>interest</transaction_category>
+       <balance>4010.89</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-10-01</transaction_date>
+       <transaction_description>Bonus Interest</transaction_description>
+       <amount>9.65</amount>
+       <transaction_category>interest</transaction_category>
+       <balance>4020.54</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-10-02</transaction_date>
+       <transaction_description>Transfer from xx2992 NetBank regular</transaction_description>
+       <amount>1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4021.54</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-11-01</transaction_date>
+       <transaction_description>Credit Interest</transaction_description>
+       <amount>1.37</amount>
+       <transaction_category>interest</transaction_category>
+       <balance>4022.91</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-11-01</transaction_date>
+       <transaction_description>Bonus Interest</transaction_description>
+       <amount>15.37</amount>
+       <transaction_category>interest</transaction_category>
+       <balance>4038.28</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-11-02</transaction_date>
+       <transaction_description>Transfer from xx2992 NetBank regular</transaction_description>
+       <amount>1.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4039.28</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-11-11</transaction_date>
+       <transaction_description>CLOSING BALANCE</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>closing_balance</transaction_category>
+       <balance>4039.28</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-11-12</transaction_date>
+       <transaction_description>OPENING BALANCE</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>opening_balance</transaction_category>
+       <balance>4039.28</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2024-11-30</transaction_date>
+       <transaction_description>CLOSING BALANCE</transaction_description>
+       <amount>0.00</amount>
+       <transaction_category>closing_balance</transaction_category>
+       <balance>4039.28</balance>
+     </transaction>
+  </transactions>
+  <inflows>
+    <from>
+       <target>xx2992 CommBank app savings</target>
+       <total_amount>2000.00</total_amount>
+    </from>
+    <from>
+       <target>xx2992 CommBank app holiday savings</target>
+       <total_amount>2000.00</total_amount>
+    </from>
+    <from>
+       <target>Interest Payments</target>
+       <total_amount>27.28</total_amount>
+    </from>
+    <from>
+       <target>xx2992 NetBank Mini Savings</target>
+       <total_amount>10.00</total_amount>
+    </from>
+    <from>
+       <target>xx2992 NetBank regular</target>
+       <total_amount>2.00</total_amount>
+    </from>
+  </inflows>
+  <outflows>
+  </outflows>
+  <analysis_summary>
+  This is a Commonwealth Bank GoalSaver account for Ben Greenway showing activity from May 11, 2024 to November 30, 2024. The account started with a nil balance and grew to $4,039.28 through transfers from another account (xx2992) and interest earnings. The account shows healthy savings behavior with regular transfers and bonus interest payments. All transactions were inflows - there were no withdrawals or debits during this period. The largest transfers were two $2,000 deposits in September 2024 for savings and holiday savings purposes. Interest was earned monthly, including both standard credit interest and bonus interest payments.
+  </analysis_summary>
+</transaction_analysis>
