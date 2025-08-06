@@ -157,6 +157,18 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users).orderBy(users.firstName, users.lastName);
   }
 
+  async updateUser(id: string, updates: Partial<UpsertUser>): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
   // Legal organization operations
   async getLegalOrganizations(): Promise<LegalOrganization[]> {
     return await db

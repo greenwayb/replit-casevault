@@ -5,6 +5,7 @@ import { Strategy as GitHubStrategy } from "passport-github2";
 import { Express } from "express";
 import { storage } from "./storage";
 import { randomUUID } from "crypto";
+import { formatUserNames } from "./nameFormattingService.js";
 
 export async function setupOAuthAuth(app: Express) {
   // Google OAuth Strategy
@@ -19,11 +20,17 @@ export async function setupOAuthAuth(app: Express) {
         let user = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
         
         if (!user) {
+          // Format names before creating user
+          const { firstName, lastName } = formatUserNames(
+            profile.name?.givenName || '',
+            profile.name?.familyName || ''
+          );
+          
           // Create new user
           user = await storage.createUser({
             id: randomUUID(),
-            firstName: profile.name?.givenName || '',
-            lastName: profile.name?.familyName || '',
+            firstName,
+            lastName,
             email: profile.emails?.[0]?.value || '',
             password: '', // OAuth users don't need passwords
             authProvider: 'google',
@@ -63,10 +70,16 @@ export async function setupOAuthAuth(app: Express) {
         let user = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
         
         if (!user) {
+          // Format names before creating user
+          const { firstName, lastName } = formatUserNames(
+            profile.name?.givenName || '',
+            profile.name?.familyName || ''
+          );
+          
           user = await storage.createUser({
             id: randomUUID(),
-            firstName: profile.name?.givenName || '',
-            lastName: profile.name?.familyName || '',
+            firstName,
+            lastName,
             email: profile.emails?.[0]?.value || '',
             password: '',
             authProvider: 'facebook',
@@ -105,10 +118,17 @@ export async function setupOAuthAuth(app: Express) {
         let user = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
         
         if (!user) {
+          // Format names before creating user
+          const displayNameParts = profile.displayName?.split(' ') || [];
+          const { firstName, lastName } = formatUserNames(
+            displayNameParts[0] || '',
+            displayNameParts.slice(1).join(' ') || ''
+          );
+          
           user = await storage.createUser({
             id: randomUUID(),
-            firstName: profile.displayName?.split(' ')[0] || '',
-            lastName: profile.displayName?.split(' ')[1] || '',
+            firstName,
+            lastName,
             email: profile.emails?.[0]?.value || '',
             password: '',
             authProvider: 'github',

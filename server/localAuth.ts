@@ -7,6 +7,7 @@ import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 import { randomUUID } from "crypto";
 import { User as DbUser } from "@shared/schema";
+import { formatUserNames } from "./nameFormattingService.js";
 
 declare global {
   namespace Express {
@@ -127,11 +128,14 @@ export async function setupLocalAuth(app: Express) {
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
       
+      // Format names before creating user
+      const { firstName: formattedFirstName, lastName: formattedLastName } = formatUserNames(firstName, lastName);
+      
       // Create user
       const user = await storage.createUser({
         id: randomUUID(),
-        firstName,
-        lastName,
+        firstName: formattedFirstName,
+        lastName: formattedLastName,
         email,
         password: hashedPassword,
         legalOrganizationId: legalOrganizationId || null,
