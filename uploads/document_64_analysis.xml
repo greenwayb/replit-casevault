@@ -1,0 +1,1722 @@
+<transaction_analysis>
+  <institution>Commonwealth Bank of Australia</institution>
+  <account_holders>
+     <account_holder>Account holder name not specified</account_holder>
+  </account_holders>
+  <account_type>Smart Access</account_type>
+  <start_date>2025-04-29</start_date>
+  <end_date>2025-06-24</end_date>
+  <account_number>1577 0802</account_number>
+  <account_bsb>067-873</account_bsb>
+  <currency>AUD</currency>
+  <total_credits>19645.28</total_credits>
+  <total_debits>-19645.28</total_debits>
+  <transactions>
+     <transaction>
+       <transaction_date>2025-06-24</transaction_date>
+       <transaction_description>KFC AU Kelmscott Kelmscott AU AUS Card xx2206</transaction_description>
+       <amount>-30.80</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1721.86</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-24</transaction_date>
+       <transaction_description>Muzz Buzz South Lake South Lake WA AUS Card xx2206</transaction_description>
+       <amount>-12.40</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1752.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-24</transaction_date>
+       <transaction_description>ANGELO STREET MARKET South Perth WA AUS Card xx2206</transaction_description>
+       <amount>-16.63</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1765.06</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-24</transaction_date>
+       <transaction_description>Transfer to xx2622 CommBank app cc pay</transaction_description>
+       <amount>-21.49</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1781.69</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-24</transaction_date>
+       <transaction_description>Pin* WASP Hockey Club South Perth W ch_2</transaction_description>
+       <amount>-78.16</amount>
+       <transaction_category>sports</transaction_category>
+       <balance>1803.18</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-23</transaction_date>
+       <transaction_description>Transfer to CBA A/c CommBank app socks</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>1881.34</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-22</transaction_date>
+       <transaction_description>Transfer To Driving School Mike CommBank App holly test kelmscott</transaction_description>
+       <amount>-250.00</amount>
+       <transaction_category>education</transaction_category>
+       <balance>1896.34</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-22</transaction_date>
+       <transaction_description>Transfer to CBA A/c CommBank app hot choclates</transaction_description>
+       <amount>-14.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2146.34</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-21</transaction_date>
+       <transaction_description>COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-30.69</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2160.34</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-21</transaction_date>
+       <transaction_description>Little Banh Mi East Victoria WA AUS Card xx2206</transaction_description>
+       <amount>-10.67</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2191.03</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-20</transaction_date>
+       <transaction_description>COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-16.05</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2201.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-20</transaction_date>
+       <transaction_description>TUCKER FRESH EXCHANG BENTLEY WA AUS Card xx2206</transaction_description>
+       <amount>-12.78</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2217.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-20</transaction_date>
+       <transaction_description>COLES 0340COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-14.60</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2230.53</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-20</transaction_date>
+       <transaction_description>EB GAMES EAST VICTORIA AUS Card xx2206</transaction_description>
+       <amount>-37.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2245.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-18</transaction_date>
+       <transaction_description>PET CIRCLE</transaction_description>
+       <amount>-127.98</amount>
+       <transaction_category>pets</transaction_category>
+       <balance>2282.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-18</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank 51GladstoneGreenwy</transaction_description>
+       <amount>-1660.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2410.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-18</transaction_date>
+       <transaction_description>CALTEX COMO COMO WA AUS Card xx2206</transaction_description>
+       <amount>-36.01</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance>4070.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-18</transaction_date>
+       <transaction_description>AMAZON AU RETAIL SYDNEY AUS Card xx2206</transaction_description>
+       <amount>-27.61</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4106.12</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-18</transaction_date>
+       <transaction_description>MARLEYSPOON.COM.AU</transaction_description>
+       <amount>-229.91</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4133.73</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-17</transaction_date>
+       <transaction_description>RAC INSURANCE QB WEST PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-66.91</amount>
+       <transaction_category>insurance</transaction_category>
+       <balance>4363.64</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-17</transaction_date>
+       <transaction_description>WOOLWORTHS 4301 PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-16.75</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4430.55</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-17</transaction_date>
+       <transaction_description>SQ *MELVILLE CITY HOCK Kardinya WA AUS Card xx2206</transaction_description>
+       <amount>-4.00</amount>
+       <transaction_category>sports</transaction_category>
+       <balance>4447.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-17</transaction_date>
+       <transaction_description>SQ *CHU Highgate WA AUS Card xx2206</transaction_description>
+       <amount>-38.24</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4451.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-17</transaction_date>
+       <transaction_description>eBay O*01-13210-37538 INTERNET AUS Card xx2206</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4489.54</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-17</transaction_date>
+       <transaction_description>McDonalds 950294 PERTH AU AUS Card xx2206</transaction_description>
+       <amount>-4.75</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4504.54</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-16</transaction_date>
+       <transaction_description>BUDDY TELCO PTY LTD Morwell AUSSIEBB-214</transaction_description>
+       <amount>-79.00</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>4509.29</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-14</transaction_date>
+       <transaction_description>Transfer To Driving School Mike CommBank App holly lesson</transaction_description>
+       <amount>-90.00</amount>
+       <transaction_category>education</transaction_category>
+       <balance>4588.29</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-14</transaction_date>
+       <transaction_description>Google YouTubePremium Pyrmont AU AUS Card xx2206</transaction_description>
+       <amount>-32.99</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>4678.29</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-13</transaction_date>
+       <transaction_description>KMART 1278KMART 1278 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-9.09</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4711.28</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-13</transaction_date>
+       <transaction_description>KMART 1278KMART 1278 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-65.70</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4720.37</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-13</transaction_date>
+       <transaction_description>ANGELO STREET MARKET South Perth WA AUS Card xx2206</transaction_description>
+       <amount>-40.80</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4786.07</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-13</transaction_date>
+       <transaction_description>EB GAMES EAST VICTORIA AUS Card xx2206</transaction_description>
+       <amount>-104.30</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>4826.87</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-12</transaction_date>
+       <transaction_description>Transfer to CBA A/c CommBank app hair cut</transaction_description>
+       <amount>-96.21</amount>
+       <transaction_category>personal care</transaction_category>
+       <balance>4931.17</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-12</transaction_date>
+       <transaction_description>RING BASIC PLAN HAWTHORNE CA USA Card xx2206 AUD 4.95</transaction_description>
+       <amount>-4.95</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>5027.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-12</transaction_date>
+       <transaction_description>BUPA HI P T PHI MELBOURNE VI AUS Card xx2206</transaction_description>
+       <amount>-170.35</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>5032.33</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App shopping</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>5202.68</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Salary</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>5702.68</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>COLES 0340COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-95.35</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>987.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>CALTEX COMO COMO WA AUS Card xx2206</transaction_description>
+       <amount>-25.22</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance>1082.97</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>WOOLWORTHS 4301 PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-10.80</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1108.19</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>PLINE PH SOUTH PERTH SOUTH PERTH AUS Card xx2206</transaction_description>
+       <amount>-26.99</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>1118.99</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>3 Pandas' Noodle &amp; Du East Victoria WA AUS Card xx2206</transaction_description>
+       <amount>-8.13</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1145.98</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>Chinese Canton Brookf PERTH 06 AUS Card xx2206</transaction_description>
+       <amount>-17.28</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1154.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-11</transaction_date>
+       <transaction_description>MARLEYSPOON.COM.AU</transaction_description>
+       <amount>-209.95</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1171.39</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>Coles Express 6929Cole Karawara 06 AUS Card xx2206</transaction_description>
+       <amount>-46.51</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance>1381.34</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>COLES 0356COLES 0356 KARAWARA 06 AUS Card xx2206</transaction_description>
+       <amount>-14.20</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1427.85</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>COLES 0356COLES 0356 KARAWARA 06 AUS Card xx2206</transaction_description>
+       <amount>-64.11</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1442.05</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>SQ *KIRKWOOD CONTINENT Swanbourne WA AUS Card xx2206</transaction_description>
+       <amount>-28.34</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1506.16</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>OFFICEWORKS 0602OFFICE SUBIACO 06 AUS Card xx2206</transaction_description>
+       <amount>-7.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1534.50</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>OFFICEWORKS 0602OFFICE SUBIACO 06 AUS Card xx2206</transaction_description>
+       <amount>-13.66</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1541.50</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>SQ *LEMNOS FIELD HOCKE Shenton Park WA AUS Card xx2206</transaction_description>
+       <amount>-12.50</amount>
+       <transaction_category>sports</transaction_category>
+       <balance>1555.16</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>SQ *LEMNOS FIELD HOCKE Shenton Park WA AUS Card xx2206</transaction_description>
+       <amount>-11.00</amount>
+       <transaction_category>sports</transaction_category>
+       <balance>1567.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>Mt Henry Tavern Como WA AUS Card xx2206</transaction_description>
+       <amount>-19.50</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1578.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>Mt Henry Tavern Como WA AUS Card xx2206</transaction_description>
+       <amount>-50.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1598.16</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>Mt Henry Tavern Como WA AUS Card xx2206</transaction_description>
+       <amount>-14.50</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1648.16</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-10</transaction_date>
+       <transaction_description>AMAZON AU MARKETPLACE SYDNEY AUS Card xx2206</transaction_description>
+       <amount>-215.41</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1662.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-09</transaction_date>
+       <transaction_description>AMAYSIM MOBILE PTY LTD</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>1878.07</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-09</transaction_date>
+       <transaction_description>AMAYSIM MOBILE PTY LTD</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>1893.07</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-08</transaction_date>
+       <transaction_description>Transfer To Driving School Mike CommBank App holly lesson</transaction_description>
+       <amount>-90.00</amount>
+       <transaction_category>education</transaction_category>
+       <balance>1908.07</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-07</transaction_date>
+       <transaction_description>RAC INSURANCE QB WEST PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-34.69</amount>
+       <transaction_category>insurance</transaction_category>
+       <balance>1998.07</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-07</transaction_date>
+       <transaction_description>AMAZON AU MARKETPLACE SYDNEY AUS Card xx2206</transaction_description>
+       <amount>-233.04</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2032.76</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-07</transaction_date>
+       <transaction_description>Return BUPA HI PL MELBOURNE VI AUS Card xx2206</transaction_description>
+       <amount>14.61</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>2265.80</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-06</transaction_date>
+       <transaction_description>COLES 0356COLES 0356 KARAWARA 06 AUS Card xx2206</transaction_description>
+       <amount>-102.65</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2251.19</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-06</transaction_date>
+       <transaction_description>Kindle Svcs MELBOURNE AU AUS Card xx2206</transaction_description>
+       <amount>-1.38</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>2353.84</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-06</transaction_date>
+       <transaction_description>Kindle Svcs MELBOURNE AU AUS Card xx2206</transaction_description>
+       <amount>-1.38</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>2355.22</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-06</transaction_date>
+       <transaction_description>AMAZON AU MARKETPLACE SYDNEY AUS Card xx2206</transaction_description>
+       <amount>-20.98</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2356.60</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>AMAYSIM MOBILE PTY LTD</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>2377.58</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank 51GladstoneGreenwy</transaction_description>
+       <amount>-1660.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2392.58</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>AMAZON WEB SERVICES SYDNEY NS AUS Card xx2206</transaction_description>
+       <amount>-3.74</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>4052.58</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>COLES 0340COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-16.30</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4056.32</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>KMART 1278KMART 1278 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-37.35</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4072.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>KMART 1278KMART 1278 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-70.42</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4109.97</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>TUCKER FRESH EXCHANG BENTLEY WA AUS Card xx2206</transaction_description>
+       <amount>-6.99</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4180.39</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>LA VITA CAFE &amp; RESTAU Bentley WA AUS Card xx2206</transaction_description>
+       <amount>-18.74</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4187.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>Google One Barangaroo AU AUS Card xx2206</transaction_description>
+       <amount>-14.99</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>4206.12</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-04</transaction_date>
+       <transaction_description>MARLEYSPOON.COM.AU</transaction_description>
+       <amount>-229.91</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4221.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>Direct Credit 665044 WA GOV WASAP S-009B-395B</transaction_description>
+       <amount>250.00</amount>
+       <transaction_category>government</transaction_category>
+       <balance>4451.02</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>Transfer To ray white NetBank Greenway Gladstone Water</transaction_description>
+       <amount>-70.07</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>4201.02</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>COLES 0340COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-67.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4271.09</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>TICKETEK WEB Sydney AU AUS Card xx2206</transaction_description>
+       <amount>-68.40</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>4338.09</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>PLINEPH EAST VIC PARK EAST VICTORIA AUS Card xx2206</transaction_description>
+       <amount>-21.99</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>4406.49</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>WOOLWORTHS 4391 ROCKINGHAM WA AUS Card xx2206</transaction_description>
+       <amount>-13.90</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4428.48</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>HIFUMIYA PERTH AU AUS Card xx2206</transaction_description>
+       <amount>-43.07</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4442.38</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>ANGELO STREET MARKET South Perth WA AUS Card xx2206</transaction_description>
+       <amount>-17.64</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4485.45</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>DISNEY PLUS RICHMOND SA AUS Card xx2206</transaction_description>
+       <amount>-4.99</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>4503.09</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>KINGHANG PTY LTD ROCKINGHAM AU AUS Card xx2206</transaction_description>
+       <amount>-30.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4508.08</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>JB HI FI CANNNGTON H CANNINGTON WA AUS Card xx2206</transaction_description>
+       <amount>-79.90</amount>
+       <transaction_category>electronics</transaction_category>
+       <balance>4538.08</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>ASM GLOBAL (PERTH AREN PERTH AUS Card xx2206</transaction_description>
+       <amount>-12.90</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>4617.98</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-06-03</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank Coaching Fee Rebat</transaction_description>
+       <amount>-175.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>4630.88</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-31</transaction_date>
+       <transaction_description>UNITED NAVAL BASE NAVAL BASE AU</transaction_description>
+       <amount>-52.53</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4805.88</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-31</transaction_date>
+       <transaction_description>OFFICEWORKS 0615OFFICE PERTH 06 AUS Card xx2206</transaction_description>
+       <amount>-7.36</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4858.41</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-31</transaction_date>
+       <transaction_description>AMAZON AU MARKETPLACE SYDNEY AUS Card xx2206</transaction_description>
+       <amount>-82.97</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>4865.77</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-31</transaction_date>
+       <transaction_description>SQ *GOLDEN BAKERY - PE Perth WA AUS Card xx2206</transaction_description>
+       <amount>-8.80</amount>
+       <transaction_category>food</transaction_category>
+       <balance>4948.74</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-30</transaction_date>
+       <transaction_description>POST SOUTH PERTH ANGELO WA AU Card xx2206</transaction_description>
+       <amount>-412.00</amount>
+       <transaction_category>postal</transaction_category>
+       <balance>4957.54</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-30</transaction_date>
+       <transaction_description>POST SOUTH PERTH ANGELO WA AU Card xx2206</transaction_description>
+       <amount>-21.95</amount>
+       <transaction_category>postal</transaction_category>
+       <balance>5369.54</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-30</transaction_date>
+       <transaction_description>SAGEPSYCHSERVICES SPEARWOOD WA AUS Card xx2206</transaction_description>
+       <amount>-150.00</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>5391.49</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-30</transaction_date>
+       <transaction_description>Pin* WASP Hockey Club South Perth W ch_n</transaction_description>
+       <amount>-134.29</amount>
+       <transaction_category>sports</transaction_category>
+       <balance>5541.49</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-29</transaction_date>
+       <transaction_description>TGGEF L0879 EAST FREMANTL WA AUS Card xx2206</transaction_description>
+       <amount>-11.98</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance>5675.78</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-29</transaction_date>
+       <transaction_description>COLES 0340COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-43.20</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>5687.76</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-29</transaction_date>
+       <transaction_description>TPP GROUP AUS PTY LTD PERTH AUS Card xx2206</transaction_description>
+       <amount>-12.50</amount>
+       <transaction_category>parking</transaction_category>
+       <balance>5730.96</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-28</transaction_date>
+       <transaction_description>Direct Credit 002221 MCARE BENEFITS 081104275 AYWQ</transaction_description>
+       <amount>96.65</amount>
+       <transaction_category>government</transaction_category>
+       <balance>5743.46</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-28</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App shopping</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>5646.81</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-28</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Salary</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>6146.81</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-28</transaction_date>
+       <transaction_description>FREMANTLE COCKBURN HOC South Lake AU AUS Card xx2206</transaction_description>
+       <amount>-3.50</amount>
+       <transaction_category>sports</transaction_category>
+       <balance>1431.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-28</transaction_date>
+       <transaction_description>EB GAMES CANNINGTON AUS Card xx2206</transaction_description>
+       <amount>-5.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>1435.25</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-28</transaction_date>
+       <transaction_description>MARLEYSPOON.COM.AU</transaction_description>
+       <amount>-265.83</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1440.25</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>OFFICEWORKS 0615OFFICE PERTH 06 AUS Card xx2206</transaction_description>
+       <amount>-34.24</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1706.08</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>International Transaction Fee</transaction_description>
+       <amount>-1.17</amount>
+       <transaction_category>fee</transaction_category>
+       <balance>1740.32</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>GEN REGISTER OFFICE SOUTHPORT GBR Card xx2206 GBP 16.00</transaction_description>
+       <amount>-33.42</amount>
+       <transaction_category>government</transaction_category>
+       <balance>1741.49</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>TPP GROUP AUS PTY LTD PERTH AUS Card xx2206</transaction_description>
+       <amount>-14.50</amount>
+       <transaction_category>parking</transaction_category>
+       <balance>1774.91</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>CITY PROVISIONS PTY LT PERTH AUS Card xx2206</transaction_description>
+       <amount>-5.10</amount>
+       <transaction_category>food</transaction_category>
+       <balance>1789.41</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>Uniqlo Carousel CANNINGTON AU AUS Card xx2206</transaction_description>
+       <amount>-99.70</amount>
+       <transaction_category>clothing</transaction_category>
+       <balance>1794.51</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>Seed Carousel Cannington AU AUS Card xx2206</transaction_description>
+       <amount>-59.95</amount>
+       <transaction_category>clothing</transaction_category>
+       <balance>1894.21</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>COLES 0296COLES 0296 Angelo Street 06 AUS Card xx2206</transaction_description>
+       <amount>-25.10</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1954.16</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>TARGET 5045TARGET 5045 CANNINGTON 06 AUS Card xx2206</transaction_description>
+       <amount>-58.50</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>1979.26</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>Little Ying Thai East Victoria WA AUS Card xx2206</transaction_description>
+       <amount>-33.77</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2037.76</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>Nooodling Carousel Cannington WA AUS Card xx2206</transaction_description>
+       <amount>-41.49</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2071.53</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>Daiso Carousel Cannington WA AUS Card xx2206</transaction_description>
+       <amount>-40.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2113.02</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>SQ *PIETRO GELATERIA East Victoria WA AUS Card xx2206</transaction_description>
+       <amount>-6.60</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2153.02</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>DAVID JONES PTY LTD - CANNINGTON AUS Card xx2206</transaction_description>
+       <amount>-79.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2159.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>EG GROUP 4227 SOUTH LAKE WA AUS Card xx2206</transaction_description>
+       <amount>-53.98</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance>2238.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>eBay O*25-13098-84992 Sydney AU AUS Card xx2206</transaction_description>
+       <amount>-15.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2292.60</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>STEAMGAMES.COM 4259522 BELLEVUE WA USA Card xx2206 AUD 53.97</transaction_description>
+       <amount>-53.97</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2308.59</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-27</transaction_date>
+       <transaction_description>ORIENTAL DELIGHTS COCKBURN CENT AUS Card xx2206</transaction_description>
+       <amount>-42.46</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2362.56</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-24</transaction_date>
+       <transaction_description>STEAM PURCHASE SEATTLE HH DEU Card xx2206 AUD 9.99</transaction_description>
+       <amount>-9.99</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2405.02</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-24</transaction_date>
+       <transaction_description>ANGELO STREET MARKET South Perth WA AUS Card xx2206</transaction_description>
+       <amount>-20.16</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2415.01</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-23</transaction_date>
+       <transaction_description>ALINTA PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-149.35</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>2435.17</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>OFFICEWORKS Bentleigh Eas VI AUS Card xx2206</transaction_description>
+       <amount>-157.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2584.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>TUCKER FRESH EXCHANG BENTLEY WA AUS Card xx2206</transaction_description>
+       <amount>-22.18</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2741.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>McDonalds 950294 PERTH AU AUS Card xx2206</transaction_description>
+       <amount>-16.95</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2763.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>AMZNMktplace*891RB3CL5 amazon.co.uk GB GBR Card xx2206 AUD 30.66</transaction_description>
+       <amount>-30.66</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2780.65</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>EB GAMES PERTH AUS Card xx2206</transaction_description>
+       <amount>-19.95</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2811.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>EB GAMES PERTH AUS Card xx2206</transaction_description>
+       <amount>-27.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2831.26</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>TPP GROUP AUS PTY LTD PERTH AUS Card xx2206</transaction_description>
+       <amount>-6.00</amount>
+       <transaction_category>parking</transaction_category>
+       <balance>2858.26</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>LANDGATE MIDLAND AUS Card xx2206</transaction_description>
+       <amount>-31.60</amount>
+       <transaction_category>government</transaction_category>
+       <balance>2864.26</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New NetBank Shopping</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2895.86</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-22</transaction_date>
+       <transaction_description>Transfer to xx2622 NetBank CC Pay</transaction_description>
+       <amount>-59.49</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3395.86</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>PET CIRCLE</transaction_description>
+       <amount>-147.96</amount>
+       <transaction_category>pets</transaction_category>
+       <balance>3455.35</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>WOOLWORTHS 4301 PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-5.75</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>3603.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>BOATSHED MARKET PTY COTTESLOE WA AUS Card xx2206</transaction_description>
+       <amount>-9.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>3609.06</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>THREE STORIES FREMANTLE WA AUS Card xx2206</transaction_description>
+       <amount>-159.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>3618.06</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>MINIT AUSTRALIA PTY PERTH AUS Card xx2206</transaction_description>
+       <amount>-25.90</amount>
+       <transaction_category>services</transaction_category>
+       <balance>3778.05</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>PERTH AIRPORT PTY LTD PERTH AIRPORT AUS Card xx2206</transaction_description>
+       <amount>-25.84</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>3803.95</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>PTA SMARTRIDER EAST PERTH AUS Card xx2206</transaction_description>
+       <amount>-20.00</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>3829.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank 51GladstoneGreenwy</transaction_description>
+       <amount>-1660.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3849.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-21</transaction_date>
+       <transaction_description>MARLEYSPOON.COM.AU</transaction_description>
+       <amount>-209.95</amount>
+       <transaction_category>food</transaction_category>
+       <balance>5509.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-20</transaction_date>
+       <transaction_description>Return No account or incorrect account no BenG Revolut Bank shopping</transaction_description>
+       <amount>500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>5719.74</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-20</transaction_date>
+       <transaction_description>LS Breaks Fremantle Hamilton Hill AU AUS Card xx2206</transaction_description>
+       <amount>-19.50</amount>
+       <transaction_category>food</transaction_category>
+       <balance>5219.74</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-20</transaction_date>
+       <transaction_description>COLES 0296COLES 0296 Angelo Street 06 AUS Card xx2206</transaction_description>
+       <amount>-63.84</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>5239.24</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-20</transaction_date>
+       <transaction_description>EasyPark PRAHRAN AU AUS Card xx2206</transaction_description>
+       <amount>-7.06</amount>
+       <transaction_category>parking</transaction_category>
+       <balance>5303.08</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-20</transaction_date>
+       <transaction_description>THE CAMFIELD BAR BURSWOOD AUS Card xx2206</transaction_description>
+       <amount>-81.71</amount>
+       <transaction_category>food</transaction_category>
+       <balance>5310.14</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-20</transaction_date>
+       <transaction_description>LA VITA CAFE &amp; RESTAU Bentley WA AUS Card xx2206</transaction_description>
+       <amount>-70.90</amount>
+       <transaction_category>food</transaction_category>
+       <balance>5391.85</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-18</transaction_date>
+       <transaction_description>Transfer to other Bank CommBank app shopping</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>5462.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-17</transaction_date>
+       <transaction_description>LS PERTH BRIDGE CLIMB PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-93.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>5962.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-17</transaction_date>
+       <transaction_description>NAE S SEAFOOD AND GR ROCKINGHAM WA AUS Card xx2206</transaction_description>
+       <amount>-57.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>6055.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-17</transaction_date>
+       <transaction_description>BUNNINGS 323000 ROCKINGHAM AUS Card xx2206</transaction_description>
+       <amount>-16.96</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>6112.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-17</transaction_date>
+       <transaction_description>SYNERGY PERTH AUS Card xx2206</transaction_description>
+       <amount>-106.95</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>6129.71</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-16</transaction_date>
+       <transaction_description>Transfer To Driving School Mike CommBank App holly next test</transaction_description>
+       <amount>-114.00</amount>
+       <transaction_category>education</transaction_category>
+       <balance>6236.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-16</transaction_date>
+       <transaction_description>SQ *SOMEWHERE IN THE P Victoria Park WA AUS Card xx2206</transaction_description>
+       <amount>-30.45</amount>
+       <transaction_category>food</transaction_category>
+       <balance>6350.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-16</transaction_date>
+       <transaction_description>SQ *SOMEWHERE IN THE P Victoria Park WA AUS Card xx2206</transaction_description>
+       <amount>-38.57</amount>
+       <transaction_category>food</transaction_category>
+       <balance>6381.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-16</transaction_date>
+       <transaction_description>SUPER CHEAP AUTO VICTORIA PARK WA AUS Card xx2206</transaction_description>
+       <amount>-29.00</amount>
+       <transaction_category>automotive</transaction_category>
+       <balance>6419.68</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-16</transaction_date>
+       <transaction_description>ALDI STORES - EAST VIC ST JAMES AUS Card xx2206</transaction_description>
+       <amount>-32.30</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>6448.68</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-15</transaction_date>
+       <transaction_description>BUDDY TELCO PTY LTD Morwell AUSSIEBB-214</transaction_description>
+       <amount>-79.00</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>6480.98</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-15</transaction_date>
+       <transaction_description>eBay O*14-13065-23537 INTERNET AUS Card xx2206</transaction_description>
+       <amount>-19.94</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>6559.98</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-15</transaction_date>
+       <transaction_description>eBay O*14-13065-23536 INTERNET AUS Card xx2206</transaction_description>
+       <amount>-31.34</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>6579.92</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-15</transaction_date>
+       <transaction_description>KMART 1278KMART 1278 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-13.50</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>6611.26</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-15</transaction_date>
+       <transaction_description>RAC INSURANCE QB WEST PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-66.87</amount>
+       <transaction_category>insurance</transaction_category>
+       <balance>6624.76</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-15</transaction_date>
+       <transaction_description>BUNNINGS 392000 EAST VICTORIA AUS Card xx2206</transaction_description>
+       <amount>-66.00</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>6691.63</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-14</transaction_date>
+       <transaction_description>Direct Credit 093992 Australian Inves AUSIEX Salary</transaction_description>
+       <amount>4715.06</amount>
+       <transaction_category>salary</transaction_category>
+       <balance>6757.63</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-14</transaction_date>
+       <transaction_description>Transfer to xx2622 CommBank app holly gym</transaction_description>
+       <amount>-38.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>2042.57</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-14</transaction_date>
+       <transaction_description>Google YouTubePremium Pyrmont AU AUS Card xx2206</transaction_description>
+       <amount>-32.99</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>2080.57</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-14</transaction_date>
+       <transaction_description>PAGE 7 PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-19.30</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2113.56</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-14</transaction_date>
+       <transaction_description>COLES 0340COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-28.30</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2132.86</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-14</transaction_date>
+       <transaction_description>BUNNINGS 392000 EAST VICTORIA AUS Card xx2206</transaction_description>
+       <amount>-141.55</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2161.16</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-14</transaction_date>
+       <transaction_description>MARLEYSPOON.COM.AU</transaction_description>
+       <amount>-209.95</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2302.71</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>Sporting Globe Bendig Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-9.96</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2512.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>Sporting Globe Bendig Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-28.17</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2522.62</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>SQ *HCV Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-5.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2550.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>COLES 0638COLES 0638 BENDIGO 03 AUS Card xx2206</transaction_description>
+       <amount>-3.51</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2555.79</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>RIFLE BRIGADE HOTEL Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-27.40</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2559.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>SQ *HCV Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-5.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2586.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>AMAZON AU MARKETPLACE SYDNEY AUS Card xx2206</transaction_description>
+       <amount>-132.99</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2591.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>UBER *TRIP HELP.UBER.C 14518236738 AU AUS Card xx2206</transaction_description>
+       <amount>-39.27</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>2724.69</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>WHSMITH MELT3 MEZZANIN TULLAMARINE AU AUS Card xx2206</transaction_description>
+       <amount>-15.94</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>2763.96</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>The Jolly Miller Sunbury AU AUS Card xx2206</transaction_description>
+       <amount>-82.40</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2779.90</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>SQ *BAYLEAF FOODSTORE Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-12.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2862.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-13</transaction_date>
+       <transaction_description>EasyPark</transaction_description>
+       <amount>-21.83</amount>
+       <transaction_category>parking</transaction_category>
+       <balance>2874.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-12</transaction_date>
+       <transaction_description>AMAYSIM MOBILE PTY LTD</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>2896.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-12</transaction_date>
+       <transaction_description>AMAYSIM MOBILE PTY LTD</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>2911.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-10</transaction_date>
+       <transaction_description>SQ *SOUTH BENDIGO BOWL Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-3.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2926.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-10</transaction_date>
+       <transaction_description>Signature Dhaba Bendigo AU AUS Card xx2206</transaction_description>
+       <amount>-22.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2929.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-10</transaction_date>
+       <transaction_description>SQ *SOUTH BENDIGO BOWL Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-6.00</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>2951.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-10</transaction_date>
+       <transaction_description>SQ *HOO-GAH Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-61.50</amount>
+       <transaction_category>food</transaction_category>
+       <balance>2957.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-10</transaction_date>
+       <transaction_description>Signature Dhaba Bendigo AU AUS Card xx2206</transaction_description>
+       <amount>-25.50</amount>
+       <transaction_category>food</transaction_category>
+       <balance>3018.63</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-10</transaction_date>
+       <transaction_description>BUPA HI P T PHI MELBOURNE VI AUS Card xx2206</transaction_description>
+       <amount>-206.69</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>3044.13</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-09</transaction_date>
+       <transaction_description>CHEMIST WAREHOUSE BENDIGO VI AUS Card xx2206</transaction_description>
+       <amount>-23.84</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>3250.82</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-09</transaction_date>
+       <transaction_description>SQ *HCV Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-5.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>3274.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-08</transaction_date>
+       <transaction_description>RAC INSURANCE QB WEST PERTH WA AUS Card xx2206</transaction_description>
+       <amount>-34.65</amount>
+       <transaction_category>insurance</transaction_category>
+       <balance>3279.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-08</transaction_date>
+       <transaction_description>Kindle Svcs MELBOURNE AU AUS Card xx2206</transaction_description>
+       <amount>-11.99</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>3314.31</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-08</transaction_date>
+       <transaction_description>COLES 0638COLES 0638 BENDIGO 03 AUS Card xx2206</transaction_description>
+       <amount>-31.29</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>3326.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-08</transaction_date>
+       <transaction_description>MYER BENDIGO BENDIGO VI AUS Card xx2206</transaction_description>
+       <amount>-41.89</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>3357.59</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-08</transaction_date>
+       <transaction_description>SQ *HCV Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-16.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>3399.48</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>AMAYSIM MOBILE PTY LTD</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>3415.48</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>boss-burger-co-bendigo Bendigo AU AUS Card xx2206</transaction_description>
+       <amount>-43.04</amount>
+       <transaction_category>food</transaction_category>
+       <balance>3430.48</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>STEAM PURCHASE SEATTLE HH DEU Card xx2206 AUD 5.99</transaction_description>
+       <amount>-5.99</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>3473.52</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>Augutus Bendigo Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-15.14</amount>
+       <transaction_category>food</transaction_category>
+       <balance>3479.51</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>SQ *HCV Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-7.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>3494.65</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>AMCAL EXPRESS PERTH PERTH AIRPORT AUS Card xx2206</transaction_description>
+       <amount>-9.60</amount>
+       <transaction_category>medical</transaction_category>
+       <balance>3501.65</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>JULIE ANNA INVESTMENTS BENDIGO AUS Card xx2206</transaction_description>
+       <amount>-10.10</amount>
+       <transaction_category>accommodation</transaction_category>
+       <balance>3511.25</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>Transfer to CBA A/c NetBank 51GladstoneGreenwy</transaction_description>
+       <amount>-1660.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>3521.35</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-07</transaction_date>
+       <transaction_description>MARLEYSPOON.COM.AU</transaction_description>
+       <amount>-209.95</amount>
+       <transaction_category>food</transaction_category>
+       <balance>5181.35</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>Transfer To Driving School Mike CommBank App holly lesson test</transaction_description>
+       <amount>-250.00</amount>
+       <transaction_category>education</transaction_category>
+       <balance>5391.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>Transfer To Driving School Mike CommBank App holly lesson</transaction_description>
+       <amount>-90.00</amount>
+       <transaction_category>education</transaction_category>
+       <balance>5641.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>Transfer To Onsite Auto Repairs Mick NetBank Car Servicing</transaction_description>
+       <amount>-345.57</amount>
+       <transaction_category>automotive</transaction_category>
+       <balance>5731.30</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>WILSON PARKING AUSTRAL NEDLANDS WA AUS Card xx2206</transaction_description>
+       <amount>-3.80</amount>
+       <transaction_category>parking</transaction_category>
+       <balance>6076.87</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>VIBE PETROLEUM WELSHPOOL WA AUS Card xx2206</transaction_description>
+       <amount>-26.87</amount>
+       <transaction_category>fuel</transaction_category>
+       <balance>6080.67</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>Google One Barangaroo AU AUS Card xx2206</transaction_description>
+       <amount>-14.99</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>6107.54</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>SHAMROCK HOTEL Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-54.81</amount>
+       <transaction_category>food</transaction_category>
+       <balance>6122.53</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>BLACK CAB VIC 132227 OAKLEIGH AU AUS Card xx2206</transaction_description>
+       <amount>-9.27</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>6177.34</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>UBER *TRIP HELP.UBER.C 14518236738 AU AUS Card xx2206</transaction_description>
+       <amount>-32.90</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>6186.61</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>PERTH AIRPORT PTY LTD PERTH AIRPORT AUS Card xx2206</transaction_description>
+       <amount>-18.27</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>6219.51</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>SQ *HCV Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-8.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>6237.78</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>SQ *HCV Bendigo VI AUS Card xx2206</transaction_description>
+       <amount>-9.00</amount>
+       <transaction_category>food</transaction_category>
+       <balance>6245.78</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-06</transaction_date>
+       <transaction_description>UBER *TRIP Sydney AU AUS Card xx2206</transaction_description>
+       <amount>-40.33</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>6254.78</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-05</transaction_date>
+       <transaction_description>Transfer to xx2622 NetBank cc pay</transaction_description>
+       <amount>-433.64</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>6295.11</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-04</transaction_date>
+       <transaction_description>LIVEHOCKEY.COM.AU</transaction_description>
+       <amount>-88.00</amount>
+       <transaction_category>sports</transaction_category>
+       <balance>6728.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-03</transaction_date>
+       <transaction_description>LS WA Hospitality Pty Nedlands AU AUS Card xx2206</transaction_description>
+       <amount>-9.20</amount>
+       <transaction_category>food</transaction_category>
+       <balance>6816.75</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-03</transaction_date>
+       <transaction_description>SYNERGY PERTH AUS Card xx2206</transaction_description>
+       <amount>-342.75</amount>
+       <transaction_category>bill</transaction_category>
+       <balance>6825.95</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-02</transaction_date>
+       <transaction_description>Return No account or incorrect account no BenG Revolut Bank shopping</transaction_description>
+       <amount>500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>7168.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-02</transaction_date>
+       <transaction_description>Transfer To Ben Greenway Revolut New CommBank App shopping</transaction_description>
+       <amount>-500.00</amount>
+       <transaction_category>transfer</transaction_category>
+       <balance>6668.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-02</transaction_date>
+       <transaction_description>STEAMGAMES.COM 4259522 BELLEVUE WA USA Card xx2206 AUD 22.49</transaction_description>
+       <amount>-22.49</amount>
+       <transaction_category>entertainment</transaction_category>
+       <balance>7168.70</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-02</transaction_date>
+       <transaction_description>TUCKER FRESH EXCHANG BENTLEY WA AUS Card xx2206</transaction_description>
+       <amount>-14.47</amount>
+       <transaction_category>food</transaction_category>
+       <balance>7191.19</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-01</transaction_date>
+       <transaction_description>LIVEHOCKEY.COM.AU</transaction_description>
+       <amount>-11.00</amount>
+       <transaction_category>sports</transaction_category>
+       <balance>7205.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-01</transaction_date>
+       <transaction_description>WILSON PARKING AUSTRAL NEDLANDS WA AUS Card xx2206</transaction_description>
+       <amount>-11.40</amount>
+       <transaction_category>parking</transaction_category>
+       <balance>7216.66</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-01</transaction_date>
+       <transaction_description>COLES 0340COLES 0340 E VICTORIA PK 06 AUS Card xx2206</transaction_description>
+       <amount>-20.35</amount>
+       <transaction_category>shopping</transaction_category>
+       <balance>7228.06</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-05-01</transaction_date>
+       <transaction_description>MYKI PAYMENTS MELBOURNE AUS Card xx2206</transaction_description>
+       <amount>-15.00</amount>
+       <transaction_category>transport</transaction_category>
+       <balance>7248.41</balance>
+     </transaction>
+     <transaction>
+       <transaction_date>2025-04-29</transaction_date>
+       <transaction_description>Kindle Svcs MELBOURNE AU AUS Card xx2206</transaction_description>
+       <amount>-11.99</amount>
+       <transaction_category>subscription</transaction_category>
+       <balance>7263.41</balance>
+     </transaction>
+  </transactions>
+  <inflows>
+    <from>
+       <target>Australian Inves AUSIEX Salary</target>
+       <total_amount>14145.18</total_amount>
+    </from>
+    <from>
+       <target>BenG Revolut Bank shopping return</target>
+       <total_amount>1000.00</total_amount>
+    </from>
+    <from>
+       <target>WA GOV WASAP</target>
+       <total_amount>250.00</total_amount>
+    </from>
+    <from>
+       <target>MCARE BENEFITS</target>
+       <total_amount>96.65</total_amount>
+    </from>
+    <from>
+       <target>BUPA return</target>
+       <total_amount>14.61</total_amount>
+    </from>
+  </inflows>
+  <outflows>
+    <to>
+       <target>CBA A/c NetBank 51GladstoneGreenwy</target>
+       <total_amount>-4980.00</total_amount>
+    </to>
+    <to>
+       <target>Ben Greenway Revolut New</target>
+       <total_amount>-1500.00</total_amount>
+    </to>
+    <to>
+       <target>MARLEYSPOON.COM.AU</target>
+       <total_amount>-1125.59</total_amount>
+    </to>
+    <to>
+       <target>Driving School Mike</target>
+       <total_amount>-784.00</total_amount>
+    </to>
+    <to>
+       <target>BUDDY TELCO PTY LTD</target>
+       <total_amount>-158.00</total_amount>
+    </to>
+  </outflows>
+  <analysis_summary>
+This Commonwealth Bank Smart Access account shows regular salary deposits of $4,715.06 from Australian Inves AUSIEX, indicating stable employment income. The account holder maintains an active lifestyle with frequent dining out, shopping at major retailers like Coles and Kmart, and various entertainment expenses. There are significant regular transfers to rent/mortgage payments ($1,660 per transfer), driving school lessons, and other personal transfers. The spending pattern shows a mix of essential expenses (groceries, fuel, insurance) and discretionary spending (restaurants, entertainment, gaming). The account also shows some returned transactions, indicating occasional payment issues or changes of mind on purchases.
+  </analysis_summary>
+</transaction_analysis>

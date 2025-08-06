@@ -54,6 +54,7 @@ Preferred communication style: Simple, everyday language.
 - **Document Association**: One-to-many relationship
 - **Member Management**: Add existing users or invite new users via email with multi-role assignment capabilities.
 - **Activity Tracking**: Comprehensive logging of case creation, document uploads, and user actions.
+- **Document Deletion**: Case owners (CASEADMIN/DISCLOSER) can delete individual documents or entire account groups from the navigation tree with confirmation dialogs and proper permission checks.
 
 ## UI/UX Decisions
 - **Branding**: "Family Court Documentation" branding and logo integrated into top navigation and generated PDFs.
