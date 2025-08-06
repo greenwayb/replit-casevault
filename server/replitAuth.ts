@@ -115,8 +115,14 @@ export async function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.get("/api/logout", (req, res) => {
+  // Support both GET and POST logout for compatibility
+  const logoutHandler = (req: any, res: any) => {
     req.logout(() => {
+      // For API requests (POST), return JSON response
+      if (req.method === 'POST') {
+        return res.json({ message: "Logout successful" });
+      }
+      // For browser redirects (GET), redirect to OIDC end session
       res.redirect(
         client.buildEndSessionUrl(config, {
           client_id: process.env.REPL_ID!,
@@ -124,7 +130,10 @@ export async function setupAuth(app: Express) {
         }).href
       );
     });
-  });
+  };
+
+  app.get("/api/logout", logoutHandler);
+  app.post("/api/logout", logoutHandler);
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
