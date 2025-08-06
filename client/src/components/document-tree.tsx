@@ -55,8 +55,16 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
     mutationFn: async (documentId: number) => {
       return await apiRequest(`/api/documents/${documentId}`, "DELETE");
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId] });
+    onSuccess: async (data, variables) => {
+      // Clear selected document if it was the one deleted
+      if (selectedDocument && selectedDocument.id === variables) {
+        onDocumentSelect(null as any);
+      }
+      
+      // Invalidate and refetch queries to refresh the tree immediately
+      await queryClient.invalidateQueries({ queryKey: ["/api/cases", caseId] });
+      await queryClient.refetchQueries({ queryKey: ["/api/cases", caseId] });
+      
       toast({
         title: "Success",
         description: "Document deleted successfully",
