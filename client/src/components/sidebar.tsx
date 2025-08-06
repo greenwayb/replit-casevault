@@ -142,7 +142,10 @@ export default function Sidebar({ user }: SidebarProps) {
           <Button
             variant="ghost"
             className="w-full justify-start text-slate-600 hover:bg-slate-100 font-medium text-sm md:text-base py-2 md:py-2.5 touch-manipulation"
-            onClick={() => logoutMutation.mutate()}
+            onClick={() => {
+              console.log("Logout button clicked!");
+              logoutMutation.mutate();
+            }}
             disabled={logoutMutation.isPending}
           >
             <LogOut className="h-4 w-4 mr-2 md:mr-3 flex-shrink-0" />
