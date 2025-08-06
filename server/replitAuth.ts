@@ -78,7 +78,7 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
-    const user = {};
+    const user: any = {};
     updateUserSession(user, tokens);
     await upsertUser(tokens.claims());
     verified(null, user);
@@ -117,12 +117,20 @@ export async function setupAuth(app: Express) {
 
   // Support both GET and POST logout for compatibility
   const logoutHandler = (req: any, res: any) => {
-    req.logout(() => {
+    console.log(`Logout handler called with method: ${req.method}`);
+    req.logout((err: any) => {
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      console.log("Session cleared successfully");
       // For API requests (POST), return JSON response
       if (req.method === 'POST') {
+        console.log("Returning JSON response for POST logout");
         return res.json({ message: "Logout successful" });
       }
       // For browser redirects (GET), redirect to OIDC end session
+      console.log("Redirecting to OIDC end session for GET logout");
       res.redirect(
         client.buildEndSessionUrl(config, {
           client_id: process.env.REPL_ID!,

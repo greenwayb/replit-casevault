@@ -24,15 +24,26 @@ export default function Sidebar({ user }: SidebarProps) {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/logout", {});
-      return response.json();
+      console.log("Starting logout mutation...");
+      try {
+        const response = await apiRequest("/api/logout", "POST", {});
+        console.log("Logout response:", response.status);
+        const result = await response.json();
+        console.log("Logout result:", result);
+        return result;
+      } catch (error) {
+        console.error("Logout API error:", error);
+        throw error;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Logout successful, clearing cache and redirecting...", data);
       // Clear all cached queries and redirect to auth page
       queryClient.clear();
       window.location.href = "/auth";
     },
     onError: (error: Error) => {
+      console.error("Logout mutation error:", error);
       toast({
         title: "Logout failed", 
         description: error.message,
