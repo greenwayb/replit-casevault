@@ -122,7 +122,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
 
     // Create nodes and links for Sankey
     const nodes: Array<{ name: string; category: string }> = [];
-    const links: Array<{ source: number; target: number; value: number }> = [];
+    const links: Array<{ source: number; target: number; value: number; sourceName: string; targetName: string }> = [];
     
     let nodeIndex = 0;
     const nodeMap = new Map<string, number>();
@@ -149,7 +149,9 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       links.push({
         source: nodeMap.get(source)!,
         target: accountNodeIndex,
-        value: amount
+        value: amount,
+        sourceName: source,
+        targetName: accountDisplayName
       });
     });
     
@@ -158,7 +160,9 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       links.push({
         source: accountNodeIndex,
         target: nodeMap.get(target)!,
-        value: amount
+        value: amount,
+        sourceName: accountDisplayName,
+        targetName: target
       });
     });
 
@@ -237,10 +241,17 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      console.log('Tooltip data:', data); // Debug logging
+      
+      // Try different ways to access the value
+      const value = data.value || data.amount || data.flow || 0;
+      const sourceName = data.source?.name || data.sourceName || 'Source';
+      const targetName = data.target?.name || data.targetName || 'Target';
+      
       return (
         <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
-          <p className="font-semibold">{`${data.source?.name || 'Source'} → ${data.target?.name || 'Target'}`}</p>
-          <p className="text-blue-600">{`Amount: $${data.value?.toLocaleString() || 0}`}</p>
+          <p className="font-semibold">{`${sourceName} → ${targetName}`}</p>
+          <p className="text-blue-600">{`Amount: $${value.toLocaleString()}`}</p>
         </div>
       );
     }
