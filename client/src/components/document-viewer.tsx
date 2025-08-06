@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Download, Maximize2, FileText, Calendar, FileSpreadsheet, Building } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Download, Maximize2, FileText, Calendar, FileSpreadsheet, Building, Edit, Lock, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import BankingDocumentTabs from "./banking-document-tabs";
 import FullAnalysisDialog from "./full-analysis-dialog";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { StatusSelect } from "@/components/ui/status-select";
+import { apiRequest } from "@/lib/queryClient";
 
 interface Document {
   id: number;
@@ -48,6 +50,14 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isFullAnalysisDialogOpen, setIsFullAnalysisDialogOpen] = useState(false);
+  const [isEditingBankingInfo, setIsEditingBankingInfo] = useState(false);
+  const [editedBankingInfo, setEditedBankingInfo] = useState({
+    accountHolderName: '',
+    accountName: '',
+    financialInstitution: '',
+    accountNumber: '',
+    bsbSortCode: ''
+  });
 
   // Fetch CSV data for banking documents
   const { data: csvData } = useQuery({
@@ -55,6 +65,70 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
     enabled: document?.category === 'BANKING' && document?.csvGenerated === true,
     retry: false,
   });
+
+  // Banking info update mutation
+  const updateBankingInfoMutation = useMutation({
+    mutationFn: async (updatedInfo: typeof editedBankingInfo) => {
+      return await apiRequest(`/api/documents/${document?.id}/banking-info`, "PATCH", updatedInfo);
+    },
+    onSuccess: async (response) => {
+      const updatedDocument = await response.json();
+      toast({
+        title: "Success",
+        description: "Banking information updated successfully",
+      });
+      setIsEditingBankingInfo(false);
+      if (onDocumentUpdate) {
+        onDocumentUpdate(updatedDocument);
+      }
+      // Refresh case data to update navigation tree
+      await queryClient.invalidateQueries({ queryKey: ["/api/cases", document?.caseId?.toString()] });
+      await queryClient.refetchQueries({ queryKey: ["/api/cases", document?.caseId?.toString()] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update banking information. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Check if user can edit banking info
+  const canEditBankingInfo = () => {
+    return userRole === 'CASEADMIN' || userRole === 'DISCLOSER' || userRole === 'REVIEWER';
+  };
+
+  // Handle edit mode toggle
+  const handleEditToggle = () => {
+    if (!isEditingBankingInfo && document) {
+      setEditedBankingInfo({
+        accountHolderName: document.accountHolderName || '',
+        accountName: document.accountName || '',
+        financialInstitution: document.financialInstitution || '',
+        accountNumber: document.accountNumber || '',
+        bsbSortCode: document.bsbSortCode || ''
+      });
+    }
+    setIsEditingBankingInfo(!isEditingBankingInfo);
+  };
+
+  // Handle save
+  const handleSaveBankingInfo = () => {
+    updateBankingInfoMutation.mutate(editedBankingInfo);
+  };
+
+  // Handle cancel
+  const handleCancelEdit = () => {
+    setIsEditingBankingInfo(false);
+    setEditedBankingInfo({
+      accountHolderName: '',
+      accountName: '',
+      financialInstitution: '',
+      accountNumber: '',
+      bsbSortCode: ''
+    });
+  };
 
   const handleDownload = async () => {
     if (!document) return;
@@ -235,49 +309,141 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
             {/* Banking-specific information */}
             {document.category === 'BANKING' && document.aiProcessed && (
               <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Building className="h-4 w-4 text-blue-600" />
-                  <span className="font-medium text-blue-900">Banking Information</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  {document.accountHolderName && (
-                    <div><span className="font-medium text-slate-700">Account Holder:</span> {document.accountHolderName}</div>
-                  )}
-                  {document.accountName && (
-                    <div><span className="font-medium text-slate-700">Account:</span> {document.accountName}</div>
-                  )}
-                  {document.financialInstitution && (
-                    <div><span className="font-medium text-slate-700">Bank:</span> {document.financialInstitution}</div>
-                  )}
-                  {document.accountNumber && (
-                    <div><span className="font-medium text-slate-700">Number:</span> {document.accountNumber}</div>
-                  )}
-                  {document.bsbSortCode && (
-                    <div><span className="font-medium text-slate-700">BSB/Sort:</span> {document.bsbSortCode}</div>
-                  )}
-                  {document.transactionDateFrom && document.transactionDateTo && (
-                    <div className="col-span-2">
-                      <span className="font-medium text-slate-700">Period:</span> {formatDate(document.transactionDateFrom)} - {formatDate(document.transactionDateTo)}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Building className="h-4 w-4 text-blue-600" />
+                    <span className="font-medium text-blue-900">Banking Information</span>
+                    {!isEditingBankingInfo && <Lock className="h-3 w-3 text-slate-400" />}
+                  </div>
+                  {canEditBankingInfo() && (
+                    <div className="flex gap-2">
+                      {isEditingBankingInfo ? (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleSaveBankingInfo}
+                            disabled={updateBankingInfoMutation.isPending}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <Save className="h-3 w-3 mr-1" />
+                            Save
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={handleCancelEdit}
+                            disabled={updateBankingInfoMutation.isPending}
+                            className="h-7 px-2 text-xs"
+                          >
+                            <X className="h-3 w-3 mr-1" />
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={handleEditToggle}
+                          className="h-7 px-2 text-xs text-blue-600 hover:bg-blue-100"
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                      )}
                     </div>
                   )}
-                  {document.csvGenerated && document.csvRowCount && (
-                    <div className="col-span-2">
-                      <span className="font-medium text-slate-700">CSV Data:</span> {document.csvRowCount} transaction rows extracted
-                    </div>
-                  )}
-                  {(document as any).totalTransactions && (
-                    <div><span className="font-medium text-slate-700">Total Transactions:</span> {(document as any).totalTransactions}</div>
-                  )}
-                  {(document as any).estimatedPdfCount && (document as any).estimatedPdfCount > 1 && (
-                    <div><span className="font-medium text-slate-700">Estimated PDFs:</span> {(document as any).estimatedPdfCount} statements combined</div>
-                  )}
-                  {(document as any).earliestTransaction && (
-                    <div><span className="font-medium text-slate-700">Earliest Transaction:</span> {(document as any).earliestTransaction}</div>
-                  )}
-                  {(document as any).latestTransaction && (
-                    <div><span className="font-medium text-slate-700">Latest Transaction:</span> {(document as any).latestTransaction}</div>
-                  )}
                 </div>
+                
+                {isEditingBankingInfo ? (
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">Account Holder:</label>
+                      <Input
+                        value={editedBankingInfo.accountHolderName}
+                        onChange={(e) => setEditedBankingInfo(prev => ({ ...prev, accountHolderName: e.target.value }))}
+                        className="h-8 text-sm"
+                        placeholder="Enter account holder name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">Account:</label>
+                      <Input
+                        value={editedBankingInfo.accountName}
+                        onChange={(e) => setEditedBankingInfo(prev => ({ ...prev, accountName: e.target.value }))}
+                        className="h-8 text-sm"
+                        placeholder="Enter account name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">Bank:</label>
+                      <Input
+                        value={editedBankingInfo.financialInstitution}
+                        onChange={(e) => setEditedBankingInfo(prev => ({ ...prev, financialInstitution: e.target.value }))}
+                        className="h-8 text-sm"
+                        placeholder="Enter bank name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">Number:</label>
+                      <Input
+                        value={editedBankingInfo.accountNumber}
+                        onChange={(e) => setEditedBankingInfo(prev => ({ ...prev, accountNumber: e.target.value }))}
+                        className="h-8 text-sm"
+                        placeholder="Enter account number"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 mb-1">BSB/Sort:</label>
+                      <Input
+                        value={editedBankingInfo.bsbSortCode}
+                        onChange={(e) => setEditedBankingInfo(prev => ({ ...prev, bsbSortCode: e.target.value }))}
+                        className="h-8 text-sm"
+                        placeholder="Enter BSB or sort code"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {document.accountHolderName && (
+                      <div><span className="font-medium text-slate-700">Account Holder:</span> {document.accountHolderName}</div>
+                    )}
+                    {document.accountName && (
+                      <div><span className="font-medium text-slate-700">Account:</span> {document.accountName}</div>
+                    )}
+                    {document.financialInstitution && (
+                      <div><span className="font-medium text-slate-700">Bank:</span> {document.financialInstitution}</div>
+                    )}
+                    {document.accountNumber && (
+                      <div><span className="font-medium text-slate-700">Number:</span> {document.accountNumber}</div>
+                    )}
+                    {document.bsbSortCode && (
+                      <div><span className="font-medium text-slate-700">BSB/Sort:</span> {document.bsbSortCode}</div>
+                    )}
+                    {document.transactionDateFrom && document.transactionDateTo && (
+                      <div className="col-span-2">
+                        <span className="font-medium text-slate-700">Period:</span> {formatDate(document.transactionDateFrom)} - {formatDate(document.transactionDateTo)}
+                      </div>
+                    )}
+                    {document.csvGenerated && document.csvRowCount && (
+                      <div className="col-span-2">
+                        <span className="font-medium text-slate-700">CSV Data:</span> {document.csvRowCount} transaction rows extracted
+                      </div>
+                    )}
+                    {(document as any).totalTransactions && (
+                      <div><span className="font-medium text-slate-700">Total Transactions:</span> {(document as any).totalTransactions}</div>
+                    )}
+                    {(document as any).estimatedPdfCount && (document as any).estimatedPdfCount > 1 && (
+                      <div><span className="font-medium text-slate-700">Estimated PDFs:</span> {(document as any).estimatedPdfCount} statements combined</div>
+                    )}
+                    {(document as any).earliestTransaction && (
+                      <div><span className="font-medium text-slate-700">Earliest Transaction:</span> {(document as any).earliestTransaction}</div>
+                    )}
+                    {(document as any).latestTransaction && (
+                      <div><span className="font-medium text-slate-700">Latest Transaction:</span> {(document as any).latestTransaction}</div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
             

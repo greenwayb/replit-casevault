@@ -757,6 +757,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update banking information for documents
+  app.patch('/api/documents/:id/banking-info', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const documentId = parseInt(req.params.id);
+      const { accountHolderName, accountName, financialInstitution, accountNumber, bsbSortCode } = req.body;
+
+      console.log(`PATCH banking info for document ${documentId} by user ${userId}:`, req.body);
+
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check if user has access to the case
+      const userRoles = await storage.getUserRolesInCase(userId, document.caseId);
+      if (!userRoles || userRoles.length === 0) {
+        return res.status(403).json({ message: "Access denied to this document" });
+      }
+
+      // Check if user has permission to edit (CASEADMIN, DISCLOSER, or REVIEWER)
+      if (!userRoles.includes('CASEADMIN') && !userRoles.includes('DISCLOSER') && !userRoles.includes('REVIEWER')) {
+        return res.status(403).json({ message: "Insufficient permissions to edit banking information" });
+      }
+
+      // Update banking information
+      const updates: any = {};
+      if (accountHolderName !== undefined) updates.accountHolderName = accountHolderName?.trim() || null;
+      if (accountName !== undefined) updates.accountName = accountName?.trim() || null;
+      if (financialInstitution !== undefined) updates.financialInstitution = financialInstitution?.trim() || null;
+      if (accountNumber !== undefined) updates.accountNumber = accountNumber?.trim() || null;
+      if (bsbSortCode !== undefined) updates.bsbSortCode = bsbSortCode?.trim() || null;
+
+      const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, updates);
+      console.log(`Banking info updated successfully for document ${documentId}`);
+
+      res.json(updatedDocument);
+    } catch (error) {
+      console.error("Error updating banking information:", error);
+      res.status(500).json({ message: "Failed to update banking information" });
+    }
+  });
+
   // Delete document
   app.delete('/api/documents/:id', isAuthenticated, async (req: any, res) => {
     try {
