@@ -271,27 +271,37 @@ export default function DocumentTree({ documents, onDocumentSelect, selectedDocu
                       if (accountKey === 'ungrouped') {
                         // Render ungrouped documents directly
                         return accountDocs.map((doc) => (
-                          <Button
-                            key={doc.id}
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                              "w-full justify-start p-2 h-auto text-left",
-                              selectedDocument?.id === doc.id && "bg-primary/10 text-primary border border-primary/20"
+                          <div key={doc.id} className="group relative">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={cn(
+                                "w-full justify-start p-2 h-auto text-left pr-8",
+                                selectedDocument?.id === doc.id && "bg-primary/10 text-primary border border-primary/20"
+                              )}
+                              onClick={() => onDocumentSelect(doc)}
+                            >
+                              <FileText className="h-4 w-4 mr-2 text-slate-400" />
+                              <div className="flex-1 min-w-0">
+                                <div className={`text-sm font-medium truncate ${getStatusColor(doc.status)}`}>
+                                  {doc.originalName}
+                                </div>
+                                <div className="text-xs text-slate-500">
+                                  {formatDate(doc.createdAt)} • {formatFileSize(doc.fileSize)}
+                                  {doc.processingError && <span className="text-amber-600 ml-1">• AI Processing Failed</span>}
+                                </div>
+                              </div>
+                            </Button>
+                            {canDeleteDocuments() && (
+                              <div
+                                className="absolute right-1 top-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-600 rounded cursor-pointer flex items-center justify-center"
+                                onClick={(e) => handleDeleteDocument(doc, e)}
+                                title="Delete this document"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </div>
                             )}
-                            onClick={() => onDocumentSelect(doc)}
-                          >
-                            <FileText className="h-4 w-4 mr-2 text-slate-400" />
-                            <div className="flex-1 min-w-0">
-                              <div className={`text-sm font-medium truncate ${getStatusColor(doc.status)}`}>
-                                {doc.originalName}
-                              </div>
-                              <div className="text-xs text-slate-500">
-                                {formatDate(doc.createdAt)} • {formatFileSize(doc.fileSize)}
-                                {doc.processingError && <span className="text-amber-600 ml-1">• AI Processing Failed</span>}
-                              </div>
-                            </div>
-                          </Button>
+                          </div>
                         ));
                       }
 
