@@ -67,9 +67,9 @@ export function TopNav() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-sm text-gray-700">
             <User className="h-4 w-4" />
-            <span className="font-medium">{user.firstName} {user.lastName}</span>
-            {user.email && (
-              <span className="text-gray-500">({user.email})</span>
+            <span className="font-medium">{(user as any)?.firstName} {(user as any)?.lastName}</span>
+            {(user as any)?.email && (
+              <span className="text-gray-500">({(user as any)?.email})</span>
             )}
           </div>
           <Button
