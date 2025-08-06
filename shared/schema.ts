@@ -260,8 +260,6 @@ export const insertCaseInvitationSchema = createInsertSchema(caseInvitations).om
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
-export type Document = typeof documents.$inferSelect;
-export type InsertDocument = typeof documents.$inferInsert;
 export type LegalOrganization = typeof legalOrganizations.$inferSelect;
 export type InsertLegalOrganization = typeof legalOrganizations.$inferInsert;
 

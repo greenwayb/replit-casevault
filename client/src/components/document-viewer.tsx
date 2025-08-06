@@ -350,7 +350,7 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
           onClose={() => setIsFullAnalysisDialogOpen(false)}
           documentId={document.id}
           onComplete={handleFullAnalysisComplete}
-          transactionCount={document.totalTransactions || 0}
+          transactionCount={(document as any).totalTransactions || 0}
         />
       )}
     </div>
