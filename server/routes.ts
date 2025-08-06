@@ -763,23 +763,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const documentId = parseInt(req.params.id);
       
+      console.log(`DELETE request for document ${documentId} by user ${userId}`);
+      
+      // Validate documentId
+      if (isNaN(documentId)) {
+        console.log(`Invalid document ID: ${req.params.id}`);
+        return res.status(400).json({ message: "Invalid document ID" });
+      }
+      
       const document = await storage.getDocumentById(documentId);
       if (!document) {
+        console.log(`Document ${documentId} not found`);
         return res.status(404).json({ message: "Document not found" });
       }
 
       // Check if user has access to the case
       const userRoles = await storage.getUserRolesInCase(userId, document.caseId);
+      console.log(`User ${userId} roles in case ${document.caseId}:`, userRoles);
+      
       if (!userRoles || userRoles.length === 0) {
+        console.log(`User ${userId} has no access to case ${document.caseId}`);
         return res.status(403).json({ message: "Access denied to this document" });
       }
 
       // Check if user has permission to delete (CASEADMIN or DISCLOSER)
       if (!userRoles.includes('CASEADMIN') && !userRoles.includes('DISCLOSER')) {
+        console.log(`User ${userId} lacks delete permissions. Roles:`, userRoles);
         return res.status(403).json({ message: "Insufficient permissions to delete document" });
       }
 
+      console.log(`Deleting document ${documentId}`);
       await storage.deleteDocument(documentId);
+      console.log(`Document ${documentId} deleted successfully`);
+      
       res.json({ message: "Document deleted successfully" });
     } catch (error) {
       console.error("Error deleting document:", error);
