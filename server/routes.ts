@@ -11,7 +11,6 @@ import fs from "fs";
 import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF, generateXMLFromAnalysis } from "./aiService";
 import { GoogleDriveService } from "./googleDriveService";
 import { DisclosurePdfService } from "./disclosurePdfService";
-import { standardizeAllUserNames } from "./nameFormattingService.js";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -1538,35 +1537,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating case title:", error);
       res.status(500).json({ message: "Failed to update case title" });
-    }
-  });
-
-  // Admin route to standardize all user names
-  app.post('/api/admin/standardize-names', isAuthenticated, async (req: any, res) => {
-    try {
-      // Check if user has admin privileges (CASEADMIN role in at least one case)
-      const userId = req.user.id;
-      const userCases = await storage.getCasesByUserId(userId);
-      const hasAdminRole = userCases.some((caseItem: any) => 
-        caseItem.members?.some((member: any) => 
-          member.userId === userId && member.roles.includes('CASEADMIN')
-        )
-      );
-      
-      if (!hasAdminRole) {
-        return res.status(403).json({ message: "Admin privileges required" });
-      }
-      
-      // Run the standardization process
-      const result = await standardizeAllUserNames();
-      
-      res.json({
-        message: "Name standardization completed",
-        ...result
-      });
-    } catch (error) {
-      console.error("Error standardizing user names:", error);
-      res.status(500).json({ message: "Failed to standardize user names" });
     }
   });
 
