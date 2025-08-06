@@ -68,6 +68,31 @@ export interface CSVGenerationResult {
   rowCount: number;
 }
 
+// Helper function to format account holder names consistently
+function formatAccountHolderName(name: string): string {
+  if (!name) return name;
+  
+  // Remove common titles (case insensitive)
+  const titlesToRemove = [
+    'MR', 'MRS', 'MS', 'MISS', 'DR', 'PROF', 'SIR', 'LADY', 'LORD',
+    'Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Prof', 'Sir', 'Lady', 'Lord',
+    'mr', 'mrs', 'ms', 'miss', 'dr', 'prof', 'sir', 'lady', 'lord'
+  ];
+  
+  let cleanName = name.trim();
+  
+  // Remove titles from the beginning of the name
+  for (const title of titlesToRemove) {
+    const titlePattern = new RegExp(`^${title}\\.?\\s+`, 'i');
+    cleanName = cleanName.replace(titlePattern, '');
+  }
+  
+  // Convert to title case (first letter of each word capitalized)
+  cleanName = cleanName.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+  
+  return cleanName;
+}
+
 // Helper function to estimate processing time based on document complexity
 function estimateProcessingTime(textLength: number, transactionCount: number): { estimatedMinutes: number; description: string } {
   // Formula: 1 + ceiling(transaction_count / 80) minutes
@@ -274,6 +299,10 @@ ${pdfText}`
         }
       } else {
         analysisResult = JSON.parse(jsonMatch[0]);
+        // Apply account holder name formatting to JSON response
+        if (analysisResult.accountHolderName) {
+          analysisResult.accountHolderName = formatAccountHolderName(analysisResult.accountHolderName);
+        }
       }
     } catch (error) {
       console.warn('Could not parse JSON from analysis response:', error);
@@ -281,6 +310,7 @@ ${pdfText}`
       
       // Fallback: extract data from the full response text
       analysisResult = extractDataFromText(fullResponse);
+      // Name formatting already applied in extractDataFromText
     }
     
     // Extract XML analysis from the response - try multiple patterns
@@ -425,7 +455,7 @@ function extractDataFromText(text: string): any {
   // Extract account holders
   const holderMatch = text.match(/(?:Account Holders?|Holders?)[:\s]*([^\n]*?)(?:\n|$)/i);
   if (holderMatch) {
-    result.accountHolderName = holderMatch[1].trim();
+    result.accountHolderName = formatAccountHolderName(holderMatch[1].trim());
   }
   
   // Extract account type/name

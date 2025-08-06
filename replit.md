@@ -44,6 +44,8 @@ Preferred communication style: Simple, everyday language.
 - **Transaction Completeness**: PDF transaction line estimation with XML validation to detect incomplete analysis and ensure all transactions are captured.
 - **Enhanced Error Handling**: Processing failures keep dialog open, log detailed error information to server files, and display log locations to users for debugging.
 - **Transaction Limit Protection**: AI Analysis button becomes disabled with warning tooltip when documents exceed 600 transactions, advising users to split large PDFs for optimal processing.
+- **Processing Time Display**: Processing dialogs now show calculated time estimates using the formula `1 + ceiling(transaction_count / 80)` minutes instead of generic "1-2 minutes" estimates.
+- **Account Holder Name Formatting**: Account holder names extracted from PDFs are automatically formatted with consistent title case and titles (MR, Miss, etc.) removed for standardized navigation tree categorization.
 
 ## Case Management
 - **Creation**: Unique case number generation, creator assignment

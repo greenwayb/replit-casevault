@@ -37,6 +37,31 @@ export interface BasicBankingFields {
   latestTransaction?: string;
 }
 
+// Helper function to format account holder names consistently
+function formatAccountHolderName(name: string): string {
+  if (!name) return name;
+  
+  // Remove common titles (case insensitive)
+  const titlesToRemove = [
+    'MR', 'MRS', 'MS', 'MISS', 'DR', 'PROF', 'SIR', 'LADY', 'LORD',
+    'Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Prof', 'Sir', 'Lady', 'Lord',
+    'mr', 'mrs', 'ms', 'miss', 'dr', 'prof', 'sir', 'lady', 'lord'
+  ];
+  
+  let cleanName = name.trim();
+  
+  // Remove titles from the beginning of the name
+  for (const title of titlesToRemove) {
+    const titlePattern = new RegExp(`^${title}\\.?\\s+`, 'i');
+    cleanName = cleanName.replace(titlePattern, '');
+  }
+  
+  // Convert to title case (first letter of each word capitalized)
+  cleanName = cleanName.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+  
+  return cleanName;
+}
+
 // Helper function to estimate processing time for full analysis
 function estimateFullAnalysisTime(textLength: number, transactionCount: number): { estimatedMinutes: number; description: string } {
   // Formula: 1 + ceiling(transaction_count / 80) minutes
@@ -178,7 +203,8 @@ Important:
     const accountNumber = getXMLValue(responseText, 'account_number') || undefined;
     const accountBsb = getXMLValue(responseText, 'account_bsb') || undefined;
     
-    const accountHolders = getXMLArray(responseText, 'account_holders', 'account_holder');
+    const accountHolders = getXMLArray(responseText, 'account_holders', 'account_holder')
+      .map(name => formatAccountHolderName(name));
     
     const totalTransactions = parseInt(getXMLValue(responseText, 'total_transactions')) || undefined;
     const estimatedPdfCount = parseInt(getXMLValue(responseText, 'estimated_pdf_count')) || undefined;
