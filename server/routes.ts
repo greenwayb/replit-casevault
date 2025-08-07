@@ -8,6 +8,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { promises as fsPromises } from "fs";
 import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF, generateXMLFromAnalysis } from "./aiService";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -1035,7 +1036,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create temporary file paths
       const tempDir = path.join(process.cwd(), 'temp');
       try {
-        await fs.mkdir(tempDir, { recursive: true });
+        await fsPromises.mkdir(tempDir, { recursive: true });
       } catch (mkdirError) {
         // Directory might already exist, continue
       }
@@ -1045,7 +1046,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         // Write the PDF to temporary file
-        await fs.writeFile(tempInputPath, pdfBuffer);
+        await fsPromises.writeFile(tempInputPath, pdfBuffer);
         
         // Use Ghostscript for PDF optimization with better compression
         const { execFile } = await import('child_process');
@@ -1090,15 +1091,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         // Read optimized PDF
-        const optimizedBuffer = await fs.readFile(tempOutputPath);
+        const optimizedBuffer = await fsPromises.readFile(tempOutputPath);
         console.log(`Optimized PDF size: ${(optimizedBuffer.length / 1024 / 1024).toFixed(2)} MB`);
         
         // Clean up temporary files
         try {
-          await fs.unlink(tempInputPath);
+          await fsPromises.unlink(tempInputPath);
         } catch {}
         try {
-          await fs.unlink(tempOutputPath);
+          await fsPromises.unlink(tempOutputPath);
         } catch {}
         
         // Send optimized PDF
@@ -1122,10 +1123,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Save with compression
           const compressedPdfBytes = await pdfDoc.save({
-            useObjectStreams: true,
-            addDefaultPage: false,
-            objectStreamsThreshold: 40,
-            compress: true
+            useObjectStreams: false,
+            addDefaultPage: false
           });
           
           const optimizedBuffer = Buffer.from(compressedPdfBytes);
@@ -1134,7 +1133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Clean up temp files
           try {
-            await fs.unlink(tempInputPath);
+            await fsPromises.unlink(tempInputPath);
           } catch {}
           
           // Send compressed PDF
