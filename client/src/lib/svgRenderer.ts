@@ -99,32 +99,50 @@ export class ClientSVGRenderer {
       // Wait a moment for chart to fully render
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Find SVG element within the container
-      const svgElement = containerRef.current.querySelector('svg');
-      if (!svgElement) {
-        console.log(`No SVG found in ${chartName} container, checking for nested SVGs...`);
-        
-        // Check for nested containers or Recharts components
-        const allSvgs = containerRef.current.querySelectorAll('svg');
-        console.log(`Found ${allSvgs.length} SVG elements in container`);
-        
-        if (allSvgs.length === 0) {
-          console.log(`No SVGs found in ${chartName} container at all`);
-          return null;
-        }
-        
-        // Use the first/largest SVG found
-        const targetSvg = allSvgs[0] as SVGElement;
-        return await this.renderSVGElementToPNG(targetSvg, options);
+      // Look for ResponsiveContainer or Recharts chart components
+      const chartContainer = containerRef.current.querySelector('[data-testid="transaction-chart"]') || 
+                           containerRef.current.querySelector('.recharts-wrapper') ||
+                           containerRef.current;
+
+      // Find all SVG elements within the chart container
+      const svgElements = chartContainer.querySelectorAll('svg');
+      console.log(`Found ${svgElements.length} SVG elements in ${chartName} container`);
+      
+      if (svgElements.length === 0) {
+        console.log(`No SVGs found in ${chartName} container at all`);
+        return null;
       }
 
-      console.log(`Found SVG for ${chartName}, dimensions:`, {
-        width: svgElement.clientWidth,
-        height: svgElement.clientHeight,
-        viewBox: svgElement.getAttribute('viewBox')
+      // Find the largest/main SVG (usually the chart itself)
+      let mainSvg = svgElements[0] as SVGElement;
+      let maxArea = 0;
+      
+      svgElements.forEach(svg => {
+        const rect = (svg as SVGElement).getBoundingClientRect();
+        const area = rect.width * rect.height;
+        if (area > maxArea) {
+          maxArea = area;
+          mainSvg = svg as SVGElement;
+        }
+      });
+
+      console.log(`Using main SVG for ${chartName}, dimensions:`, {
+        width: mainSvg.clientWidth,
+        height: mainSvg.clientHeight,
+        viewBox: mainSvg.getAttribute('viewBox'),
+        bbox: mainSvg.getBoundingClientRect()
       });
       
-      return await this.renderSVGElementToPNG(svgElement, options);
+      // Use high resolution for readable charts - working configuration
+      const enhancedOptions = {
+        ...options,
+        width: Math.max(800, mainSvg.clientWidth || 600),
+        height: Math.max(600, mainSvg.clientHeight || 450),
+        format: 'png' as const,
+        quality: 90
+      };
+      
+      return await this.renderSVGElementToPNG(mainSvg, enhancedOptions);
 
     } catch (error) {
       console.warn(`Server-side rendering failed for ${chartName}, falling back to Canvg:`, error);
@@ -134,7 +152,7 @@ export class ClientSVGRenderer {
     }
   }
 
-  // Fallback Canvg method (existing implementation)
+  // Fallback Canvg method with enhanced chart element detection
   private static async fallbackCanvgCapture(
     containerRef: React.RefObject<HTMLDivElement>,
     chartName: string
@@ -144,23 +162,82 @@ export class ClientSVGRenderer {
       
       if (!containerRef.current) return null;
       
-      const svgElement = containerRef.current.querySelector('svg');
-      if (!svgElement) return null;
+      // Look for ResponsiveContainer or main chart SVG
+      const chartContainer = containerRef.current.querySelector('[data-testid="transaction-chart"]') || 
+                           containerRef.current.querySelector('.recharts-wrapper') ||
+                           containerRef.current;
+      
+      const svgElements = chartContainer.querySelectorAll('svg');
+      if (svgElements.length === 0) return null;
 
-      const svgData = new XMLSerializer().serializeToString(svgElement);
+      // Find the largest SVG (main chart)
+      let mainSvg = svgElements[0] as SVGElement;
+      let maxArea = 0;
+      
+      svgElements.forEach(svg => {
+        const rect = (svg as SVGElement).getBoundingClientRect();
+        const area = rect.width * rect.height;
+        if (area > maxArea) {
+          maxArea = area;
+          mainSvg = svg as SVGElement;
+        }
+      });
+
+      console.log(`Fallback: Found main SVG for ${chartName}:`, {
+        width: mainSvg.clientWidth,
+        height: mainSvg.clientHeight,
+        elements: mainSvg.children.length
+      });
+
+      // Get the SVG data and ensure text elements are preserved
+      let svgData = new XMLSerializer().serializeToString(mainSvg);
+      
+      // Add font definitions to ensure text is rendered properly
+      if (!svgData.includes('<defs>')) {
+        svgData = svgData.replace('<svg', `<svg><defs><style type="text/css">
+          text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+          .recharts-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+          .recharts-cartesian-axis-tick-value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #6B7280; }
+          .recharts-legend-item-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; fill: #374151; }
+        </style></defs><svg`);
+      }
+      
+      console.log(`SVG data sample for ${chartName}:`, svgData.substring(0, 500));
+      
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
       if (!ctx) return null;
 
-      const svgWidth = svgElement.clientWidth || 800;
-      const svgHeight = svgElement.clientHeight || 400;
-      canvas.width = svgWidth;
-      canvas.height = svgHeight;
+      // Use working high-resolution scaling for readable text
+      const svgWidth = Math.max(800, mainSvg.clientWidth || 600);
+      const svgHeight = Math.max(600, mainSvg.clientHeight || 450);
+      canvas.width = svgWidth * 2; // 2x scaling for crisp text
+      canvas.height = svgHeight * 2;
+      
+      // Scale context for high-resolution rendering
+      ctx.scale(2, 2);
+      
+      // Set canvas text rendering properties for better quality
+      ctx.textAlign = 'start';
+      ctx.textBaseline = 'alphabetic';
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
 
-      const canvgInstance = Canvg.fromString(ctx, svgData);
+      // Count text elements in SVG for debugging
+      const textCount = (svgData.match(/<text/g) || []).length;
+      console.log(`${chartName}: Found ${textCount} text elements in SVG`);
+
+      const canvgInstance = Canvg.fromString(ctx, svgData, {
+        ignoreMouse: true,
+        ignoreAnimation: true,
+        ignoreDimensions: false,
+        ignoreClear: false,
+        enableRedraw: false
+      });
       await canvgInstance.render();
 
+      // Return high-quality PNG for readable text (working version)
       return canvas.toDataURL('image/png', 0.9);
     } catch (error) {
       console.error(`Fallback capture failed for ${chartName}:`, error);
