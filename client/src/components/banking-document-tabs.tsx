@@ -136,12 +136,12 @@ export default function BankingDocumentTabs({
         await new Promise(resolve => setTimeout(resolve, 1500));
       }
       
-      // Capture the chart with high resolution for text readability
+      // Use working configuration for readable charts
       const result = await ClientSVGRenderer.captureChart(containerRef, chartName, {
-        width: 1000,  // High resolution for text
-        height: 700,  // High resolution for text
-        scale: 1.5,   // Scale up for crisp text
-        quality: 90   // High quality for readable text
+        width: 800,
+        height: 600,
+        scale: 2,     // 2x scaling that worked before
+        quality: 90
       });
       
       return result;
@@ -159,12 +159,8 @@ export default function BankingDocumentTabs({
 
     console.log('Starting PDF export with aggressive optimization for smaller file size...');
     
-    // Create PDF with minimal settings for smaller file size
-    const doc = new jsPDF({
-      compress: true,
-      format: 'a4',
-      unit: 'mm'
-    });
+    // Back to working PDF configuration 
+    const doc = new jsPDF();
     const bankInfo = getBankInfo();
     
     // Attempt to capture charts with enhanced server-side rendering
@@ -271,7 +267,7 @@ export default function BankingDocumentTabs({
       // Add the captured Sankey diagram image
       try {
         console.log('Adding Sankey image to PDF...');
-        doc.addImage(sankeyImage, 'JPEG', 20, 40, 240, 150);
+        doc.addImage(sankeyImage, 'PNG', 20, 40, 250, 150); // Back to PNG with working size
         console.log('Sankey image added successfully');
       } catch (error) {
         console.error('Error adding Sankey image to PDF:', error);
@@ -305,7 +301,7 @@ export default function BankingDocumentTabs({
       // Add the captured transaction chart image
       try {
         console.log('Adding transaction chart image to PDF...');
-        doc.addImage(chartImage, 'JPEG', 20, 40, 240, 150);
+        doc.addImage(chartImage, 'PNG', 20, 40, 250, 150); // Back to PNG with working size
         console.log('Transaction chart image added successfully');
       } catch (error) {
         console.error('Error adding chart image to PDF:', error);

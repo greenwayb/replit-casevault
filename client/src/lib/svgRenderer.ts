@@ -133,13 +133,13 @@ export class ClientSVGRenderer {
         bbox: mainSvg.getBoundingClientRect()
       });
       
-      // Use high resolution for text readability, then compress
+      // Use high resolution for readable charts - working configuration
       const enhancedOptions = {
         ...options,
-        width: Math.max(1000, mainSvg.clientWidth || 800),  // High resolution for text
-        height: Math.max(700, mainSvg.clientHeight || 600), // High resolution for text
+        width: Math.max(800, mainSvg.clientWidth || 600),
+        height: Math.max(600, mainSvg.clientHeight || 450),
         format: 'png' as const,
-        quality: 90  // High quality for text readability
+        quality: 90
       };
       
       return await this.renderSVGElementToPNG(mainSvg, enhancedOptions);
@@ -195,28 +195,20 @@ export class ClientSVGRenderer {
       
       if (!ctx) return null;
 
-      // Use high resolution for text readability with 2x scaling
-      const svgWidth = Math.max(1000, mainSvg.clientWidth || 800);
-      const svgHeight = Math.max(700, mainSvg.clientHeight || 600);
-      canvas.width = svgWidth * 1.5; // Scale up for crisp text
-      canvas.height = svgHeight * 1.5;
+      // Use working high-resolution scaling for readable text
+      const svgWidth = Math.max(800, mainSvg.clientWidth || 600);
+      const svgHeight = Math.max(600, mainSvg.clientHeight || 450);
+      canvas.width = svgWidth * 2; // 2x scaling for crisp text
+      canvas.height = svgHeight * 2;
       
       // Scale context for high-resolution rendering
-      ctx.scale(1.5, 1.5);
+      ctx.scale(2, 2);
 
       const canvgInstance = Canvg.fromString(ctx, svgData);
       await canvgInstance.render();
 
-      // Return high-resolution image with smart compression for PDF use
-      // First get high quality PNG for text readability
-      const highQualityPng = canvas.toDataURL('image/png', 0.95);
-      
-      // For PDF use, also create a compressed JPEG version to reduce file size
-      // while maintaining text readability
-      const compressedJpeg = canvas.toDataURL('image/jpeg', 0.85);
-      
-      // Return the JPEG version for smaller file sizes in PDFs
-      return compressedJpeg;
+      // Return high-quality PNG for readable text (working version)
+      return canvas.toDataURL('image/png', 0.9);
     } catch (error) {
       console.error(`Fallback capture failed for ${chartName}:`, error);
       return null;
