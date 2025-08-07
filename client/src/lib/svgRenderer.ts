@@ -15,18 +15,36 @@ export class ClientSVGRenderer {
     svgElement: SVGElement, 
     options: SVGRenderOptions = {}
   ): Promise<string> {
-    // Get SVG content as string
+    // Clean and prepare SVG content
     let svgContent = new XMLSerializer().serializeToString(svgElement);
+    
+    // Ensure SVG is properly closed and well-formed
+    if (!svgContent.includes('</svg>')) {
+      svgContent += '</svg>';
+    }
+    
+    // Clean up any invalid characters or malformed attributes
+    svgContent = svgContent
+      .replace(/&nbsp;/g, ' ')
+      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+      .replace(/xmlns:xlink="http:\/\/www\.w3\.org\/1999\/xlink"/g, '')
+      .trim();
     
     // Enhance SVG with font definitions for better text rendering
     if (!svgContent.includes('<defs>')) {
-      svgContent = svgContent.replace('<svg', `<svg><defs><style type="text/css">
-        text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
-        .recharts-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
-        .recharts-cartesian-axis-tick-value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #6B7280; }
-        .recharts-legend-item-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; fill: #374151; }
-        .recharts-tooltip-wrapper { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-      </style></defs><svg`);
+      const svgOpenTag = svgContent.match(/<svg[^>]*>/)?.[0] || '<svg>';
+      const restOfSvg = svgContent.replace(svgOpenTag, '');
+      
+      svgContent = `${svgOpenTag}
+        <defs>
+          <style type="text/css">
+            text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+            .recharts-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+            .recharts-cartesian-axis-tick-value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #6B7280; }
+            .recharts-legend-item-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; fill: #374151; }
+          </style>
+        </defs>
+        ${restOfSvg}`;
     }
     
     // Count text elements for debugging
@@ -207,14 +225,33 @@ export class ClientSVGRenderer {
       // Get the SVG data and ensure text elements are preserved
       let svgData = new XMLSerializer().serializeToString(mainSvg);
       
+      // Clean and validate SVG content
+      svgData = svgData
+        .replace(/&nbsp;/g, ' ')
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+        .replace(/xmlns:xlink="http:\/\/www\.w3\.org\/1999\/xlink"/g, '')
+        .trim();
+      
+      // Ensure SVG is properly closed
+      if (!svgData.includes('</svg>')) {
+        svgData += '</svg>';
+      }
+      
       // Add font definitions to ensure text is rendered properly
       if (!svgData.includes('<defs>')) {
-        svgData = svgData.replace('<svg', `<svg><defs><style type="text/css">
-          text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
-          .recharts-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
-          .recharts-cartesian-axis-tick-value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #6B7280; }
-          .recharts-legend-item-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; fill: #374151; }
-        </style></defs><svg`);
+        const svgOpenTag = svgData.match(/<svg[^>]*>/)?.[0] || '<svg>';
+        const restOfSvg = svgData.replace(svgOpenTag, '');
+        
+        svgData = `${svgOpenTag}
+          <defs>
+            <style type="text/css">
+              text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+              .recharts-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+              .recharts-cartesian-axis-tick-value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #6B7280; }
+              .recharts-legend-item-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; fill: #374151; }
+            </style>
+          </defs>
+          ${restOfSvg}`;
       }
       
       console.log(`SVG data sample for ${chartName}:`, svgData.substring(0, 500));
@@ -242,13 +279,28 @@ export class ClientSVGRenderer {
       // Count text elements in SVG for debugging
       const textCount = (svgData.match(/<text/g) || []).length;
       console.log(`${chartName}: Found ${textCount} text elements in SVG`);
+      
+      // Validate SVG before passing to Canvg
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgData, 'image/svg+xml');
+        const errorNode = doc.querySelector('parsererror');
+        if (errorNode) {
+          console.error(`SVG parse error for ${chartName}:`, errorNode.textContent);
+          return null;
+        }
+      } catch (error) {
+        console.error(`SVG validation failed for ${chartName}:`, error);
+        return null;
+      }
 
       const canvgInstance = Canvg.fromString(ctx, svgData, {
         ignoreMouse: true,
         ignoreAnimation: true,
         ignoreDimensions: false,
         ignoreClear: false,
-        enableRedraw: false
+        enableRedraw: false,
+        DOMParser: DOMParser
       });
       await canvgInstance.render();
 
