@@ -133,13 +133,13 @@ export class ClientSVGRenderer {
         bbox: mainSvg.getBoundingClientRect()
       });
       
-      // Use optimized dimensions for much smaller file sizes
+      // Use balanced dimensions for readable text with smaller file sizes
       const enhancedOptions = {
         ...options,
-        width: Math.min(600, mainSvg.clientWidth || 600),  // Cap at 600px width
-        height: Math.min(400, mainSvg.clientHeight || 400), // Cap at 400px height
+        width: Math.min(700, mainSvg.clientWidth || 700),  // Slightly larger for text readability
+        height: Math.min(500, mainSvg.clientHeight || 500), // Slightly larger for text readability
         format: 'png' as const,
-        quality: 65  // Much lower quality for significantly smaller file sizes
+        quality: 75  // Better quality for readable text
       };
       
       return await this.renderSVGElementToPNG(mainSvg, enhancedOptions);
@@ -195,17 +195,17 @@ export class ClientSVGRenderer {
       
       if (!ctx) return null;
 
-      // Use optimized resolution for smaller file sizes
-      const svgWidth = Math.min(600, mainSvg.clientWidth || 600);  // Cap width
-      const svgHeight = Math.min(400, mainSvg.clientHeight || 400); // Cap height
-      canvas.width = svgWidth; // No scaling for smaller files
+      // Use balanced resolution for readable text with smaller file sizes
+      const svgWidth = Math.min(700, mainSvg.clientWidth || 700);  // Larger for text readability
+      const svgHeight = Math.min(500, mainSvg.clientHeight || 500); // Larger for text readability
+      canvas.width = svgWidth;
       canvas.height = svgHeight;
 
       const canvgInstance = Canvg.fromString(ctx, svgData);
       await canvgInstance.render();
 
-      // Use aggressive compression for much smaller file sizes
-      return canvas.toDataURL('image/jpeg', 0.6); // JPEG with 60% quality
+      // Use moderate compression for readable text
+      return canvas.toDataURL('image/png', 0.75); // PNG with 75% quality for readable text
     } catch (error) {
       console.error(`Fallback capture failed for ${chartName}:`, error);
       return null;

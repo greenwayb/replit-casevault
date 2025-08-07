@@ -136,12 +136,12 @@ export default function BankingDocumentTabs({
         await new Promise(resolve => setTimeout(resolve, 1500));
       }
       
-      // Capture the chart with optimized settings for smaller file size
+      // Capture the chart with balanced settings for readable text and reasonable file size
       const result = await ClientSVGRenderer.captureChart(containerRef, chartName, {
-        width: 500,  // Smaller width
-        height: 350, // Smaller height
+        width: 650,  // Larger for text readability
+        height: 450, // Larger for text readability
         scale: 1,    // No scaling to reduce file size
-        quality: 60  // Much lower quality for smaller files
+        quality: 75  // Better quality for readable text
       });
       
       return result;
@@ -271,7 +271,7 @@ export default function BankingDocumentTabs({
       // Add the captured Sankey diagram image
       try {
         console.log('Adding Sankey image to PDF...');
-        doc.addImage(sankeyImage, 'JPEG', 20, 40, 180, 120); // Smaller size, JPEG format
+        doc.addImage(sankeyImage, 'PNG', 20, 40, 220, 140); // Larger for readable text
         console.log('Sankey image added successfully');
       } catch (error) {
         console.error('Error adding Sankey image to PDF:', error);
@@ -305,7 +305,7 @@ export default function BankingDocumentTabs({
       // Add the captured transaction chart image
       try {
         console.log('Adding transaction chart image to PDF...');
-        doc.addImage(chartImage, 'JPEG', 20, 40, 180, 120); // Smaller size, JPEG format
+        doc.addImage(chartImage, 'PNG', 20, 40, 220, 140); // Larger for readable text
         console.log('Transaction chart image added successfully');
       } catch (error) {
         console.error('Error adding chart image to PDF:', error);
@@ -419,7 +419,7 @@ export default function BankingDocumentTabs({
       console.log('Optimizing PDF for smaller file size...');
       
       // Get PDF data with compression and log size information  
-      const pdfData = doc.output('arraybuffer', { compress: true });
+      const pdfData = doc.output('arraybuffer');
       const originalSize = pdfData.byteLength;
       console.log(`Optimized PDF size: ${(originalSize / 1024).toFixed(1)} KB (target: <3MB)`);
       
