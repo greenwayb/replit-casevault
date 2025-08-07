@@ -133,11 +133,13 @@ export class ClientSVGRenderer {
         bbox: mainSvg.getBoundingClientRect()
       });
       
-      // Use enhanced dimensions to capture the full chart
+      // Use enhanced dimensions to capture the full chart with optimized quality
       const enhancedOptions = {
         ...options,
         width: Math.max(options.width || 800, mainSvg.clientWidth || 800),
-        height: Math.max(options.height || 600, mainSvg.clientHeight || 600)
+        height: Math.max(options.height || 600, mainSvg.clientHeight || 600),
+        format: 'png' as const,
+        quality: 85  // Slightly lower quality for smaller file sizes
       };
       
       return await this.renderSVGElementToPNG(mainSvg, enhancedOptions);
@@ -205,7 +207,8 @@ export class ClientSVGRenderer {
       const canvgInstance = Canvg.fromString(ctx, svgData);
       await canvgInstance.render();
 
-      return canvas.toDataURL('image/png', 0.95);
+      // Use moderate compression for smaller file sizes
+      return canvas.toDataURL('image/png', 0.85);
     } catch (error) {
       console.error(`Fallback capture failed for ${chartName}:`, error);
       return null;

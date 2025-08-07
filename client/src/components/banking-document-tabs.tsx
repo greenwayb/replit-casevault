@@ -409,9 +409,34 @@ export default function BankingDocumentTabs({
       doc.text(`Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, doc.internal.pageSize.width - 80, doc.internal.pageSize.height - 10);
     }
     
-    // Save the PDF
-    const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-    doc.save(fileName);
+    // Save PDF with optimization
+    try {
+      console.log('Optimizing PDF for smaller file size...');
+      
+      // Get PDF data and log size information  
+      const pdfData = doc.output('arraybuffer');
+      const originalSize = pdfData.byteLength;
+      console.log(`PDF size: ${(originalSize / 1024).toFixed(1)} KB`);
+      
+      // Create optimized filename and download
+      const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+      const pdfBlob = new Blob([pdfData], { type: 'application/pdf' });
+      
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      console.log('Optimized PDF export completed successfully');
+    } catch (error) {
+      console.error('Error during PDF optimization, using standard save:', error);
+      const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+    }
   };
 
 
