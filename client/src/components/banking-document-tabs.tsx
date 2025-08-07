@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet, AlertTriangle, FileDown } from "lucide-react";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import html2canvas from 'html2canvas';
+import { Canvg } from 'canvg';
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
 import { BankingJsonDisplay } from "./banking-json-display";
@@ -33,6 +33,8 @@ export default function BankingDocumentTabs({
   onFullAnalysis
 }: BankingDocumentTabsProps) {
   const [activeTab, setActiveTab] = useState("pdf");
+  const sankeyRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<HTMLDivElement>(null);
   
   // Check if full analysis is completed
   const isFullAnalysisComplete = document?.fullAnalysisCompleted && xmlData;
@@ -119,16 +121,87 @@ export default function BankingDocumentTabs({
     }
   };
 
-  // Note: Chart capture is not available in current environment
-  // PDF will include informative text instead of chart images
+  // Function to capture SVG chart using Canvg
+  const captureSVGChart = async (containerRef: React.RefObject<HTMLDivElement>, chartName: string): Promise<string | null> => {
+    try {
+      console.log(`Starting ${chartName} capture with Canvg...`);
+      
+      if (!containerRef.current) {
+        console.log(`No ${chartName} container ref available`);
+        return null;
+      }
+
+      // Find SVG element within the container
+      const svgElement = containerRef.current.querySelector('svg');
+      if (!svgElement) {
+        console.log(`No SVG found in ${chartName} container`);
+        return null;
+      }
+
+      console.log(`Found SVG for ${chartName}:`, {
+        width: svgElement.getAttribute('width'),
+        height: svgElement.getAttribute('height'),
+        viewBox: svgElement.getAttribute('viewBox')
+      });
+
+      // Get SVG content as string
+      const svgData = new XMLSerializer().serializeToString(svgElement);
+      console.log(`SVG data length for ${chartName}:`, svgData.length);
+
+      // Create canvas element
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        console.log('Cannot get canvas context');
+        return null;
+      }
+
+      // Set canvas dimensions based on SVG
+      const svgWidth = svgElement.clientWidth || 800;
+      const svgHeight = svgElement.clientHeight || 400;
+      canvas.width = svgWidth;
+      canvas.height = svgHeight;
+
+      console.log(`Canvas dimensions for ${chartName}:`, { width: svgWidth, height: svgHeight });
+
+      // Use Canvg to render SVG to canvas
+      const canvgInstance = Canvg.fromString(ctx, svgData);
+      await canvgInstance.render();
+
+      const imageData = canvas.toDataURL('image/png', 0.9);
+      console.log(`${chartName} image captured successfully, size:`, imageData.length);
+      return imageData;
+    } catch (error) {
+      console.error(`Error capturing ${chartName}:`, error);
+      return null;
+    }
+  };
 
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
-    console.log('Starting PDF export without chart capture...');
+    console.log('Starting PDF export with Canvg chart capture...');
     
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
+    
+    // Attempt to capture charts using Canvg
+    let sankeyImage: string | null = null;
+    let chartImage: string | null = null;
+    
+    try {
+      console.log('Attempting Sankey capture...');
+      sankeyImage = await captureSVGChart(sankeyRef, 'Sankey');
+    } catch (error) {
+      console.log('Sankey capture failed:', error);
+    }
+    
+    try {
+      console.log('Attempting chart capture...');
+      chartImage = await captureSVGChart(chartRef, 'Chart');
+    } catch (error) {
+      console.log('Chart capture failed:', error);
+    }
     
     // Page 1: Banking Information and Summary (Portrait)
     addWatermark(doc);
@@ -210,17 +283,31 @@ export default function BankingDocumentTabs({
     doc.setFont('helvetica', 'bold');
     doc.text('Transaction Flow Analysis (Sankey Diagram)', 20, 20);
     
-    // Add detailed explanation instead of image
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.text('Transaction Flow Analysis (Sankey Diagram)', 20, 40);
-    doc.setFontSize(10);
-    doc.text('The Sankey diagram visualizes the flow of money in and out of the account, showing:', 20, 55);
-    doc.text('• Money coming into the account (inflows) from various sources', 25, 70);
-    doc.text('• Money going out of the account (outflows) to different categories', 25, 80);
-    doc.text('• The relative magnitude of each flow represented by connection thickness', 25, 90);
-    doc.text('• Net position showing overall account activity', 25, 100);
-    doc.text('Please view the Sankey tab in the application for the interactive visualization.', 20, 115);
+    if (sankeyImage) {
+      // Add the captured Sankey diagram image
+      try {
+        console.log('Adding Sankey image to PDF...');
+        doc.addImage(sankeyImage, 'PNG', 20, 40, 250, 150);
+        console.log('Sankey image added successfully');
+      } catch (error) {
+        console.error('Error adding Sankey image to PDF:', error);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.text('Sankey diagram could not be rendered. Please view the Sankey tab for visualization.', 20, 40);
+      }
+    } else {
+      // Add detailed explanation instead of image
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.text('Transaction Flow Analysis (Sankey Diagram)', 20, 40);
+      doc.setFontSize(10);
+      doc.text('The Sankey diagram visualizes the flow of money in and out of the account, showing:', 20, 55);
+      doc.text('• Money coming into the account (inflows) from various sources', 25, 70);
+      doc.text('• Money going out of the account (outflows) to different categories', 25, 80);
+      doc.text('• The relative magnitude of each flow represented by connection thickness', 25, 90);
+      doc.text('• Net position showing overall account activity', 25, 100);
+      doc.text('Please view the Sankey tab in the application for the interactive visualization.', 20, 115);
+    }
 
     // Page 3: Transaction Chart (Landscape)
     doc.addPage('a4', 'landscape');
@@ -230,18 +317,32 @@ export default function BankingDocumentTabs({
     doc.setFont('helvetica', 'bold');
     doc.text('Transaction Chart Analysis', 20, 20);
     
-    // Add detailed explanation instead of image
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.text('Transaction Chart Analysis', 20, 40);
-    doc.setFontSize(10);
-    doc.text('The transaction chart provides comprehensive account activity visualization showing:', 20, 55);
-    doc.text('• Daily account balance trends over the statement period', 25, 70);
-    doc.text('• Credit transactions (money in) as positive bars', 25, 80);
-    doc.text('• Debit transactions (money out) as negative bars', 25, 90);
-    doc.text('• Key financial events such as large deposits or withdrawals', 25, 100);
-    doc.text('• Account balance line showing end-of-day positions', 25, 110);
-    doc.text('Please view the Chart tab in the application for the interactive visualization.', 20, 125);
+    if (chartImage) {
+      // Add the captured transaction chart image
+      try {
+        console.log('Adding transaction chart image to PDF...');
+        doc.addImage(chartImage, 'PNG', 20, 40, 250, 150);
+        console.log('Transaction chart image added successfully');
+      } catch (error) {
+        console.error('Error adding chart image to PDF:', error);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.text('Transaction chart could not be rendered. Please view the Chart tab for visualization.', 20, 40);
+      }
+    } else {
+      // Add detailed explanation instead of image
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.text('Transaction Chart Analysis', 20, 40);
+      doc.setFontSize(10);
+      doc.text('The transaction chart provides comprehensive account activity visualization showing:', 20, 55);
+      doc.text('• Daily account balance trends over the statement period', 25, 70);
+      doc.text('• Credit transactions (money in) as positive bars', 25, 80);
+      doc.text('• Debit transactions (money out) as negative bars', 25, 90);
+      doc.text('• Key financial events such as large deposits or withdrawals', 25, 100);
+      doc.text('• Account balance line showing end-of-day positions', 25, 110);
+      doc.text('Please view the Chart tab in the application for the interactive visualization.', 20, 125);
+    }
 
     // Page 4: Queried Transactions (Portrait)
     doc.addPage('a4', 'portrait');
@@ -448,11 +549,13 @@ export default function BankingDocumentTabs({
 
         <TabsContent value="sankey" className="space-y-4">
           {isFullAnalysisComplete ? (
-            <BankingSankeyDiagram 
-              xmlData={xmlData || ''}
-              accountName={accountName || 'Bank Account'}
-              dateRange={`${document?.transactionDateFrom || ''} - ${document?.transactionDateTo || ''}`}
-            />
+            <div ref={sankeyRef}>
+              <BankingSankeyDiagram 
+                xmlData={xmlData || ''}
+                accountName={accountName || 'Bank Account'}
+                dateRange={`${document?.transactionDateFrom || ''} - ${document?.transactionDateTo || ''}`}
+              />
+            </div>
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
@@ -483,10 +586,12 @@ export default function BankingDocumentTabs({
 
         <TabsContent value="chart" className="space-y-4">
           {isFullAnalysisComplete ? (
-            <BankingTransactionChart 
-              xmlData={xmlData || ''}
-              accountName={accountName || 'Bank Account'}
-            />
+            <div ref={chartRef}>
+              <BankingTransactionChart 
+                xmlData={xmlData || ''}
+                accountName={accountName || 'Bank Account'}
+              />
+            </div>
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
