@@ -13,6 +13,7 @@ import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
 import { GoogleDriveService } from "./googleDriveService";
 import { DisclosurePdfService } from "./disclosurePdfService";
+import { SVGRenderer } from "./svgRenderer";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -1010,6 +1011,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error downloading document:", error);
       res.status(500).json({ message: "Failed to download document" });
+    }
+  });
+
+  // Server-side SVG to PNG rendering endpoint
+  app.post('/api/render/svg-to-png', isAuthenticated, async (req: any, res) => {
+    try {
+      const { svgContent, chartData, chartType, width = 800, height = 600, scale = 2 } = req.body;
+
+      let pngBuffer: Buffer;
+
+      if (svgContent) {
+        // Render raw SVG content
+        pngBuffer = await SVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
+      } else if (chartData && chartType) {
+        // Render chart data using Recharts
+        pngBuffer = await SVGRenderer.renderChartToPNG(chartData, chartType, { width, height, scale });
+      } else {
+        return res.status(400).json({ message: "Either svgContent or chartData/chartType is required" });
+      }
+
+      // Optimize the PNG
+      const optimizedPng = await SVGRenderer.optimizePNG(pngBuffer, { quality: 90 });
+
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Length', optimizedPng.length);
+      res.send(optimizedPng);
+    } catch (error) {
+      console.error("Error rendering SVG to PNG:", error);
+      res.status(500).json({ message: "Failed to render SVG" });
     }
   });
 

@@ -64,6 +64,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Sankey Visualization**: Comprehensive banking flow diagram with summary statistics, top inflows/outflows breakdown, color-coded visual design, and detailed analytics matching user style preferences.
 - **CSV Export Removal**: CSV export functionality completely removed per user request, focusing exclusively on XML-based analysis and visualization.
 - **Multi-PDF Transaction Analysis**: Banking confirmation modal and document tabs now display total transaction count, estimated PDF count for combined statements, earliest/latest transaction dates with automatic population of date fields from detected transaction range.
+- **Enhanced SVG Rendering**: Implemented multiple approaches for high-quality SVG-to-PDF conversion: server-side Puppeteer rendering for superior quality, client-side fallback with Canvg, and vector SVG preservation for smallest file sizes. Automatic fallback chain ensures reliable chart capture for banking analysis PDFs.
 
 # External Dependencies
 
@@ -94,3 +95,6 @@ Preferred communication style: Simple, everyday language.
 - **Multer**: Multipart form data handling
 - **File System**: Node.js fs module for local file operations
 - **OpenAI GPT-4o**: For AI-powered banking document analysis.
+- **Puppeteer**: Headless browser for server-side SVG-to-PNG rendering with high quality
+- **Sharp**: Image optimization and format conversion for generated chart images
+- **Canvg**: Client-side SVG-to-canvas fallback rendering for offline scenarios

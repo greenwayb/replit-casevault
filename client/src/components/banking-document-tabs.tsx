@@ -9,6 +9,7 @@ import 'jspdf-autotable';
 import { Canvg } from 'canvg';
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
+import { ClientSVGRenderer } from "@/lib/svgRenderer";
 import { BankingJsonDisplay } from "./banking-json-display";
 import { BankingTransactionChart } from "./banking-transaction-chart";
 import { BankingTransactionsTable } from "./banking-transactions-table";
@@ -121,66 +122,20 @@ export default function BankingDocumentTabs({
     }
   };
 
-  // Function to capture SVG chart using Canvg
+  // Enhanced function to capture SVG chart with server-side rendering
   const captureSVGChart = async (containerRef: React.RefObject<HTMLDivElement>, chartName: string): Promise<string | null> => {
-    try {
-      console.log(`Starting ${chartName} capture with Canvg...`);
-      
-      if (!containerRef.current) {
-        console.log(`No ${chartName} container ref available`);
-        return null;
-      }
-
-      // Find SVG element within the container
-      const svgElement = containerRef.current.querySelector('svg');
-      if (!svgElement) {
-        console.log(`No SVG found in ${chartName} container`);
-        return null;
-      }
-
-      console.log(`Found SVG for ${chartName}:`, {
-        width: svgElement.getAttribute('width'),
-        height: svgElement.getAttribute('height'),
-        viewBox: svgElement.getAttribute('viewBox')
-      });
-
-      // Get SVG content as string
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-      console.log(`SVG data length for ${chartName}:`, svgData.length);
-
-      // Create canvas element
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.log('Cannot get canvas context');
-        return null;
-      }
-
-      // Set canvas dimensions based on SVG
-      const svgWidth = svgElement.clientWidth || 800;
-      const svgHeight = svgElement.clientHeight || 400;
-      canvas.width = svgWidth;
-      canvas.height = svgHeight;
-
-      console.log(`Canvas dimensions for ${chartName}:`, { width: svgWidth, height: svgHeight });
-
-      // Use Canvg to render SVG to canvas
-      const canvgInstance = Canvg.fromString(ctx, svgData);
-      await canvgInstance.render();
-
-      const imageData = canvas.toDataURL('image/png', 0.9);
-      console.log(`${chartName} image captured successfully, size:`, imageData.length);
-      return imageData;
-    } catch (error) {
-      console.error(`Error capturing ${chartName}:`, error);
-      return null;
-    }
+    return await ClientSVGRenderer.captureChart(containerRef, chartName, {
+      width: 800,
+      height: 600,
+      scale: 2, // High resolution for PDF
+      quality: 95
+    });
   };
 
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
-    console.log('Starting PDF export with Canvg chart capture...');
+    console.log('Starting PDF export with enhanced server-side chart capture...');
     
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
