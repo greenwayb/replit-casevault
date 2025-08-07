@@ -99,32 +99,48 @@ export class ClientSVGRenderer {
       // Wait a moment for chart to fully render
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Find SVG element within the container
-      const svgElement = containerRef.current.querySelector('svg');
-      if (!svgElement) {
-        console.log(`No SVG found in ${chartName} container, checking for nested SVGs...`);
-        
-        // Check for nested containers or Recharts components
-        const allSvgs = containerRef.current.querySelectorAll('svg');
-        console.log(`Found ${allSvgs.length} SVG elements in container`);
-        
-        if (allSvgs.length === 0) {
-          console.log(`No SVGs found in ${chartName} container at all`);
-          return null;
-        }
-        
-        // Use the first/largest SVG found
-        const targetSvg = allSvgs[0] as SVGElement;
-        return await this.renderSVGElementToPNG(targetSvg, options);
+      // Look for ResponsiveContainer or Recharts chart components
+      const chartContainer = containerRef.current.querySelector('[data-testid="transaction-chart"]') || 
+                           containerRef.current.querySelector('.recharts-wrapper') ||
+                           containerRef.current;
+
+      // Find all SVG elements within the chart container
+      const svgElements = chartContainer.querySelectorAll('svg');
+      console.log(`Found ${svgElements.length} SVG elements in ${chartName} container`);
+      
+      if (svgElements.length === 0) {
+        console.log(`No SVGs found in ${chartName} container at all`);
+        return null;
       }
 
-      console.log(`Found SVG for ${chartName}, dimensions:`, {
-        width: svgElement.clientWidth,
-        height: svgElement.clientHeight,
-        viewBox: svgElement.getAttribute('viewBox')
+      // Find the largest/main SVG (usually the chart itself)
+      let mainSvg = svgElements[0] as SVGElement;
+      let maxArea = 0;
+      
+      svgElements.forEach(svg => {
+        const rect = (svg as SVGElement).getBoundingClientRect();
+        const area = rect.width * rect.height;
+        if (area > maxArea) {
+          maxArea = area;
+          mainSvg = svg as SVGElement;
+        }
+      });
+
+      console.log(`Using main SVG for ${chartName}, dimensions:`, {
+        width: mainSvg.clientWidth,
+        height: mainSvg.clientHeight,
+        viewBox: mainSvg.getAttribute('viewBox'),
+        bbox: mainSvg.getBoundingClientRect()
       });
       
-      return await this.renderSVGElementToPNG(svgElement, options);
+      // Use enhanced dimensions to capture the full chart
+      const enhancedOptions = {
+        ...options,
+        width: Math.max(options.width || 800, mainSvg.clientWidth || 800),
+        height: Math.max(options.height || 600, mainSvg.clientHeight || 600)
+      };
+      
+      return await this.renderSVGElementToPNG(mainSvg, enhancedOptions);
 
     } catch (error) {
       console.warn(`Server-side rendering failed for ${chartName}, falling back to Canvg:`, error);
@@ -134,7 +150,7 @@ export class ClientSVGRenderer {
     }
   }
 
-  // Fallback Canvg method (existing implementation)
+  // Fallback Canvg method with enhanced chart element detection
   private static async fallbackCanvgCapture(
     containerRef: React.RefObject<HTMLDivElement>,
     chartName: string
@@ -144,24 +160,52 @@ export class ClientSVGRenderer {
       
       if (!containerRef.current) return null;
       
-      const svgElement = containerRef.current.querySelector('svg');
-      if (!svgElement) return null;
+      // Look for ResponsiveContainer or main chart SVG
+      const chartContainer = containerRef.current.querySelector('[data-testid="transaction-chart"]') || 
+                           containerRef.current.querySelector('.recharts-wrapper') ||
+                           containerRef.current;
+      
+      const svgElements = chartContainer.querySelectorAll('svg');
+      if (svgElements.length === 0) return null;
 
-      const svgData = new XMLSerializer().serializeToString(svgElement);
+      // Find the largest SVG (main chart)
+      let mainSvg = svgElements[0] as SVGElement;
+      let maxArea = 0;
+      
+      svgElements.forEach(svg => {
+        const rect = (svg as SVGElement).getBoundingClientRect();
+        const area = rect.width * rect.height;
+        if (area > maxArea) {
+          maxArea = area;
+          mainSvg = svg as SVGElement;
+        }
+      });
+
+      console.log(`Fallback: Found main SVG for ${chartName}:`, {
+        width: mainSvg.clientWidth,
+        height: mainSvg.clientHeight,
+        elements: mainSvg.children.length
+      });
+
+      const svgData = new XMLSerializer().serializeToString(mainSvg);
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
       if (!ctx) return null;
 
-      const svgWidth = svgElement.clientWidth || 800;
-      const svgHeight = svgElement.clientHeight || 400;
-      canvas.width = svgWidth;
-      canvas.height = svgHeight;
+      // Use higher resolution for better quality
+      const svgWidth = mainSvg.clientWidth || 800;
+      const svgHeight = mainSvg.clientHeight || 600;
+      canvas.width = svgWidth * 2; // 2x scale for crisp rendering
+      canvas.height = svgHeight * 2;
+      
+      // Scale the context to match
+      ctx.scale(2, 2);
 
       const canvgInstance = Canvg.fromString(ctx, svgData);
       await canvgInstance.render();
 
-      return canvas.toDataURL('image/png', 0.9);
+      return canvas.toDataURL('image/png', 0.95);
     } catch (error) {
       console.error(`Fallback capture failed for ${chartName}:`, error);
       return null;
