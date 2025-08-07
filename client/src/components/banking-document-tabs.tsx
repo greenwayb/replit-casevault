@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet, AlertTriangle, FileDown } from "lucide-react";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
 import { BankingJsonDisplay } from "./banking-json-display";
@@ -123,40 +124,37 @@ export default function BankingDocumentTabs({
   // Function to capture Sankey diagram as image
   const captureSankeyDiagram = async (): Promise<string | null> => {
     try {
-      // Find the Sankey diagram SVG element - check multiple possible selectors
-      const sankeyElement = document.querySelector('[data-testid="sankey-diagram"] svg') || 
-                           document.querySelector('.recharts-wrapper svg') ||
-                           document.querySelector('.sankey-container svg') ||
-                           document.querySelector('.recharts-responsive-container svg') ||
-                           document.querySelector('svg[role="presentation"]');
+      console.log('Starting Sankey diagram capture...');
       
-      if (!sankeyElement) {
-        console.log('No Sankey diagram SVG found');
+      // Wait a moment for charts to fully render
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Find the Sankey diagram container - try multiple selectors
+      const sankeyContainer = document.querySelector('[data-testid="sankey-diagram"]') ||
+                             document.querySelector('.recharts-responsive-container') ||
+                             document.querySelector('.bg-white.rounded-lg.shadow-lg');
+      
+      if (!sankeyContainer) {
+        console.log('No Sankey diagram container found');
         return null;
       }
 
-      // Create canvas and capture the SVG
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
+      console.log('Found Sankey container:', sankeyContainer);
 
-      const svgData = new XMLSerializer().serializeToString(sankeyElement as SVGElement);
-      const img = new Image();
-      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-      const url = URL.createObjectURL(svgBlob);
-
-      return new Promise((resolve) => {
-        img.onload = () => {
-          canvas.width = img.width || 800;
-          canvas.height = img.height || 600;
-          ctx.drawImage(img, 0, 0);
-          const imageData = canvas.toDataURL('image/png');
-          URL.revokeObjectURL(url);
-          resolve(imageData);
-        };
-        img.onerror = () => resolve(null);
-        img.src = url;
+      // Use html2canvas to capture the entire container
+      const canvas = await html2canvas(sankeyContainer as HTMLElement, {
+        backgroundColor: '#ffffff',
+        scale: 2, // Higher quality
+        useCORS: true,
+        allowTaint: true,
+        logging: true,
+        width: 1200,
+        height: 600
       });
+
+      const imageData = canvas.toDataURL('image/png', 0.95);
+      console.log('Sankey image captured successfully, size:', imageData.length);
+      return imageData;
     } catch (error) {
       console.error('Error capturing Sankey diagram:', error);
       return null;
@@ -166,43 +164,40 @@ export default function BankingDocumentTabs({
   // Function to capture transaction chart as image
   const captureTransactionChart = async (): Promise<string | null> => {
     try {
-      // Find the transaction chart SVG element - check multiple possible selectors
-      const chartElement = document.querySelector('[data-testid="transaction-chart"] svg') || 
-                          document.querySelector('.chart-container svg') ||
-                          // Look for recharts SVGs that are not the Sankey diagram
-                          Array.from(document.querySelectorAll('.recharts-responsive-container svg')).find((svg, index) => index > 0) ||
-                          Array.from(document.querySelectorAll('svg')).find(svg => 
-                            svg.querySelector('.recharts-bar') || 
-                            svg.querySelector('.recharts-line') ||
-                            svg.querySelector('.recharts-area')
-                          );
+      console.log('Starting transaction chart capture...');
       
-      if (!chartElement) {
-        console.log('No transaction chart SVG found');
+      // Wait a moment for charts to fully render
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Find the transaction chart container
+      const chartContainer = document.querySelector('[data-testid="transaction-chart"]') ||
+                            document.querySelectorAll('.recharts-responsive-container')[1] ||
+                            Array.from(document.querySelectorAll('.card')).find(card => 
+                              card.textContent?.includes('Main Chart') || 
+                              card.querySelector('.recharts-responsive-container')
+                            );
+      
+      if (!chartContainer) {
+        console.log('No transaction chart container found');
         return null;
       }
 
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
+      console.log('Found chart container:', chartContainer);
 
-      const svgData = new XMLSerializer().serializeToString(chartElement as SVGElement);
-      const img = new Image();
-      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-      const url = URL.createObjectURL(svgBlob);
-
-      return new Promise((resolve) => {
-        img.onload = () => {
-          canvas.width = img.width || 800;
-          canvas.height = img.height || 600;
-          ctx.drawImage(img, 0, 0);
-          const imageData = canvas.toDataURL('image/png');
-          URL.revokeObjectURL(url);
-          resolve(imageData);
-        };
-        img.onerror = () => resolve(null);
-        img.src = url;
+      // Use html2canvas to capture the entire container
+      const canvas = await html2canvas(chartContainer as HTMLElement, {
+        backgroundColor: '#ffffff',
+        scale: 2, // Higher quality
+        useCORS: true,
+        allowTaint: true,
+        logging: true,
+        width: 1200,
+        height: 600
       });
+
+      const imageData = canvas.toDataURL('image/png', 0.95);
+      console.log('Transaction chart image captured successfully, size:', imageData.length);
+      return imageData;
     } catch (error) {
       console.error('Error capturing transaction chart:', error);
       return null;
@@ -212,12 +207,18 @@ export default function BankingDocumentTabs({
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
+    console.log('Starting PDF export...');
+    
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
     
     // Capture chart images before creating PDF
+    console.log('Capturing chart images...');
     const sankeyImage = await captureSankeyDiagram();
     const chartImage = await captureTransactionChart();
+    
+    console.log('Sankey image captured:', !!sankeyImage);
+    console.log('Chart image captured:', !!chartImage);
     
     // Page 1: Banking Information and Summary (Portrait)
     addWatermark(doc);
@@ -302,7 +303,9 @@ export default function BankingDocumentTabs({
     if (sankeyImage) {
       // Add the captured Sankey diagram image
       try {
+        console.log('Adding Sankey image to PDF...');
         doc.addImage(sankeyImage, 'PNG', 20, 40, 250, 150);
+        console.log('Sankey image added successfully');
       } catch (error) {
         console.error('Error adding Sankey image to PDF:', error);
         doc.setFont('helvetica', 'normal');
@@ -310,6 +313,7 @@ export default function BankingDocumentTabs({
         doc.text('Sankey diagram could not be rendered. Please view the Sankey tab for visualization.', 20, 40);
       }
     } else {
+      console.log('No Sankey image available, adding fallback text');
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(12);
       doc.text('Sankey diagram visualization shows the flow of money in and out of the account.', 20, 40);
@@ -327,7 +331,9 @@ export default function BankingDocumentTabs({
     if (chartImage) {
       // Add the captured transaction chart image
       try {
+        console.log('Adding transaction chart image to PDF...');
         doc.addImage(chartImage, 'PNG', 20, 40, 250, 150);
+        console.log('Transaction chart image added successfully');
       } catch (error) {
         console.error('Error adding chart image to PDF:', error);
         doc.setFont('helvetica', 'normal');
@@ -335,6 +341,7 @@ export default function BankingDocumentTabs({
         doc.text('Transaction chart could not be rendered. Please view the Chart tab for visualization.', 20, 40);
       }
     } else {
+      console.log('No chart image available, adding fallback text');
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(12);
       doc.text('Transaction chart shows patterns, balances over time, and spending categories.', 20, 40);
