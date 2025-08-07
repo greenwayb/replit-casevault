@@ -9,7 +9,7 @@ import 'jspdf-autotable';
 import { Canvg } from 'canvg';
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
-
+import { ClientSVGRenderer } from "@/lib/svgRenderer";
 import { BankingJsonDisplay } from "./banking-json-display";
 import { BankingTransactionChart } from "./banking-transaction-chart";
 import { BankingTransactionsTable } from "./banking-transactions-table";
@@ -122,86 +122,20 @@ export default function BankingDocumentTabs({
     }
   };
 
-  // Function to capture SVG chart using Canvg (the working approach)
+  // Enhanced function to capture SVG chart with server-side rendering (the working approach)
   const captureSVGChart = async (containerRef: React.RefObject<HTMLDivElement>, chartName: string): Promise<string | null> => {
-    try {
-      console.log(`Starting ${chartName} capture with Canvg...`);
-      
-      if (!containerRef.current) {
-        console.log(`No ${chartName} container ref available`);
-        return null;
-      }
-
-      // Wait for chart to fully render
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Find SVG element within the container
-      const svgElement = containerRef.current.querySelector('svg');
-      if (!svgElement) {
-        console.log(`No SVG found in ${chartName} container`);
-        // Check for multiple SVGs in case of nested components
-        const allSvgs = containerRef.current.querySelectorAll('svg');
-        console.log(`Found ${allSvgs.length} total SVG elements`);
-        if (allSvgs.length === 0) return null;
-        // Use the first SVG if multiple found
-        const targetSvg = allSvgs[0] as SVGElement;
-        return await processSVGElement(targetSvg, chartName);
-      }
-
-      return await processSVGElement(svgElement, chartName);
-    } catch (error) {
-      console.error(`Error capturing ${chartName}:`, error);
-      return null;
-    }
-  };
-
-  const processSVGElement = async (svgElement: SVGElement, chartName: string): Promise<string | null> => {
-    try {
-      console.log(`Found SVG for ${chartName}:`, {
-        width: svgElement.getAttribute('width'),
-        height: svgElement.getAttribute('height'),
-        viewBox: svgElement.getAttribute('viewBox'),
-        clientWidth: svgElement.clientWidth,
-        clientHeight: svgElement.clientHeight
-      });
-
-      // Get SVG content as string
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-      console.log(`SVG data length for ${chartName}:`, svgData.length);
-
-      // Create canvas element
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.log('Cannot get canvas context');
-        return null;
-      }
-
-      // Set canvas dimensions based on SVG
-      const svgWidth = svgElement.clientWidth || 800;
-      const svgHeight = svgElement.clientHeight || 400;
-      canvas.width = svgWidth * 2; // Higher resolution
-      canvas.height = svgHeight * 2;
-
-      console.log(`Canvas dimensions for ${chartName}:`, { width: canvas.width, height: canvas.height });
-
-      // Use Canvg to render SVG to canvas
-      const canvgInstance = Canvg.fromString(ctx, svgData);
-      await canvgInstance.render();
-
-      const imageData = canvas.toDataURL('image/png', 0.95);
-      console.log(`${chartName} image captured successfully, size:`, imageData.length);
-      return imageData;
-    } catch (error) {
-      console.error(`Error processing SVG for ${chartName}:`, error);
-      return null;
-    }
+    return await ClientSVGRenderer.captureChart(containerRef, chartName, {
+      width: 800,
+      height: 600,
+      scale: 2, // High resolution for PDF
+      quality: 95
+    });
   };
 
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
-    console.log('Starting PDF export with Canvg chart capture...');
+    console.log('Starting PDF export with enhanced server-side chart capture...');
     
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
