@@ -189,7 +189,21 @@ export class ClientSVGRenderer {
         elements: mainSvg.children.length
       });
 
-      const svgData = new XMLSerializer().serializeToString(mainSvg);
+      // Get the SVG data and ensure text elements are preserved
+      let svgData = new XMLSerializer().serializeToString(mainSvg);
+      
+      // Add font definitions to ensure text is rendered properly
+      if (!svgData.includes('<defs>')) {
+        svgData = svgData.replace('<svg', `<svg><defs><style type="text/css">
+          text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+          .recharts-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+          .recharts-cartesian-axis-tick-value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #6B7280; }
+          .recharts-legend-item-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; fill: #374151; }
+        </style></defs><svg`);
+      }
+      
+      console.log(`SVG data sample for ${chartName}:`, svgData.substring(0, 500));
+      
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
@@ -203,8 +217,29 @@ export class ClientSVGRenderer {
       
       // Scale context for high-resolution rendering
       ctx.scale(2, 2);
+      
+      // Set canvas text rendering properties for better quality
+      ctx.textAlign = 'start';
+      ctx.textBaseline = 'alphabetic';
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
 
-      const canvgInstance = Canvg.fromString(ctx, svgData);
+      // Count text elements in SVG for debugging
+      const textCount = (svgData.match(/<text/g) || []).length;
+      console.log(`${chartName}: Found ${textCount} text elements in SVG`);
+
+      const canvgInstance = Canvg.fromString(ctx, svgData, {
+        ignoreMouse: true,
+        ignoreAnimation: true,
+        ignoreDimensions: false,
+        ignoreClear: false,
+        enableRedraw: false,
+        createImage: (src: string) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          return img;
+        }
+      });
       await canvgInstance.render();
 
       // Return high-quality PNG for readable text (working version)
