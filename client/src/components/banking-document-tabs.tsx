@@ -136,12 +136,12 @@ export default function BankingDocumentTabs({
         await new Promise(resolve => setTimeout(resolve, 1500));
       }
       
-      // Capture the chart with balanced settings for readable text and reasonable file size
+      // Capture the chart with high resolution for text readability
       const result = await ClientSVGRenderer.captureChart(containerRef, chartName, {
-        width: 650,  // Larger for text readability
-        height: 450, // Larger for text readability
-        scale: 1,    // No scaling to reduce file size
-        quality: 75  // Better quality for readable text
+        width: 1000,  // High resolution for text
+        height: 700,  // High resolution for text
+        scale: 1.5,   // Scale up for crisp text
+        quality: 90   // High quality for readable text
       });
       
       return result;
@@ -271,7 +271,26 @@ export default function BankingDocumentTabs({
       // Add the captured Sankey diagram image
       try {
         console.log('Adding Sankey image to PDF...');
-        doc.addImage(sankeyImage, 'PNG', 20, 40, 220, 140); // Larger for readable text
+        // Compress the image before adding to PDF to reduce file size
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        await new Promise((resolve, reject) => {
+          img.onload = () => {
+            // Set canvas to desired PDF size
+            canvas.width = 1000;
+            canvas.height = 600;
+            
+            // Draw and compress the image
+            ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const compressedImage = canvas.toDataURL('image/jpeg', 0.8);
+            doc.addImage(compressedImage, 'JPEG', 20, 40, 240, 150);
+            resolve(null);
+          };
+          img.onerror = reject;
+          img.src = sankeyImage;
+        });
         console.log('Sankey image added successfully');
       } catch (error) {
         console.error('Error adding Sankey image to PDF:', error);
@@ -305,7 +324,26 @@ export default function BankingDocumentTabs({
       // Add the captured transaction chart image
       try {
         console.log('Adding transaction chart image to PDF...');
-        doc.addImage(chartImage, 'PNG', 20, 40, 220, 140); // Larger for readable text
+        // Compress the chart image before adding to PDF
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        await new Promise((resolve, reject) => {
+          img.onload = () => {
+            // Set canvas to desired PDF size
+            canvas.width = 1000;
+            canvas.height = 600;
+            
+            // Draw and compress the image
+            ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const compressedImage = canvas.toDataURL('image/jpeg', 0.8);
+            doc.addImage(compressedImage, 'JPEG', 20, 40, 240, 150);
+            resolve(null);
+          };
+          img.onerror = reject;
+          img.src = chartImage;
+        });
         console.log('Transaction chart image added successfully');
       } catch (error) {
         console.error('Error adding chart image to PDF:', error);

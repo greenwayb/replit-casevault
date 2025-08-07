@@ -133,13 +133,13 @@ export class ClientSVGRenderer {
         bbox: mainSvg.getBoundingClientRect()
       });
       
-      // Use balanced dimensions for readable text with smaller file sizes
+      // Use high resolution for text readability, then compress
       const enhancedOptions = {
         ...options,
-        width: Math.min(700, mainSvg.clientWidth || 700),  // Slightly larger for text readability
-        height: Math.min(500, mainSvg.clientHeight || 500), // Slightly larger for text readability
+        width: Math.max(1000, mainSvg.clientWidth || 800),  // High resolution for text
+        height: Math.max(700, mainSvg.clientHeight || 600), // High resolution for text
         format: 'png' as const,
-        quality: 75  // Better quality for readable text
+        quality: 90  // High quality for text readability
       };
       
       return await this.renderSVGElementToPNG(mainSvg, enhancedOptions);
@@ -195,17 +195,20 @@ export class ClientSVGRenderer {
       
       if (!ctx) return null;
 
-      // Use balanced resolution for readable text with smaller file sizes
-      const svgWidth = Math.min(700, mainSvg.clientWidth || 700);  // Larger for text readability
-      const svgHeight = Math.min(500, mainSvg.clientHeight || 500); // Larger for text readability
-      canvas.width = svgWidth;
-      canvas.height = svgHeight;
+      // Use high resolution for text readability with 2x scaling
+      const svgWidth = Math.max(1000, mainSvg.clientWidth || 800);
+      const svgHeight = Math.max(700, mainSvg.clientHeight || 600);
+      canvas.width = svgWidth * 1.5; // Scale up for crisp text
+      canvas.height = svgHeight * 1.5;
+      
+      // Scale context for high-resolution rendering
+      ctx.scale(1.5, 1.5);
 
       const canvgInstance = Canvg.fromString(ctx, svgData);
       await canvgInstance.render();
 
-      // Use moderate compression for readable text
-      return canvas.toDataURL('image/png', 0.75); // PNG with 75% quality for readable text
+      // Use high quality for readable text
+      return canvas.toDataURL('image/png', 0.9); // High quality PNG for text readability
     } catch (error) {
       console.error(`Fallback capture failed for ${chartName}:`, error);
       return null;
