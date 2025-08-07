@@ -130,42 +130,76 @@ export default function BankingDocumentTabs({
 
       console.log('Starting Sankey diagram capture...');
       
-      // Wait for charts to render
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer for charts to render
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Find the Sankey diagram container with simple selectors
+      // Debug: Log all available elements
+      const allContainers = document.querySelectorAll('.recharts-responsive-container');
+      const allTestIds = document.querySelectorAll('[data-testid]');
+      const allSvgs = document.querySelectorAll('svg');
+      
+      console.log('Available elements for capture:');
+      console.log('- Recharts containers:', allContainers.length);
+      console.log('- Test ID elements:', allTestIds.length, Array.from(allTestIds).map(el => el.getAttribute('data-testid')));
+      console.log('- SVG elements:', allSvgs.length);
+      
+      // Find the Sankey diagram container with extensive debugging
       let sankeyContainer: HTMLElement | null = null;
       
       // Try data-testid first
       sankeyContainer = document.querySelector('[data-testid="sankey-diagram"]') as HTMLElement;
+      console.log('Found by data-testid:', !!sankeyContainer);
+      
+      if (!sankeyContainer) {
+        // Try the parent container of the Sankey diagram
+        sankeyContainer = document.querySelector('.bg-white.rounded-lg.shadow-lg') as HTMLElement;
+        console.log('Found by styling classes:', !!sankeyContainer);
+      }
       
       if (!sankeyContainer) {
         // Try recharts containers
         const containers = document.querySelectorAll('.recharts-responsive-container');
         if (containers.length > 0) {
           sankeyContainer = containers[0] as HTMLElement;
-          console.log('Using first recharts container');
+          console.log('Using first recharts container:', !!sankeyContainer);
         }
       }
       
       if (!sankeyContainer) {
-        console.log('No Sankey container found');
+        // Try finding any SVG element as last resort
+        const svgs = document.querySelectorAll('svg');
+        if (svgs.length > 0) {
+          sankeyContainer = svgs[0].parentElement as HTMLElement;
+          console.log('Using SVG parent element:', !!sankeyContainer);
+        }
+      }
+      
+      if (!sankeyContainer) {
+        console.log('No Sankey container found after all attempts');
         return null;
       }
 
-      console.log('Found Sankey container, capturing...');
-
-      // Use html2canvas to capture
-      const canvas = await html2canvas(sankeyContainer, {
-        backgroundColor: '#ffffff',
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
-        logging: false
+      console.log('Found Sankey container:', sankeyContainer.tagName, sankeyContainer.className);
+      console.log('Container dimensions:', {
+        width: sankeyContainer.offsetWidth,
+        height: sankeyContainer.offsetHeight,
+        visible: sankeyContainer.offsetParent !== null
       });
 
-      const imageData = canvas.toDataURL('image/png', 0.8);
-      console.log('Sankey image captured, size:', imageData.length);
+      // Use html2canvas to capture with better settings
+      const canvas = await html2canvas(sankeyContainer, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: true,
+        removeContainer: false,
+        width: sankeyContainer.offsetWidth,
+        height: sankeyContainer.offsetHeight
+      });
+
+      const imageData = canvas.toDataURL('image/png', 0.9);
+      console.log('Sankey image captured successfully, size:', imageData.length);
       return imageData;
     } catch (error) {
       console.error('Error capturing Sankey diagram:', error);
@@ -184,45 +218,58 @@ export default function BankingDocumentTabs({
 
       console.log('Starting transaction chart capture...');
       
-      // Wait for charts to render
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer for charts to render
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Find the transaction chart container with simple selectors
+      // Debug: Log available elements
+      const allContainers = document.querySelectorAll('.recharts-responsive-container');
+      console.log('Available recharts containers for chart:', allContainers.length);
+      
+      // Find the transaction chart container with extensive debugging
       let chartContainer: HTMLElement | null = null;
       
       // Try data-testid first
       chartContainer = document.querySelector('[data-testid="transaction-chart"]') as HTMLElement;
+      console.log('Found chart by data-testid:', !!chartContainer);
       
       if (!chartContainer) {
         // Try recharts containers - look for the last one if multiple exist
         const containers = document.querySelectorAll('.recharts-responsive-container');
         if (containers.length > 1) {
           chartContainer = containers[containers.length - 1] as HTMLElement;
-          console.log('Using last recharts container');
+          console.log('Using last recharts container for chart:', !!chartContainer);
         } else if (containers.length === 1) {
           chartContainer = containers[0] as HTMLElement;
-          console.log('Using only recharts container');
+          console.log('Using only recharts container for chart:', !!chartContainer);
         }
       }
       
       if (!chartContainer) {
-        console.log('No chart container found');
+        console.log('No chart container found after all attempts');
         return null;
       }
 
-      console.log('Found chart container, capturing...');
-
-      // Use html2canvas to capture
-      const canvas = await html2canvas(chartContainer, {
-        backgroundColor: '#ffffff',
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
-        logging: false
+      console.log('Found chart container:', chartContainer.tagName, chartContainer.className);
+      console.log('Chart container dimensions:', {
+        width: chartContainer.offsetWidth,
+        height: chartContainer.offsetHeight,
+        visible: chartContainer.offsetParent !== null
       });
 
-      const imageData = canvas.toDataURL('image/png', 0.8);
-      console.log('Chart image captured, size:', imageData.length);
+      // Use html2canvas to capture with better settings
+      const canvas = await html2canvas(chartContainer, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: true,
+        removeContainer: false,
+        width: chartContainer.offsetWidth,
+        height: chartContainer.offsetHeight
+      });
+
+      const imageData = canvas.toDataURL('image/png', 0.9);
+      console.log('Chart image captured successfully, size:', imageData.length);
       return imageData;
     } catch (error) {
       console.error('Error capturing transaction chart:', error);
