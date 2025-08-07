@@ -234,16 +234,27 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
       
+      const getElementText = (tagName: string) => {
+        const element = xmlDoc.getElementsByTagName(tagName)[0];
+        return element ? element.textContent?.trim() || '' : '';
+      };
+
+      // Get account holders
+      const accountHolders = Array.from(xmlDoc.getElementsByTagName('account_holder')).map(
+        el => el.textContent?.trim() || ''
+      );
+      
       return {
-        institution: xmlDoc.querySelector('institution')?.textContent || 'Unknown Institution',
-        accountName: xmlDoc.querySelector('account_name')?.textContent || 'Unknown Account',
-        accountNumber: xmlDoc.querySelector('account_number')?.textContent || 'N/A',
-        accountType: xmlDoc.querySelector('account_type')?.textContent || 'Unknown Type',
-        bsb: xmlDoc.querySelector('bsb')?.textContent || 'N/A',
-        startDate: xmlDoc.querySelector('start_date')?.textContent || 'N/A',
-        endDate: xmlDoc.querySelector('end_date')?.textContent || 'N/A',
-        openingBalance: xmlDoc.querySelector('opening_balance')?.textContent || 'N/A',
-        closingBalance: xmlDoc.querySelector('closing_balance')?.textContent || 'N/A'
+        institution: getElementText('institution'),
+        accountHolders: accountHolders,
+        accountNumber: getElementText('account_number'),
+        accountType: getElementText('account_type'),
+        bsb: getElementText('account_bsb'),
+        startDate: getElementText('start_date'),
+        endDate: getElementText('end_date'),
+        currency: getElementText('currency'),
+        totalCredits: getElementText('total_credits'),
+        totalDebits: getElementText('total_debits')
       };
     } catch (error) {
       console.error('Error parsing XML for bank info:', error);
@@ -282,14 +293,15 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
       doc.setFont('helvetica', 'normal');
       let yPos = 55;
       const bankDetails = [
-        `Institution: ${bankInfo.institution}`,
-        `Account Name: ${bankInfo.accountName}`,
-        `Account Number: ${bankInfo.accountNumber}`,
-        `Account Type: ${bankInfo.accountType}`,
-        `BSB: ${bankInfo.bsb}`,
-        `Statement Period: ${bankInfo.startDate} to ${bankInfo.endDate}`,
-        `Opening Balance: ${bankInfo.openingBalance}`,
-        `Closing Balance: ${bankInfo.closingBalance}`
+        `Institution: ${bankInfo.institution || 'N/A'}`,
+        `Account Holders: ${bankInfo.accountHolders.length > 0 ? bankInfo.accountHolders.join(', ') : 'N/A'}`,
+        `Account Number: ${bankInfo.accountNumber || 'N/A'}`,
+        `Account Type: ${bankInfo.accountType || 'N/A'}`,
+        `BSB: ${bankInfo.bsb || 'N/A'}`,
+        `Statement Period: ${bankInfo.startDate || 'N/A'} to ${bankInfo.endDate || 'N/A'}`,
+        `Currency: ${bankInfo.currency || 'N/A'}`,
+        `Total Credits: ${bankInfo.totalCredits || 'N/A'}`,
+        `Total Debits: ${bankInfo.totalDebits || 'N/A'}`
       ];
       
       bankDetails.forEach(detail => {
