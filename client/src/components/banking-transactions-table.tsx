@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Download, Filter, MessageCircle, MessageSquare, Save, X } from 'lucide-react';
+import { Search, Download, Filter, MessageCircle, MessageSquare, Save, X, FileDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 interface Transaction {
@@ -224,6 +226,162 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
     setCommentText('');
   };
 
+  // Extract bank information from XML
+  const bankInfo = useMemo(() => {
+    if (!xmlData) return null;
+    
+    try {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
+      
+      return {
+        institution: xmlDoc.querySelector('institution')?.textContent || 'Unknown Institution',
+        accountName: xmlDoc.querySelector('account_name')?.textContent || 'Unknown Account',
+        accountNumber: xmlDoc.querySelector('account_number')?.textContent || 'N/A',
+        accountType: xmlDoc.querySelector('account_type')?.textContent || 'Unknown Type',
+        bsb: xmlDoc.querySelector('bsb')?.textContent || 'N/A',
+        startDate: xmlDoc.querySelector('start_date')?.textContent || 'N/A',
+        endDate: xmlDoc.querySelector('end_date')?.textContent || 'N/A',
+        openingBalance: xmlDoc.querySelector('opening_balance')?.textContent || 'N/A',
+        closingBalance: xmlDoc.querySelector('closing_balance')?.textContent || 'N/A'
+      };
+    } catch (error) {
+      console.error('Error parsing XML for bank info:', error);
+      return null;
+    }
+  }, [xmlData]);
+
+  const exportQueriesAsPDF = () => {
+    const queriedTransactions = transactions.filter(t => t.status === 'query');
+    
+    if (queriedTransactions.length === 0) {
+      toast({
+        title: "No queried transactions",
+        description: "There are no transactions with 'query' status to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const doc = new jsPDF();
+    
+    // Add header
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Family Court Documentation', 20, 20);
+    
+    doc.setFontSize(14);
+    doc.text('Queried Banking Transactions Report', 20, 30);
+    
+    // Add bank information
+    if (bankInfo) {
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Bank Account Information', 20, 45);
+      
+      doc.setFont('helvetica', 'normal');
+      let yPos = 55;
+      const bankDetails = [
+        `Institution: ${bankInfo.institution}`,
+        `Account Name: ${bankInfo.accountName}`,
+        `Account Number: ${bankInfo.accountNumber}`,
+        `Account Type: ${bankInfo.accountType}`,
+        `BSB: ${bankInfo.bsb}`,
+        `Statement Period: ${bankInfo.startDate} to ${bankInfo.endDate}`,
+        `Opening Balance: ${bankInfo.openingBalance}`,
+        `Closing Balance: ${bankInfo.closingBalance}`
+      ];
+      
+      bankDetails.forEach(detail => {
+        doc.text(detail, 25, yPos);
+        yPos += 8;
+      });
+      
+      yPos += 10;
+    }
+    
+    // Add transactions
+    let transactionsStartY = bankInfo ? 130 : 60;
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Queried Transactions (${queriedTransactions.length} transactions)`, 20, transactionsStartY);
+    
+    let currentY = transactionsStartY + 15;
+    
+    queriedTransactions.forEach((transaction, index) => {
+      // Check if we need a new page
+      if (currentY > 250) {
+        doc.addPage();
+        currentY = 20;
+      }
+      
+      // Transaction header
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.text(`Transaction ${index + 1}`, 20, currentY);
+      currentY += 8;
+      
+      // Transaction details
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      
+      const transactionDetails = [
+        `Date: ${new Date(transaction.transactionDate).toLocaleDateString()}`,
+        `Description: ${transaction.description}`,
+        `Amount: ${formatAmount(transaction.amount)}`,
+        `Balance: ${transaction.balance ? formatAmount(transaction.balance) : 'N/A'}`,
+        `Category: ${transaction.category || 'N/A'}`
+      ];
+      
+      transactionDetails.forEach(detail => {
+        doc.text(detail, 25, currentY);
+        currentY += 6;
+      });
+      
+      // Add comment box if there's a comment
+      if (transaction.comments && transaction.comments.trim()) {
+        currentY += 5;
+        
+        // Draw comment box
+        const commentBoxHeight = Math.max(20, Math.ceil(transaction.comments.length / 80) * 5 + 10);
+        doc.setDrawColor(200, 200, 200);
+        doc.rect(25, currentY - 5, 160, commentBoxHeight);
+        
+        // Comment label
+        doc.setFont('helvetica', 'bold');
+        doc.text('Comment:', 30, currentY + 3);
+        
+        // Comment text (wrapped)
+        doc.setFont('helvetica', 'normal');
+        const splitComment = doc.splitTextToSize(transaction.comments, 150);
+        doc.text(splitComment, 30, currentY + 10);
+        
+        currentY += commentBoxHeight + 5;
+      }
+      
+      currentY += 10; // Space between transactions
+    });
+    
+    // Add footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Page ${i} of ${pageCount}`, 20, 285);
+      doc.text(`Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, 120, 285);
+    }
+    
+    // Save the PDF
+    const fileName = `Queried_Transactions_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+    
+    toast({
+      title: "PDF exported successfully",
+      description: `${queriedTransactions.length} queried transactions exported to ${fileName}`,
+    });
+  };
+
   const formatAmount = (amount: string) => {
     const num = parseFloat(amount);
     if (isNaN(num)) return amount;
@@ -386,13 +544,24 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
         </div>
         
         {filteredTransactions.length > 0 && (
-          <div className="flex justify-between items-center mt-4 text-sm text-muted-foreground">
-            <div>
-              Showing {filteredTransactions.length} of {transactions.length} transactions
-            </div>
-            <div className="flex gap-4">
-              <span>Queries: {filteredTransactions.filter(t => t.status === 'query').length}</span>
-              <span>None: {filteredTransactions.filter(t => t.status === 'none').length}</span>
+          <div className="mt-4 pt-4 border-t">
+            <div className="flex justify-between items-center">
+              <div className="flex gap-4 text-sm text-muted-foreground">
+                <span>Total: {filteredTransactions.length}</span>
+                <span>Queries: {filteredTransactions.filter(t => t.status === 'query').length}</span>
+                <span>None: {filteredTransactions.filter(t => t.status === 'none').length}</span>
+              </div>
+              
+              <Button
+                onClick={exportQueriesAsPDF}
+                variant="outline"
+                size="sm"
+                disabled={transactions.filter(t => t.status === 'query').length === 0}
+                className="gap-2"
+              >
+                <FileDown className="h-4 w-4" />
+                Export Queries as PDF
+              </Button>
             </div>
           </div>
         )}
