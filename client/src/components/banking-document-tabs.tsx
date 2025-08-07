@@ -164,7 +164,13 @@ export default function BankingDocumentTabs({
     console.log('Starting PDF export with proper tab switching and high-quality rendering...');
     
     // Back to working PDF configuration 
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+      orientation: 'p',
+      unit: 'mm', 
+      format: 'a4',
+      compress: true,
+      precision: 2
+    });
     const bankInfo = getBankInfo();
     
     // Use proper tab-switching chart capture for reliable rendering

@@ -1047,59 +1047,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Write the PDF to temporary file
         await fs.writeFile(tempInputPath, pdfBuffer);
         
-        // Use Ghostscript for PDF optimization (if available)
-        const { spawn } = await import('child_process');
+        // Use Ghostscript for PDF optimization with better compression
+        const { execFile } = await import('child_process');
+        const { promisify } = await import('util');
+        const execFilePromise = promisify(execFile);
         
-        // Check if ghostscript is available first
         try {
-          await new Promise<void>((resolve, reject) => {
-            const testProcess = spawn('gs', ['--version']);
-            testProcess.on('close', (code) => {
-              if (code === 0) {
-                resolve();
-              } else {
-                reject(new Error('Ghostscript not available'));
-              }
-            });
-            testProcess.on('error', () => {
-              reject(new Error('Ghostscript command not found'));
-            });
-          });
-        } catch (gsTestError) {
-          throw new Error('Ghostscript not available on system');
-        }
-        
-        const gsProcess = spawn('gs', [
-          '-sDEVICE=pdfwrite',
-          '-dCompatibilityLevel=1.4',
-          '-dPDFSETTINGS=/ebook',
-          '-dNOPAUSE',
-          '-dQUIET',
-          '-dBATCH',
-          '-dColorImageResolution=150',
-          '-dGrayImageResolution=150',
-          '-dMonoImageResolution=150',
-          '-dColorImageDownsampleType=/Bicubic',
-          '-dGrayImageDownsampleType=/Bicubic',
-          '-dMonoImageDownsampleType=/Bicubic',
-          `-sOutputFile=${tempOutputPath}`,
-          tempInputPath
-        ]);
-
-        await new Promise<void>((resolve, reject) => {
-          gsProcess.on('close', (code) => {
-            if (code === 0) {
-              resolve();
-            } else {
-              reject(new Error(`Ghostscript failed with code ${code}`));
-            }
-          });
+          // Test if ghostscript is available
+          await execFilePromise('gs', ['--version']);
           
-          gsProcess.on('error', (error) => {
-            console.log('Ghostscript not available, using alternative compression...');
-            reject(error);
-          });
-        });
+          // Use aggressive compression settings for smaller file size
+          await execFilePromise('gs', [
+            '-sDEVICE=pdfwrite',
+            '-dCompatibilityLevel=1.4',
+            '-dPDFSETTINGS=/screen',  // More aggressive compression than /ebook
+            '-dNOPAUSE',
+            '-dQUIET',
+            '-dBATCH',
+            '-dEmbedAllFonts=true',
+            '-dSubsetFonts=true',
+            '-dCompressFonts=true',
+            '-dColorImageResolution=72',  // Lower resolution for smaller size
+            '-dGrayImageResolution=72',
+            '-dMonoImageResolution=150',
+            '-dColorImageDownsampleType=/Bicubic',
+            '-dGrayImageDownsampleType=/Bicubic',
+            '-dMonoImageDownsampleType=/Bicubic',
+            '-dAutoRotatePages=/None',
+            '-dColorConversionStrategy=/LeaveColorUnchanged',
+            '-dEncodeColorImages=true',
+            '-dEncodeGrayImages=true',
+            '-dEncodeMonoImages=true',
+            '-dUseFlateCompression=true',
+            `-sOutputFile=${tempOutputPath}`,
+            tempInputPath
+          ]);
+          
+          console.log('Ghostscript optimization completed successfully');
+        } catch (gsError: any) {
+          console.log('Ghostscript failed, trying alternative method:', gsError?.message || 'Unknown error');
+          throw gsError;
+        }
 
         // Read optimized PDF
         const optimizedBuffer = await fs.readFile(tempOutputPath);
@@ -1121,36 +1109,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (gsError: any) {
         console.log('Ghostscript optimization failed, trying alternative method:', gsError?.message || 'Unknown error');
         
-        // Fallback: Simple compression using minimal processing
+        // Fallback: Use Sharp for image compression or other Node.js libraries
         try {
-          // Use jsPDF's built-in compression if available
-          // For now, just return the original with minimal processing
-          const optimizedBuffer = pdfBuffer;
+          console.log('Using Node.js-based PDF compression fallback');
           
-          console.log('Using fallback compression method');
+          // Try using pdf-lib for compression
+          const PDFLib = await import('pdf-lib');
+          const { PDFDocument } = PDFLib;
+          
+          // Load the PDF
+          const pdfDoc = await PDFDocument.load(pdfBuffer);
+          
+          // Save with compression
+          const compressedPdfBytes = await pdfDoc.save({
+            useObjectStreams: true,
+            addDefaultPage: false,
+            objectStreamsThreshold: 40,
+            compress: true
+          });
+          
+          const optimizedBuffer = Buffer.from(compressedPdfBytes);
+          
+          console.log(`Fallback compression completed. Size: ${(optimizedBuffer.length / 1024 / 1024).toFixed(2)} MB`);
           
           // Clean up temp files
           try {
             await fs.unlink(tempInputPath);
           } catch {}
           
-          // Send PDF with compression headers
+          // Send compressed PDF
           res.setHeader('Content-Type', 'application/pdf');
           res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-          res.setHeader('Content-Encoding', 'gzip');
-          
-          // Simple gzip compression
-          const zlib = await import('zlib');
-          const compressed = zlib.gzipSync(optimizedBuffer);
-          res.send(compressed);
+          res.send(optimizedBuffer);
           
         } catch (fallbackError: any) {
-          console.error('Fallback compression failed:', fallbackError?.message || 'Unknown error');
+          console.error('Node.js compression failed, using gzip fallback:', fallbackError?.message || 'Unknown error');
           
-          // Final fallback: return original
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-          res.send(pdfBuffer);
+          // Final fallback: gzip compression
+          try {
+            const zlib = await import('zlib');
+            const compressed = zlib.gzipSync(pdfBuffer);
+            
+            console.log(`Gzip compression: ${(pdfBuffer.length / 1024 / 1024).toFixed(2)} MB -> ${(compressed.length / 1024 / 1024).toFixed(2)} MB`);
+            
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+            res.setHeader('Content-Encoding', 'gzip');
+            res.send(compressed);
+            
+          } catch {
+            // Final final fallback: return original
+            console.log('All compression methods failed, returning original PDF');
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+            res.send(pdfBuffer);
+          }
         }
       }
       
