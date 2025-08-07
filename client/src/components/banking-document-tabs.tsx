@@ -408,10 +408,88 @@ export default function BankingDocumentTabs({
       doc.text(`Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, doc.internal.pageSize.width - 80, doc.internal.pageSize.height - 10);
     }
     
-    // Save PDF using simple method (no optimization)
+    // Save PDF with server-side optimization
     const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-    doc.save(fileName);
-    console.log('PDF export completed successfully');
+    
+    try {
+      console.log('Starting PDF optimization on server...');
+      
+      // Get PDF data as base64
+      const pdfData = doc.output('datauristring');
+      
+      // Show optimization dialog
+      const optimizationPromise = fetch('/api/optimize-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pdfData,
+          fileName
+        })
+      });
+      
+      // Create a simple loading indicator
+      const loadingDiv = document.createElement('div');
+      loadingDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        z-index: 10000;
+        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      `;
+      loadingDiv.innerHTML = `
+        <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Optimizing PDF...</div>
+        <div style="font-size: 14px; color: #666;">Compressing images and reducing file size</div>
+        <div style="margin-top: 15px;">
+          <div style="width: 200px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
+            <div style="width: 0%; height: 100%; background: #3b82f6; border-radius: 2px; animation: progress 2s ease-in-out infinite;" id="progress-bar"></div>
+          </div>
+        </div>
+        <style>
+          @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+          }
+        </style>
+      `;
+      document.body.appendChild(loadingDiv);
+      
+      const response = await optimizationPromise;
+      
+      // Remove loading indicator
+      document.body.removeChild(loadingDiv);
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        console.log('Optimized PDF downloaded successfully');
+      } else {
+        throw new Error('PDF optimization failed');
+      }
+      
+    } catch (error) {
+      console.error('Error during PDF optimization:', error);
+      console.log('Falling back to direct download...');
+      
+      // Fallback to direct download if optimization fails
+      doc.save(fileName);
+    }
   };
 
 
