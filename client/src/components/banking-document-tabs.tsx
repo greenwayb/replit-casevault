@@ -282,44 +282,47 @@ export default function BankingDocumentTabs({
 
     console.log('Starting PDF export...');
     
-    // Check if we're in browser environment first
-    if (typeof window === 'undefined' || typeof document === 'undefined') {
-      console.error('PDF export must be run in browser environment');
-      return;
-    }
-    
-    // Switch to Sankey tab and capture
-    console.log('Switching to Sankey tab...');
-    try {
-      const sankeyTab = document.querySelector('[value="sankey"]') as HTMLElement;
-      if (sankeyTab) {
-        sankeyTab.click();
-        await new Promise(resolve => setTimeout(resolve, 1500));
-      }
-    } catch (error) {
-      console.log('Could not switch to Sankey tab:', error);
-    }
-    
-    const sankeyImage = await captureSankeyDiagram();
-    console.log('Sankey image captured:', !!sankeyImage);
-    
-    // Switch to chart tab and capture
-    console.log('Switching to chart tab...');
-    try {
-      const chartTab = document.querySelector('[value="chart"]') as HTMLElement;
-      if (chartTab) {
-        chartTab.click();
-        await new Promise(resolve => setTimeout(resolve, 1500));
-      }
-    } catch (error) {
-      console.log('Could not switch to chart tab:', error);
-    }
-    
-    const chartImage = await captureTransactionChart();
-    console.log('Chart image captured:', !!chartImage);
-    
+    // Create PDF document first
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
+    
+    // Only attempt chart capture if we're in a proper browser environment
+    let sankeyImage: string | null = null;
+    let chartImage: string | null = null;
+    
+    if (typeof window !== 'undefined' && typeof document !== 'undefined' && document.querySelector) {
+      console.log('Browser environment detected, attempting chart capture...');
+      
+      // Switch to Sankey tab and capture
+      console.log('Switching to Sankey tab...');
+      try {
+        const sankeyTab = document.querySelector('[value="sankey"]') as HTMLElement;
+        if (sankeyTab && typeof sankeyTab.click === 'function') {
+          sankeyTab.click();
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          sankeyImage = await captureSankeyDiagram();
+          console.log('Sankey image captured:', !!sankeyImage);
+        }
+      } catch (error) {
+        console.log('Could not switch to Sankey tab:', error);
+      }
+      
+      // Switch to chart tab and capture
+      console.log('Switching to chart tab...');
+      try {
+        const chartTab = document.querySelector('[value="chart"]') as HTMLElement;
+        if (chartTab && typeof chartTab.click === 'function') {
+          chartTab.click();
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          chartImage = await captureTransactionChart();
+          console.log('Chart image captured:', !!chartImage);
+        }
+      } catch (error) {
+        console.log('Could not switch to chart tab:', error);
+      }
+    } else {
+      console.log('Browser environment not available, skipping chart capture');
+    }
     
     // Page 1: Banking Information and Summary (Portrait)
     addWatermark(doc);
