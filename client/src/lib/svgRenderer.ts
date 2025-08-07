@@ -233,12 +233,7 @@ export class ClientSVGRenderer {
         ignoreAnimation: true,
         ignoreDimensions: false,
         ignoreClear: false,
-        enableRedraw: false,
-        createImage: (src: string) => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          return img;
-        }
+        enableRedraw: false
       });
       await canvgInstance.render();
 

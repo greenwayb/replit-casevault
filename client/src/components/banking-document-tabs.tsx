@@ -163,24 +163,79 @@ export default function BankingDocumentTabs({
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
     
-    // Attempt to capture charts with enhanced server-side rendering
+    // Use server-side Puppeteer rendering for reliable text capture
     let sankeyImage: string | null = null;
     let chartImage: string | null = null;
     
+    // Use server-side Puppeteer rendering for reliable text capture
     try {
-      console.log('Attempting Sankey capture...');
-      sankeyImage = await captureSVGChart(sankeyRef, 'Sankey', 'sankey');
-      console.log('Sankey capture result:', sankeyImage ? 'SUCCESS' : 'FAILED');
+      console.log('Attempting server-side Sankey capture...');
+      const sankeyContainer = sankeyContainerRef.current;
+      if (sankeyContainer) {
+        const sankeySvg = sankeyContainer.querySelector('svg');
+        if (sankeySvg) {
+          const svgContent = new XMLSerializer().serializeToString(sankeySvg);
+          console.log('Sending Sankey SVG to server for rendering...');
+          
+          const response = await fetch('/api/render/svg-to-png', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              svgContent,
+              options: { width: 800, height: 600, scale: 2 }
+            })
+          });
+          
+          if (response.ok) {
+            const blob = await response.blob();
+            sankeyImage = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+            console.log('Sankey image rendered successfully by server');
+          } else {
+            console.error('Server rendering failed for Sankey');
+          }
+        }
+      }
     } catch (error) {
-      console.log('Sankey capture failed:', error);
+      console.log('Sankey server capture failed:', error);
     }
     
     try {
-      console.log('Attempting transaction chart capture...');
-      chartImage = await captureSVGChart(chartRef, 'TransactionChart', 'chart');
-      console.log('Transaction chart capture result:', chartImage ? 'SUCCESS' : 'FAILED');
+      console.log('Attempting server-side transaction chart capture...');
+      const chartContainer = transactionContainerRef.current;
+      if (chartContainer) {
+        const chartSvg = chartContainer.querySelector('svg');
+        if (chartSvg) {
+          const svgContent = new XMLSerializer().serializeToString(chartSvg);
+          console.log('Sending Transaction Chart SVG to server for rendering...');
+          
+          const response = await fetch('/api/render/svg-to-png', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              svgContent,
+              options: { width: 800, height: 600, scale: 2 }
+            })
+          });
+          
+          if (response.ok) {
+            const blob = await response.blob();
+            chartImage = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+            console.log('Transaction chart image rendered successfully by server');
+          } else {
+            console.error('Server rendering failed for Transaction chart');
+          }
+        }
+      }
     } catch (error) {
-      console.log('Transaction chart capture failed:', error);
+      console.log('Transaction chart server capture failed:', error);
     }
     
     // Page 1: Banking Information and Summary (Portrait)
