@@ -34,6 +34,7 @@ export default function BankingDocumentTabs({
   onFullAnalysis
 }: BankingDocumentTabsProps) {
   const [activeTab, setActiveTab] = useState("pdf");
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const sankeyRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<HTMLDivElement>(null);
   
@@ -50,12 +51,15 @@ export default function BankingDocumentTabs({
     
     const blob = new Blob([xmlData], { type: 'application/xml' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${documentName}_analysis.xml`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    
+    if (typeof window !== 'undefined' && window.document) {
+      const a = window.document.createElement('a');
+      a.href = url;
+      a.download = `${documentName}_analysis.xml`;
+      window.document.body.appendChild(a);
+      a.click();
+      window.document.body.removeChild(a);
+    }
     URL.revokeObjectURL(url);
   };
 
@@ -413,12 +417,13 @@ export default function BankingDocumentTabs({
     
     try {
       console.log('Starting PDF optimization on server...');
+      setIsOptimizing(true);
       
       // Get PDF data as base64
       const pdfData = doc.output('datauristring');
       
-      // Show optimization dialog
-      const optimizationPromise = fetch('/api/optimize-pdf', {
+      // Send to server for optimization
+      const response = await fetch('/api/optimize-pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -429,61 +434,21 @@ export default function BankingDocumentTabs({
         })
       });
       
-      // Create a simple loading indicator
-      let loadingDiv: HTMLDivElement | null = null;
-      
-      if (typeof document !== 'undefined') {
-        loadingDiv = document.createElement('div');
-        if (loadingDiv) {
-          loadingDiv.style.cssText = `
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-          z-index: 10000;
-          text-align: center;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        `;
-          loadingDiv.innerHTML = `
-          <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Optimizing PDF...</div>
-          <div style="font-size: 14px; color: #666;">Compressing images and reducing file size</div>
-          <div style="margin-top: 15px;">
-            <div style="width: 200px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
-              <div style="width: 0%; height: 100%; background: #3b82f6; border-radius: 2px; animation: progress 2s ease-in-out infinite;" id="progress-bar"></div>
-            </div>
-          </div>
-          <style>
-            @keyframes progress {
-              0% { width: 0%; }
-              50% { width: 70%; }
-              100% { width: 100%; }
-            }
-          </style>
-        `;
-          document.body.appendChild(loadingDiv);
-        }
-      }
-      
-      const response = await optimizationPromise;
-      
-      // Remove loading indicator
-      if (loadingDiv && typeof document !== 'undefined') {
-        document.body.removeChild(loadingDiv);
-      }
+      setIsOptimizing(false);
       
       if (response.ok) {
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        
+        // Create download link safely
+        if (typeof window !== 'undefined' && window.document) {
+          const a = window.document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          window.document.body.appendChild(a);
+          a.click();
+          window.document.body.removeChild(a);
+        }
         URL.revokeObjectURL(url);
         
         console.log('Optimized PDF downloaded successfully');
@@ -494,6 +459,7 @@ export default function BankingDocumentTabs({
     } catch (error) {
       console.error('Error during PDF optimization:', error);
       console.log('Falling back to direct download...');
+      setIsOptimizing(false);
       
       // Fallback to direct download if optimization fails
       doc.save(fileName);
@@ -503,7 +469,19 @@ export default function BankingDocumentTabs({
 
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
+      {/* Loading overlay for PDF optimization */}
+      {isOptimizing && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm">
+            <div className="text-lg font-semibold mb-2">Optimizing PDF...</div>
+            <div className="text-sm text-gray-600 mb-4">Compressing images and reducing file size</div>
+            <div className="w-64 h-1 bg-gray-200 rounded overflow-hidden">
+              <div className="h-full bg-blue-500 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* AI Analysis and Export Buttons */}
       <div className="flex justify-center gap-4">
         <TooltipProvider>
