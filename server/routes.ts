@@ -14,6 +14,7 @@ import { eq, desc, and } from "drizzle-orm";
 import { GoogleDriveService } from "./googleDriveService";
 import { DisclosurePdfService } from "./disclosurePdfService";
 import { SVGRenderer } from "./svgRenderer";
+import { SimpleSVGRenderer } from "./simpleSvgRenderer";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -1022,11 +1023,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let pngBuffer: Buffer;
 
       if (svgContent) {
-        // Render raw SVG content
-        pngBuffer = await SVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
+        // Try simple Canvas-based rendering first, fallback to Puppeteer
+        try {
+          pngBuffer = await SimpleSVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
+        } catch (simpleError) {
+          const simpleErrorMsg = simpleError instanceof Error ? simpleError.message : String(simpleError);
+          console.log('Simple rendering failed, trying Puppeteer:', simpleErrorMsg);
+          try {
+            pngBuffer = await SVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
+          } catch (puppeteerError) {
+            const puppeteerErrorMsg = puppeteerError instanceof Error ? puppeteerError.message : String(puppeteerError);
+            console.log('Puppeteer failed, trying Sharp:', puppeteerErrorMsg);
+            pngBuffer = await SimpleSVGRenderer.renderSVGToBuffer(svgContent, { width, height });
+          }
+        }
       } else if (chartData && chartType) {
         // Render chart data using Recharts
-        pngBuffer = await SVGRenderer.renderChartToPNG(chartData, chartType, { width, height, scale });
+        try {
+          pngBuffer = await SVGRenderer.renderChartToPNG(chartData, chartType, { width, height, scale });
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          console.log('Chart rendering failed:', errorMessage);
+          return res.status(500).json({ message: "Chart rendering not available" });
+        }
       } else {
         return res.status(400).json({ message: "Either svgContent or chartData/chartType is required" });
       }

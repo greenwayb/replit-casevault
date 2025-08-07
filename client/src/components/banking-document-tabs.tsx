@@ -140,22 +140,24 @@ export default function BankingDocumentTabs({
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
     
-    // Attempt to capture charts using Canvg
+    // Attempt to capture charts with enhanced server-side rendering
     let sankeyImage: string | null = null;
     let chartImage: string | null = null;
     
     try {
       console.log('Attempting Sankey capture...');
       sankeyImage = await captureSVGChart(sankeyRef, 'Sankey');
+      console.log('Sankey capture result:', sankeyImage ? 'SUCCESS' : 'FAILED');
     } catch (error) {
       console.log('Sankey capture failed:', error);
     }
     
     try {
-      console.log('Attempting chart capture...');
-      chartImage = await captureSVGChart(chartRef, 'Chart');
+      console.log('Attempting transaction chart capture...');
+      chartImage = await captureSVGChart(chartRef, 'TransactionChart');
+      console.log('Transaction chart capture result:', chartImage ? 'SUCCESS' : 'FAILED');
     } catch (error) {
-      console.log('Chart capture failed:', error);
+      console.log('Transaction chart capture failed:', error);
     }
     
     // Page 1: Banking Information and Summary (Portrait)

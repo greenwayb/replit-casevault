@@ -47,7 +47,9 @@ export class ClientSVGRenderer {
 
     // Convert response to base64 data URL
     const arrayBuffer = await response.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const bytes = Array.from(uint8Array);
+    const base64 = btoa(String.fromCharCode.apply(null, bytes));
     return `data:image/png;base64,${base64}`;
   }
 
@@ -74,7 +76,9 @@ export class ClientSVGRenderer {
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const bytes = Array.from(uint8Array);
+    const base64 = btoa(String.fromCharCode.apply(null, bytes));
     return `data:image/png;base64,${base64}`;
   }
 
@@ -92,14 +96,34 @@ export class ClientSVGRenderer {
         return null;
       }
 
+      // Wait a moment for chart to fully render
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Find SVG element within the container
       const svgElement = containerRef.current.querySelector('svg');
       if (!svgElement) {
-        console.log(`No SVG found in ${chartName} container`);
-        return null;
+        console.log(`No SVG found in ${chartName} container, checking for nested SVGs...`);
+        
+        // Check for nested containers or Recharts components
+        const allSvgs = containerRef.current.querySelectorAll('svg');
+        console.log(`Found ${allSvgs.length} SVG elements in container`);
+        
+        if (allSvgs.length === 0) {
+          console.log(`No SVGs found in ${chartName} container at all`);
+          return null;
+        }
+        
+        // Use the first/largest SVG found
+        const targetSvg = allSvgs[0] as SVGElement;
+        return await this.renderSVGElementToPNG(targetSvg, options);
       }
 
-      console.log(`Found SVG for ${chartName}, rendering server-side...`);
+      console.log(`Found SVG for ${chartName}, dimensions:`, {
+        width: svgElement.clientWidth,
+        height: svgElement.clientHeight,
+        viewBox: svgElement.getAttribute('viewBox')
+      });
+      
       return await this.renderSVGElementToPNG(svgElement, options);
 
     } catch (error) {

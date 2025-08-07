@@ -16,8 +16,19 @@ export class SVGRenderer {
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-gpu',
-          '--no-first-run'
-        ]
+          '--no-first-run',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-features=TranslateUI',
+          '--disable-extensions',
+          '--disable-default-apps',
+          '--disable-sync',
+          '--single-process', // Try single process mode for Replit
+          '--no-zygote'
+        ],
+        timeout: 10000,
+        protocolTimeout: 10000
       });
     }
     return this.browser;
@@ -31,10 +42,17 @@ export class SVGRenderer {
   } = {}): Promise<Buffer> {
     const { width = 800, height = 600, scale = 2 } = options;
     
-    const browser = await this.getBrowser();
-    const page = await browser.newPage();
+    let browser;
+    let page;
     
     try {
+      browser = await this.getBrowser();
+      page = await browser.newPage();
+      
+      // Set shorter timeouts for Replit environment
+      await page.setDefaultTimeout(5000);
+      await page.setDefaultNavigationTimeout(5000);
+      
       await page.setViewport({ 
         width: width * scale, 
         height: height * scale,
@@ -47,8 +65,8 @@ export class SVGRenderer {
         <html>
         <head>
           <style>
-            body { margin: 0; padding: 20px; background: white; }
-            svg { max-width: 100%; height: auto; }
+            body { margin: 0; padding: 20px; background: white; font-family: Arial, sans-serif; }
+            svg { max-width: 100%; height: auto; display: block; }
           </style>
         </head>
         <body>
@@ -57,18 +75,36 @@ export class SVGRenderer {
         </html>
       `;
 
-      await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.setContent(html, { 
+        waitUntil: 'domcontentloaded',
+        timeout: 5000 
+      });
+      
+      // Wait a bit for SVG to render
+      await page.waitForTimeout(1000);
       
       // Take screenshot of the SVG
       const screenshot = await page.screenshot({
         type: 'png',
         fullPage: true,
-        omitBackground: false
+        omitBackground: false,
+        captureBeyondViewport: false
       });
 
       return screenshot as Buffer;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Puppeteer rendering failed:', errorMessage);
+      throw new Error(`Puppeteer rendering failed: ${errorMessage}`);
     } finally {
-      await page.close();
+      if (page) {
+        try {
+          await page.close();
+        } catch (e) {
+          const errorMessage = e instanceof Error ? e.message : String(e);
+          console.warn('Error closing page:', errorMessage);
+        }
+      }
     }
   }
 
