@@ -176,12 +176,14 @@ export class ClientSVGRenderer {
         quality: 90
       };
       
-      return await this.renderSVGElementToPNG(mainSvg, enhancedOptions);
+      // Use Canvg rendering directly for better text preservation
+      console.log(`Using Canvg rendering for ${chartName} to preserve text`);
+      return this.fallbackCanvgCapture(containerRef, chartName);
 
     } catch (error) {
-      console.warn(`Server-side rendering failed for ${chartName}, falling back to Canvg:`, error);
+      console.warn(`Chart capture completely failed for ${chartName}:`, error);
       
-      // Fallback to original Canvg method
+      // Final fallback to Canvg method
       return this.fallbackCanvgCapture(containerRef, chartName);
     }
   }

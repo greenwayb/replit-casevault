@@ -130,36 +130,12 @@ export class SVGRenderer {
         timeout: 8000 
       });
       
-      // Wait longer for SVG elements and text to fully render
-      await page.waitForTimeout(3000);
+      // Wait for SVG elements to fully render
+      await page.waitForTimeout(1500);
       
-      // Ensure all fonts are loaded and text is visible
+      // Ensure fonts are loaded
       await page.evaluate(() => {
-        return Promise.all([
-          document.fonts.ready,
-          new Promise(resolve => {
-            // Force text elements to be visible
-            const textElements = document.querySelectorAll('text');
-            console.log(`Found ${textElements.length} text elements in DOM`);
-            textElements.forEach((text, index) => {
-              const originalFill = text.getAttribute('fill');
-              const originalStyle = text.getAttribute('style');
-              console.log(`Text ${index}: content="${text.textContent}", fill="${originalFill}", style="${originalStyle}"`);
-              
-              text.style.visibility = 'visible';
-              text.style.opacity = '1';
-              text.style.fill = text.style.fill || originalFill || '#374151';
-              text.style.fontSize = text.style.fontSize || '12px';
-              text.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif';
-              
-              // Force attributes as well
-              text.setAttribute('fill', text.style.fill);
-              text.setAttribute('font-family', text.style.fontFamily);
-              text.setAttribute('font-size', text.style.fontSize);
-            });
-            setTimeout(resolve, 500);
-          })
-        ]);
+        return document.fonts.ready;
       });
       
       // Take high-quality screenshot of the SVG

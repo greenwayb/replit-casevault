@@ -408,27 +408,10 @@ export default function BankingDocumentTabs({
       doc.text(`Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, doc.internal.pageSize.width - 80, doc.internal.pageSize.height - 10);
     }
     
-    // Save PDF with optimization
-    try {
-      console.log('Optimizing PDF for smaller file size...');
-      
-      // Get PDF data with compression and log size information  
-      const pdfData = doc.output('arraybuffer');
-      const originalSize = pdfData.byteLength;
-      console.log(`Optimized PDF size: ${(originalSize / 1024).toFixed(1)} KB (target: <3MB)`);
-      
-      // Create optimized filename and download using jsPDF save method
-      const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-      
-      // Use jsPDF's built-in save method which handles download properly
-      doc.save(fileName);
-      
-      console.log('Optimized PDF export completed successfully');
-    } catch (error) {
-      console.error('Error during PDF optimization, using standard save:', error);
-      const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-      doc.save(fileName);
-    }
+    // Save PDF using simple method (no optimization)
+    const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+    console.log('PDF export completed successfully');
   };
 
 

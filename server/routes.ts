@@ -1028,17 +1028,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Server received SVG with ${textCount} text elements`);
         console.log('SVG content sample:', svgContent.substring(0, 500));
         
-        // Try simple Canvas-based rendering first, fallback to Puppeteer
+        // Try Puppeteer first for better text rendering, fallback to Canvas
         try {
-          pngBuffer = await SimpleSVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
-        } catch (simpleError) {
-          const simpleErrorMsg = simpleError instanceof Error ? simpleError.message : String(simpleError);
-          console.log('Simple rendering failed, trying Puppeteer:', simpleErrorMsg);
+          pngBuffer = await SVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
+          console.log('Puppeteer rendering successful');
+        } catch (puppeteerError) {
+          const puppeteerErrorMsg = puppeteerError instanceof Error ? puppeteerError.message : String(puppeteerError);
+          console.log('Puppeteer rendering failed, trying Canvas:', puppeteerErrorMsg);
           try {
-            pngBuffer = await SVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
-          } catch (puppeteerError) {
-            const puppeteerErrorMsg = puppeteerError instanceof Error ? puppeteerError.message : String(puppeteerError);
-            console.log('Puppeteer failed, trying Sharp:', puppeteerErrorMsg);
+            pngBuffer = await SimpleSVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
+            console.log('Canvas rendering successful');
+          } catch (simpleError) {
+            const simpleErrorMsg = simpleError instanceof Error ? simpleError.message : String(simpleError);
+            console.log('Canvas failed, trying Sharp fallback:', simpleErrorMsg);
             pngBuffer = await SimpleSVGRenderer.renderSVGToBuffer(svgContent, { width, height });
           }
         }
