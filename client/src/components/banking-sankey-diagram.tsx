@@ -122,7 +122,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
 
     // Create nodes and links for Sankey
     const nodes: Array<{ name: string; category: string }> = [];
-    const links: Array<{ source: number; target: number; value: number }> = [];
+    const links: Array<{ source: number; target: number; value: number; sourceName: string; targetName: string }> = [];
     
     let nodeIndex = 0;
     const nodeMap = new Map<string, number>();
@@ -149,7 +149,9 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       links.push({
         source: nodeMap.get(source)!,
         target: accountNodeIndex,
-        value: amount
+        value: amount,
+        sourceName: source,
+        targetName: accountDisplayName
       });
     });
     
@@ -158,7 +160,9 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
       links.push({
         source: accountNodeIndex,
         target: nodeMap.get(target)!,
-        value: amount
+        value: amount,
+        sourceName: accountDisplayName,
+        targetName: target
       });
     });
 
@@ -234,13 +238,47 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
   };
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    console.log('Tooltip triggered - active:', active, 'payload:', payload, 'label:', label);
+    
+    if (active && payload && payload.length > 0) {
+      const data = payload[0];
+      console.log('Tooltip data structure:', {
+        fullData: data,
+        value: data.value,
+        dataKey: data.dataKey,
+        payload: data.payload,
+        name: data.name,
+        fill: data.fill
+      });
+      
+      // Access the actual link value from the Sankey structure
+      // In Recharts Sankey, the value should be directly accessible
+      const value = data.value || 0;
+      
+      // For source/target names, we need to get from the sankeyData structure
+      // Since we have the indices, let's use them to get actual names
+      const sourceIndex = data.payload?.source;
+      const targetIndex = data.payload?.target;
+      
+      let sourceName = 'Source';
+      let targetName = 'Target';
+      
+      if (sourceIndex !== undefined && targetIndex !== undefined) {
+        sourceName = sankeyData.nodes[sourceIndex]?.name || 'Source';
+        targetName = sankeyData.nodes[targetIndex]?.name || 'Target';
+      } else {
+        // Fallback to custom properties we added
+        sourceName = data.payload?.sourceName || data.sourceName || 'Source';
+        targetName = data.payload?.targetName || data.targetName || 'Target';
+      }
+      
+      console.log('Final tooltip values:', { value, sourceName, targetName });
+      
       return (
-        <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
-          <p className="font-semibold">{`${data.source?.name || 'Source'} → ${data.target?.name || 'Target'}`}</p>
-          <p className="text-blue-600">{`Amount: $${data.value?.toLocaleString() || 0}`}</p>
+        <div className="bg-white p-3 border border-gray-300 rounded shadow-lg z-50">
+          <p className="font-semibold">{`${sourceName} → ${targetName}`}</p>
+          <p className="text-blue-600">{`Amount: $${Number(value).toLocaleString()}`}</p>
         </div>
       );
     }
@@ -295,7 +333,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
 
       {/* Sankey Diagram */}
       <div className="bg-white rounded-lg shadow-lg p-4" style={{ height: 'calc(100vh - 300px)' }}>
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" data-testid="sankey-diagram">
           <Sankey
             data={sankeyData}
             nodeWidth={150}
@@ -304,7 +342,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
             link={<CustomLink />}
             node={<CustomNode />}
           >
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip />} cursor={false} />
           </Sankey>
         </ResponsiveContainer>
       </div>

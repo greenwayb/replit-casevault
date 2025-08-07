@@ -401,9 +401,15 @@ export class DatabaseStorage implements IStorage {
       displayName?: string;
       aiProcessed?: boolean;
       processingError?: string;
+      processingWarning?: string;
       csvPath?: string;
       csvRowCount?: number;
       csvGenerated?: boolean;
+      fullAnalysisCompleted?: boolean;
+      xmlPath?: string;
+      xmlAnalysisData?: string;
+      aiProcessingFailed?: boolean;
+      analysisError?: string;
     }
   ): Promise<Document> {
     const [updatedDocument] = await db
@@ -522,6 +528,7 @@ export class DatabaseStorage implements IStorage {
       aiProcessingFailed?: boolean;
       fullAnalysisCompleted?: boolean;
       processingError?: string;
+      processingWarning?: string;
       csvPath?: string;
       csvRowCount?: number;
       csvGenerated?: boolean;

@@ -39,10 +39,14 @@ Preferred communication style: Simple, everyday language.
 - **File Types**: PDF-only (50MB limit)
 - **Organization**: Hierarchical categorization (REAL_PROPERTY, BANKING, TAXATION, SUPERANNUATION, EMPLOYMENT, SHARES/INVESTMENTS, VEHICLES) with a comprehensive numbering system (e.g., A1, B1, B1.1)
 - **Access Control**: Case-based permissions with user role assignments
-- **AI Processing**: Advanced Banking document analysis using Claude Sonnet 4 with enhanced completeness validation, generating comprehensive XML analysis with transaction counting and validation to ensure all document processing.
+- **AI Processing**: Advanced Banking document analysis using Claude Sonnet 4 with streaming support for large files, enhanced completeness validation, generating comprehensive XML analysis with transaction counting and validation to ensure all document processing. Supports documents up to 6MB+ with 500+ transactions using dynamic timeout scaling (up to 20 minutes) and 64K token limits (maximum for Claude Sonnet 4).
 - **Multi-PDF Detection**: Enhanced initial extraction to process full PDF text, identifying when multiple bank statements are combined into one PDF, with automatic detection of transaction counts, earliest/latest transaction dates, and estimated source PDF count.
 - **Transaction Completeness**: PDF transaction line estimation with XML validation to detect incomplete analysis and ensure all transactions are captured.
 - **Enhanced Error Handling**: Processing failures keep dialog open, log detailed error information to server files, and display log locations to users for debugging.
+- **PDF Export with Text Rendering**: Successfully implemented banking analysis PDF export with legible chart text using client-side Canvg rendering. Key technical solution: tab switching ensures proper chart rendering before capture, SVG content validation prevents parsing errors, and Canvg preserves text elements better than server-side approaches. Removed complex optimization that was interfering with text rendering.
+- **Transaction Limit Protection**: AI Analysis button becomes disabled with warning tooltip when documents exceed 600 transactions, advising users to split large PDFs for optimal processing.
+- **Processing Time Display**: Processing dialogs now show calculated time estimates using the formula `1 + ceiling(transaction_count / 80)` minutes instead of generic "1-2 minutes" estimates.
+- **Account Holder Name Formatting**: Account holder names extracted from PDFs are automatically formatted with consistent title case and titles (MR, Miss, etc.) removed for standardized navigation tree categorization.
 
 ## Case Management
 - **Creation**: Unique case number generation, creator assignment
@@ -51,6 +55,7 @@ Preferred communication style: Simple, everyday language.
 - **Document Association**: One-to-many relationship
 - **Member Management**: Add existing users or invite new users via email with multi-role assignment capabilities.
 - **Activity Tracking**: Comprehensive logging of case creation, document uploads, and user actions.
+- **Document Deletion**: Case owners (CASEADMIN/DISCLOSER) can delete individual documents or entire account groups from the navigation tree with confirmation dialogs and proper permission checks.
 
 ## UI/UX Decisions
 - **Branding**: "Family Court Documentation" branding and logo integrated into top navigation and generated PDFs.
@@ -60,6 +65,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Sankey Visualization**: Comprehensive banking flow diagram with summary statistics, top inflows/outflows breakdown, color-coded visual design, and detailed analytics matching user style preferences.
 - **CSV Export Removal**: CSV export functionality completely removed per user request, focusing exclusively on XML-based analysis and visualization.
 - **Multi-PDF Transaction Analysis**: Banking confirmation modal and document tabs now display total transaction count, estimated PDF count for combined statements, earliest/latest transaction dates with automatic population of date fields from detected transaction range.
+- **Enhanced SVG Rendering**: Implemented reliable SVG-to-PDF conversion using client-side Canvg rendering for superior text preservation. After testing multiple approaches (server-side Puppeteer, Canvas, Sharp), client-side Canvg proved most effective for maintaining legible text in banking analysis charts. Automatic fallback chain ensures reliable chart capture with proper font rendering and text visibility.
 
 # External Dependencies
 
@@ -90,3 +96,6 @@ Preferred communication style: Simple, everyday language.
 - **Multer**: Multipart form data handling
 - **File System**: Node.js fs module for local file operations
 - **OpenAI GPT-4o**: For AI-powered banking document analysis.
+- **Puppeteer**: Headless browser for server-side SVG-to-PNG rendering with high quality
+- **Sharp**: Image optimization and format conversion for generated chart images
+- **Canvg**: Client-side SVG-to-canvas fallback rendering for offline scenarios

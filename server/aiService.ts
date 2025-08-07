@@ -53,6 +53,7 @@ export interface BankingDocumentAnalysis {
   estimatedPdfCount?: number;
   earliestTransaction?: string;
   latestTransaction?: string;
+  processingWarning?: string;
 }
 
 export interface XMLGenerationResult {
@@ -65,6 +66,48 @@ export interface CSVGenerationResult {
   csvPath: string;
   csvContent: string;
   rowCount: number;
+}
+
+// Helper function to format account holder names consistently
+function formatAccountHolderName(name: string): string {
+  if (!name) return name;
+  
+  // Remove common titles (case insensitive)
+  const titlesToRemove = [
+    'MR', 'MRS', 'MS', 'MISS', 'DR', 'PROF', 'SIR', 'LADY', 'LORD',
+    'Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Prof', 'Sir', 'Lady', 'Lord',
+    'mr', 'mrs', 'ms', 'miss', 'dr', 'prof', 'sir', 'lady', 'lord'
+  ];
+  
+  let cleanName = name.trim();
+  
+  // Remove titles from the beginning of the name
+  for (const title of titlesToRemove) {
+    const titlePattern = new RegExp(`^${title}\\.?\\s+`, 'i');
+    cleanName = cleanName.replace(titlePattern, '');
+  }
+  
+  // Convert to title case (first letter of each word capitalized)
+  cleanName = cleanName.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+  
+  return cleanName;
+}
+
+// Helper function to estimate processing time based on document complexity
+function estimateProcessingTime(textLength: number, transactionCount: number): { estimatedMinutes: number; description: string } {
+  // Formula: 1 + ceiling(transaction_count / 80) minutes
+  const totalMinutes = 1 + Math.ceil(transactionCount / 80);
+  
+  let description = `Document analysis estimated time: ${totalMinutes} minutes (1 + ceiling(${transactionCount} / 80))`;
+  if (transactionCount > 200) {
+    description += ` - Large document`;
+  } else if (transactionCount > 50) {
+    description += ` - Medium complexity`;
+  } else {
+    description += ` - Standard document`;
+  }
+  
+  return { estimatedMinutes: totalMinutes, description };
 }
 
 export async function analyzeBankingDocument(filePath: string): Promise<BankingDocumentAnalysis> {
@@ -80,21 +123,46 @@ export async function analyzeBankingDocument(filePath: string): Promise<BankingD
 
     console.log(`PDF text length: ${pdfText.length} characters`);
     
-    // Count transaction lines in PDF to set expectations
-    const transactionLineCount = (pdfText.match(/\d{2}\/\d{2}\/\d{4}/g) || []).length;
+    // Count transaction lines in PDF to set expectations - improved pattern matching
+    const datePatterns = [
+      /\d{2}\/\d{2}\/\d{4}/g,     // DD/MM/YYYY
+      /\d{1,2}\/\d{1,2}\/\d{4}/g, // D/M/YYYY or DD/M/YYYY
+      /\d{4}-\d{2}-\d{2}/g,       // YYYY-MM-DD
+      /\d{2}-\d{2}-\d{4}/g,       // DD-MM-YYYY
+      /\d{2}\s\w{3}\s\d{4}/g      // DD MON YYYY
+    ];
+    
+    let transactionLineCount = 0;
+    for (const pattern of datePatterns) {
+      const matches = pdfText.match(pattern) || [];
+      transactionLineCount = Math.max(transactionLineCount, matches.length);
+    }
+    
+    // If no dates found, estimate based on text patterns typical of bank statements
+    if (transactionLineCount === 0) {
+      // Look for transaction-like patterns with amounts
+      const amountPattern = /[\$\-]?\d+\.\d{2}/g;
+      const amounts = pdfText.match(amountPattern) || [];
+      transactionLineCount = Math.floor(amounts.length / 3); // Rough estimate: debits, credits, balances
+    }
+    
     console.log(`Estimated transaction lines in PDF: ${transactionLineCount}`);
+    
+    // Calculate processing time estimate
+    const timeEstimate = estimateProcessingTime(pdfText.length, transactionLineCount);
+    console.log(timeEstimate.description);
 
-    // Add timeout wrapper for AI request - increased for complex documents
-    const TIMEOUT_MS = 300000; // 5 minutes timeout
+    // Dynamic timeout based on complexity - minimum 3 minutes, maximum 20 minutes for large files
+    const TIMEOUT_MS = Math.min(Math.max(timeEstimate.estimatedMinutes * 60 * 1000, 180000), 1200000);
     
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('AI request timed out after 3 minutes')), TIMEOUT_MS);
+      setTimeout(() => reject(new Error(`AI request timed out after ${Math.round(TIMEOUT_MS/60000)} minutes`)), TIMEOUT_MS);
     });
     
-    const aiRequestPromise = anthropic.messages.create({
+    const aiRequestPromise = anthropic.messages.stream({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
-      max_tokens: 16384,
+      max_tokens: 64000, // Maximum for Claude Sonnet 4 (64K output tokens)
       system: `You are an AI assistant specialized in extracting and analyzing information from bank statement or bank transaction PDFs. Your task is to carefully examine the provided PDF content and extract specific information.
 
 IMPORTANT: You may be provided with a number of statements combined into one file, which may or may not be in the correct order, so you should carefully analyse the file checking all data and time entries and ensure its resolved consistently across the file. Further some statements such as those used for credit cards may only have one value such as amount, which may be positive or negative. You should determine or locate a payment to the statement to determine which is a credit and which is a debit, because this may be around in a different way to a normal bank statement.
@@ -202,9 +270,15 @@ ${pdfText}`
     });
 
     // Race between AI request and timeout
-    const response = await Promise.race([aiRequestPromise, timeoutPromise]) as any;
+    const streamResponse = await Promise.race([aiRequestPromise, timeoutPromise]) as any;
 
-    const fullResponse = response.content[0].type === 'text' ? response.content[0].text : '';
+    // Collect streaming response
+    let fullResponse = '';
+    for await (const chunk of streamResponse) {
+      if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+        fullResponse += chunk.delta.text;
+      }
+    }
     
     // Extract JSON from the response for backward compatibility
     let analysisResult: any = {};
@@ -225,6 +299,10 @@ ${pdfText}`
         }
       } else {
         analysisResult = JSON.parse(jsonMatch[0]);
+        // Apply account holder name formatting to JSON response
+        if (analysisResult.accountHolderName) {
+          analysisResult.accountHolderName = formatAccountHolderName(analysisResult.accountHolderName);
+        }
       }
     } catch (error) {
       console.warn('Could not parse JSON from analysis response:', error);
@@ -232,6 +310,7 @@ ${pdfText}`
       
       // Fallback: extract data from the full response text
       analysisResult = extractDataFromText(fullResponse);
+      // Name formatting already applied in extractDataFromText
     }
     
     // Extract XML analysis from the response - try multiple patterns
@@ -246,8 +325,36 @@ ${pdfText}`
       console.log(`Successfully extracted XML analysis from AI response`);
       console.log(`PDF estimated transactions: ${transactionLineCount}, XML extracted transactions: ${xmlTransactionCount}`);
       
-      if (xmlTransactionCount < transactionLineCount * 0.8) {
-        console.warn(`Warning: XML may be incomplete. Expected ~${transactionLineCount} transactions, got ${xmlTransactionCount}`);
+      // Store transaction counts for validation
+      analysisResult.totalTransactions = xmlTransactionCount;
+      analysisResult.estimatedPdfCount = Math.max(1, Math.ceil(transactionLineCount / 50)); // Estimate source PDFs
+      
+      // Extract earliest and latest transaction dates from XML
+      const transactionDates = xmlAnalysis.match(/<transaction_date>([^<]+)<\/transaction_date>/g);
+      if (transactionDates && transactionDates.length > 0) {
+        const dates = transactionDates.map((match: string) => {
+          const dateMatch = match.match(/<transaction_date>([^<]+)<\/transaction_date>/);
+          return dateMatch ? dateMatch[1].trim() : '';
+        }).filter((date: string) => date);
+        
+        if (dates.length > 0) {
+          // Sort dates and get earliest/latest
+          const sortedDates = dates.sort();
+          analysisResult.earliestTransaction = sortedDates[0];
+          analysisResult.latestTransaction = sortedDates[sortedDates.length - 1];
+        }
+      }
+      
+      // Validate transaction count discrepancy
+      const discrepancyThreshold = 0.8; // Allow 20% variance
+      if (xmlTransactionCount < transactionLineCount * discrepancyThreshold) {
+        const discrepancyMessage = `Transaction count discrepancy detected: Expected ~${transactionLineCount} transactions from PDF analysis, but XML contains ${xmlTransactionCount} transactions. This suggests ${Math.round((1 - xmlTransactionCount/transactionLineCount) * 100)}% of transactions may be missing.`;
+        console.warn(discrepancyMessage);
+        analysisResult.processingWarning = discrepancyMessage;
+      } else if (xmlTransactionCount > transactionLineCount * 1.2) {
+        const discrepancyMessage = `Transaction count higher than expected: PDF analysis estimated ${transactionLineCount} transactions, but XML contains ${xmlTransactionCount} transactions. This may indicate duplicate processing or combined statements.`;
+        console.warn(discrepancyMessage);
+        analysisResult.processingWarning = discrepancyMessage;
       }
     } else {
       console.warn('Could not find XML analysis in AI response');
@@ -297,9 +404,30 @@ ${pdfText}`
       transactionDateFrom: analysisResult.transactionDateFrom || undefined,
       transactionDateTo: analysisResult.transactionDateTo || undefined,
       confidence: Math.min(Math.max(analysisResult.confidence || 0.5, 0), 1),
-      xmlAnalysis
+      xmlAnalysis,
+      totalTransactions: analysisResult.totalTransactions || 0,
+      estimatedPdfCount: analysisResult.estimatedPdfCount || 1,
+      earliestTransaction: analysisResult.earliestTransaction || undefined,
+      latestTransaction: analysisResult.latestTransaction || undefined,
+      processingWarning: analysisResult.processingWarning || undefined,
+      success: true,
+      data: {
+        accountHolderName: normalizeAccountHolderName(analysisResult.accountHolderName || 'Unknown Holder'),
+        accountName: analysisResult.accountName || 'Unknown Account',
+        financialInstitution: analysisResult.financialInstitution || 'Unknown Institution',
+        accountNumber: analysisResult.accountNumber || undefined,
+        bsbSortCode: analysisResult.bsbSortCode || undefined,
+        transactionDateFrom: analysisResult.transactionDateFrom || undefined,
+        transactionDateTo: analysisResult.transactionDateTo || undefined,
+        confidence: Math.min(Math.max(analysisResult.confidence || 0.5, 0), 1),
+        xmlAnalysis,
+        totalTransactions: analysisResult.totalTransactions || 0,
+        estimatedPdfCount: analysisResult.estimatedPdfCount || 1,
+        earliestTransaction: analysisResult.earliestTransaction || undefined,
+        latestTransaction: analysisResult.latestTransaction || undefined,
+      }
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error analyzing banking document:', error);
     throw new Error(`Failed to analyze document: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -327,7 +455,7 @@ function extractDataFromText(text: string): any {
   // Extract account holders
   const holderMatch = text.match(/(?:Account Holders?|Holders?)[:\s]*([^\n]*?)(?:\n|$)/i);
   if (holderMatch) {
-    result.accountHolderName = holderMatch[1].trim();
+    result.accountHolderName = formatAccountHolderName(holderMatch[1].trim());
   }
   
   // Extract account type/name

@@ -13,7 +13,7 @@ export async function setupOAuthAuth(app: Express) {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "/auth/google/callback"
-    }, async (accessToken, refreshToken, profile, done) => {
+    }, async (accessToken: string, refreshToken: string, profile: any, done: any) => {
       try {
         // Check if user exists by email
         let user = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
@@ -58,7 +58,7 @@ export async function setupOAuthAuth(app: Express) {
       clientSecret: process.env.FACEBOOK_APP_SECRET,
       callbackURL: "/auth/facebook/callback",
       profileFields: ['id', 'emails', 'name', 'picture']
-    }, async (accessToken, refreshToken, profile, done) => {
+    }, async (accessToken: string, refreshToken: string, profile: any, done: any) => {
       try {
         let user = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
         
@@ -100,7 +100,7 @@ export async function setupOAuthAuth(app: Express) {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: "/auth/github/callback"
-    }, async (accessToken, refreshToken, profile, done) => {
+    }, async (accessToken: string, refreshToken: string, profile: any, done: any) => {
       try {
         let user = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
         

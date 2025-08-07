@@ -37,6 +37,48 @@ export interface BasicBankingFields {
   latestTransaction?: string;
 }
 
+// Helper function to format account holder names consistently
+function formatAccountHolderName(name: string): string {
+  if (!name) return name;
+  
+  // Remove common titles (case insensitive)
+  const titlesToRemove = [
+    'MR', 'MRS', 'MS', 'MISS', 'DR', 'PROF', 'SIR', 'LADY', 'LORD',
+    'Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Prof', 'Sir', 'Lady', 'Lord',
+    'mr', 'mrs', 'ms', 'miss', 'dr', 'prof', 'sir', 'lady', 'lord'
+  ];
+  
+  let cleanName = name.trim();
+  
+  // Remove titles from the beginning of the name
+  for (const title of titlesToRemove) {
+    const titlePattern = new RegExp(`^${title}\\.?\\s+`, 'i');
+    cleanName = cleanName.replace(titlePattern, '');
+  }
+  
+  // Convert to title case (first letter of each word capitalized)
+  cleanName = cleanName.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+  
+  return cleanName;
+}
+
+// Helper function to estimate processing time for full analysis
+function estimateFullAnalysisTime(textLength: number, transactionCount: number): { estimatedMinutes: number; description: string } {
+  // Formula: 1 + ceiling(transaction_count / 80) minutes
+  const totalMinutes = 1 + Math.ceil(transactionCount / 80);
+  
+  let description = `Full analysis estimated time: ${totalMinutes} minutes (1 + ceiling(${transactionCount} / 80))`;
+  if (transactionCount > 200) {
+    description += ` - Large document`;
+  } else if (transactionCount > 50) {
+    description += ` - Medium complexity`;
+  } else {
+    description += ` - Standard document`;
+  }
+  
+  return { estimatedMinutes: totalMinutes, description };
+}
+
 export async function extractBasicBankingFields(filePath: string): Promise<BasicBankingFields> {
   try {
     // Read and parse the PDF file to extract text
@@ -48,7 +90,38 @@ export async function extractBasicBankingFields(filePath: string): Promise<Basic
       throw new Error("Could not extract text from PDF");
     }
 
-    const response = await anthropic.messages.create({
+    console.log(`PDF text length: ${pdfText.length} characters`);
+    
+    // Count transaction lines to estimate complexity - improved pattern matching
+    const datePatterns = [
+      /\d{2}\/\d{2}\/\d{4}/g,     // DD/MM/YYYY
+      /\d{1,2}\/\d{1,2}\/\d{4}/g, // D/M/YYYY or DD/M/YYYY
+      /\d{4}-\d{2}-\d{2}/g,       // YYYY-MM-DD
+      /\d{2}-\d{2}-\d{4}/g,       // DD-MM-YYYY
+      /\d{2}\s\w{3}\s\d{4}/g      // DD MON YYYY
+    ];
+    
+    let transactionLineCount = 0;
+    for (const pattern of datePatterns) {
+      const matches = pdfText.match(pattern) || [];
+      transactionLineCount = Math.max(transactionLineCount, matches.length);
+    }
+    
+    // If no dates found, estimate based on text patterns typical of bank statements
+    if (transactionLineCount === 0) {
+      // Look for transaction-like patterns with amounts
+      const amountPattern = /[\$\-]?\d+\.\d{2}/g;
+      const amounts = pdfText.match(amountPattern) || [];
+      transactionLineCount = Math.floor(amounts.length / 3); // Rough estimate: debits, credits, balances
+    }
+    
+    console.log(`Estimated transaction lines in PDF: ${transactionLineCount}`);
+    
+    // Calculate time estimate for full analysis
+    const timeEstimate = estimateFullAnalysisTime(pdfText.length, transactionLineCount);
+    console.log(timeEstimate.description);
+
+    const streamResponse = await anthropic.messages.stream({
       // "claude-sonnet-4-20250514"
       model: DEFAULT_MODEL_STR,
       max_tokens: 2000,
@@ -100,7 +173,13 @@ Important:
       }]
     });
 
-    const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
+    // Collect streaming response
+    let responseText = '';
+    for await (const chunk of streamResponse) {
+      if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+        responseText += chunk.delta.text;
+      }
+    }
     
     // Parse the XML response (browser DOMParser not available in Node.js)
     // Simple XML parsing for our specific format
@@ -124,7 +203,8 @@ Important:
     const accountNumber = getXMLValue(responseText, 'account_number') || undefined;
     const accountBsb = getXMLValue(responseText, 'account_bsb') || undefined;
     
-    const accountHolders = getXMLArray(responseText, 'account_holders', 'account_holder');
+    const accountHolders = getXMLArray(responseText, 'account_holders', 'account_holder')
+      .map(name => formatAccountHolderName(name));
     
     const totalTransactions = parseInt(getXMLValue(responseText, 'total_transactions')) || undefined;
     const estimatedPdfCount = parseInt(getXMLValue(responseText, 'estimated_pdf_count')) || undefined;

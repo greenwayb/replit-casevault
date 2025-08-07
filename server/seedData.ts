@@ -85,6 +85,7 @@ export async function seedSampleUsers() {
     { firstName: "Ben", lastName: "Greenway", email: "bengreenway@gmail.com", orgName: "Not Applicable" },
     // Users with legal organizations
     { firstName: "Sarah", lastName: "Mitchell", email: "sarah.mitchell@hickmanlaw.com.au", orgName: "Hickman Family Law" },
+    { firstName: "David", lastName: "Smith", email: "david@gmail.com", orgName: "Hickman Family Lawyers" },
     { firstName: "David", lastName: "Chen", email: "david.chen@ryanbosscher.com.au", orgName: "Ryan & Bosscher Lawyers" },
     { firstName: "Emma", lastName: "Thompson", email: "emma.thompson@doranlaw.com.au", orgName: "Doran Lawyers" },
     { firstName: "Michael", lastName: "Roberts", email: "michael.roberts@williamsfamily.com.au", orgName: "Williams Family Lawyers" },
@@ -104,6 +105,7 @@ export async function seedSampleUsers() {
 
     // Users with no organization specified
     { firstName: "Anna", lastName: "Rodriguez", email: "anna.rodriguez@gmail.com", orgName: "Not Applicable" },
+    { firstName: "Ev", lastName: "Johnson", email: "ev@gmail.com", orgName: "Not Applicable" },
     { firstName: "Paul", lastName: "Thompson", email: "paul.thompson@outlook.com", orgName: "Not Applicable" },
     { firstName: "Michelle", lastName: "Clark", email: "michelle.clark@yahoo.com", orgName: "Not Applicable" },
     { firstName: "Daniel", lastName: "Lewis", email: "daniel.lewis@gmail.com", orgName: "Not Applicable" },

@@ -3,14 +3,18 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupLocalAuth, isAuthenticated } from "./localAuth";
 import { randomUUID } from "crypto";
-import { insertCaseSchema, insertDocumentSchema, type Role } from "@shared/schema";
+import { insertCaseSchema, insertDocumentSchema, type Role, transactions, type InsertTransaction } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF, generateXMLFromAnalysis } from "./aiService";
+import { db } from "./db";
+import { eq, desc, and } from "drizzle-orm";
 import { GoogleDriveService } from "./googleDriveService";
 import { DisclosurePdfService } from "./disclosurePdfService";
+import { SVGRenderer } from "./svgRenderer";
+import { SimpleSVGRenderer } from "./simpleSvgRenderer";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -492,6 +496,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Convert basic fields to expected format for confirmation modal
         const accountHolderName = basicFields.accountHolders.join(' & ') || 'Unknown';
         
+        // Calculate time estimate for full analysis
+        const estimatedMinutes = Math.max(1, Math.ceil((basicFields.totalTransactions || 50) / 100) + 1);
+        const timeDescription = `Estimated processing time: ${estimatedMinutes} minutes for ${basicFields.totalTransactions || 0} transactions`;
+
         // Return the basic analysis results for user review - Phase 1 complete
         res.json({
           id: document.id,
@@ -517,7 +525,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           latestTransaction: basicFields.latestTransaction,
           confidence: basicFields.confidence,
           requiresConfirmation: true,
-          analysisPhase: 'basic' // Indicate this is Phase 1 only
+          analysisPhase: 'basic', // Indicate this is Phase 1 only
+          timeEstimate: {
+            estimatedMinutes: estimatedMinutes,
+            description: timeDescription
+          }
         });
 
       } catch (aiError) {
@@ -608,11 +620,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let xmlAnalysisData = '';
         let xmlInfo = { xmlPath: '', xmlGenerated: false };
         let analysisError = null;
+        let analysis = null; // Initialize analysis variable
         
         try {
           logToFile('Step 1: Running AI analysis to generate XML...');
           const startTime = Date.now();
-          const analysis = await analyzeBankingDocument(filePath);
+          analysis = await analyzeBankingDocument(filePath);
           
           const elapsed = Date.now() - startTime;
           logToFile(`AI analysis completed in ${elapsed}ms`);
@@ -650,6 +663,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           xmlAnalysisData: xmlAnalysisData,
         };
 
+        // Add processing warning if present
+        if (analysis && analysis.processingWarning) {
+          updateData.processingWarning = analysis.processingWarning;
+          logToFile(`Processing warning: ${analysis.processingWarning}`);
+        }
+
         if (analysisError) {
           updateData.analysisError = analysisError;
           updateData.aiProcessingFailed = true;
@@ -666,12 +685,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           xmlInfo,
           xmlAnalysisData,
           analysisError,
+          processingWarning: updateData.processingWarning,
           message: analysisError 
             ? `Analysis completed with errors: ${analysisError}` 
+            : updateData.processingWarning
+            ? `Analysis completed with warnings: ${updateData.processingWarning}`
             : "Full analysis completed successfully",
           processingSteps: {
             xmlGenerated: xmlInfo.xmlGenerated,
-            errorOccurred: !!analysisError
+            errorOccurred: !!analysisError,
+            hasWarnings: !!updateData.processingWarning
           }
         });
 
@@ -738,12 +761,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Delete document
-  app.delete('/api/documents/:id', isAuthenticated, async (req: any, res) => {
+  // Update banking information for documents
+  app.patch('/api/documents/:id/banking-info', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const documentId = parseInt(req.params.id);
-      
+      const { accountHolderName, accountName, financialInstitution, accountNumber, bsbSortCode } = req.body;
+
+      console.log(`PATCH banking info for document ${documentId} by user ${userId}:`, req.body);
+
       const document = await storage.getDocumentById(documentId);
       if (!document) {
         return res.status(404).json({ message: "Document not found" });
@@ -755,12 +781,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied to this document" });
       }
 
+      // Check if user has permission to edit (CASEADMIN, DISCLOSER, or REVIEWER)
+      if (!userRoles.includes('CASEADMIN') && !userRoles.includes('DISCLOSER') && !userRoles.includes('REVIEWER')) {
+        return res.status(403).json({ message: "Insufficient permissions to edit banking information" });
+      }
+
+      // Update banking information
+      const updates: any = {};
+      if (accountHolderName !== undefined) updates.accountHolderName = accountHolderName?.trim() || null;
+      if (accountName !== undefined) updates.accountName = accountName?.trim() || null;
+      if (financialInstitution !== undefined) updates.financialInstitution = financialInstitution?.trim() || null;
+      if (accountNumber !== undefined) updates.accountNumber = accountNumber?.trim() || null;
+      if (bsbSortCode !== undefined) updates.bsbSortCode = bsbSortCode?.trim() || null;
+
+      const updatedDocument = await storage.updateDocumentWithAIAnalysis(documentId, updates);
+      console.log(`Banking info updated successfully for document ${documentId}`);
+
+      res.json(updatedDocument);
+    } catch (error) {
+      console.error("Error updating banking information:", error);
+      res.status(500).json({ message: "Failed to update banking information" });
+    }
+  });
+
+  // Delete document
+  app.delete('/api/documents/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const documentId = parseInt(req.params.id);
+      
+      console.log(`DELETE request for document ${documentId} by user ${userId}`);
+      
+      // Validate documentId
+      if (isNaN(documentId)) {
+        console.log(`Invalid document ID: ${req.params.id}`);
+        return res.status(400).json({ message: "Invalid document ID" });
+      }
+      
+      const document = await storage.getDocumentById(documentId);
+      if (!document) {
+        console.log(`Document ${documentId} not found`);
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Check if user has access to the case
+      const userRoles = await storage.getUserRolesInCase(userId, document.caseId);
+      console.log(`User ${userId} roles in case ${document.caseId}:`, userRoles);
+      
+      if (!userRoles || userRoles.length === 0) {
+        console.log(`User ${userId} has no access to case ${document.caseId}`);
+        return res.status(403).json({ message: "Access denied to this document" });
+      }
+
       // Check if user has permission to delete (CASEADMIN or DISCLOSER)
       if (!userRoles.includes('CASEADMIN') && !userRoles.includes('DISCLOSER')) {
+        console.log(`User ${userId} lacks delete permissions. Roles:`, userRoles);
         return res.status(403).json({ message: "Insufficient permissions to delete document" });
       }
 
+      console.log(`Deleting document ${documentId}`);
       await storage.deleteDocument(documentId);
+      console.log(`Document ${documentId} deleted successfully`);
+      
       res.json({ message: "Document deleted successfully" });
     } catch (error) {
       console.error("Error deleting document:", error);
@@ -930,6 +1012,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error downloading document:", error);
       res.status(500).json({ message: "Failed to download document" });
+    }
+  });
+
+  // Server-side SVG to PNG rendering endpoint
+  app.post('/api/render/svg-to-png', isAuthenticated, async (req: any, res) => {
+    try {
+      const { svgContent, chartData, chartType, width = 800, height = 600, scale = 2 } = req.body;
+
+      let pngBuffer: Buffer;
+
+      if (svgContent) {
+        // Debug: Log SVG content details
+        const textCount = (svgContent.match(/<text/g) || []).length;
+        console.log(`Server received SVG with ${textCount} text elements`);
+        console.log('SVG content sample:', svgContent.substring(0, 500));
+        
+        // Try Puppeteer first for better text rendering, fallback to Canvas
+        try {
+          pngBuffer = await SVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
+          console.log('Puppeteer rendering successful');
+        } catch (puppeteerError) {
+          const puppeteerErrorMsg = puppeteerError instanceof Error ? puppeteerError.message : String(puppeteerError);
+          console.log('Puppeteer rendering failed, trying Canvas:', puppeteerErrorMsg);
+          try {
+            pngBuffer = await SimpleSVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
+            console.log('Canvas rendering successful');
+          } catch (simpleError) {
+            const simpleErrorMsg = simpleError instanceof Error ? simpleError.message : String(simpleError);
+            console.log('Canvas failed, trying Sharp fallback:', simpleErrorMsg);
+            pngBuffer = await SimpleSVGRenderer.renderSVGToBuffer(svgContent, { width, height });
+          }
+        }
+      } else if (chartData && chartType) {
+        // Render chart data using Recharts
+        try {
+          pngBuffer = await SVGRenderer.renderChartToPNG(chartData, chartType, { width, height, scale });
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          console.log('Chart rendering failed:', errorMessage);
+          return res.status(500).json({ message: "Chart rendering not available" });
+        }
+      } else {
+        return res.status(400).json({ message: "Either svgContent or chartData/chartType is required" });
+      }
+
+      // Optimize the PNG
+      const optimizedPng = await SVGRenderer.optimizePNG(pngBuffer, { quality: 90 });
+
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Length', optimizedPng.length);
+      res.send(optimizedPng);
+    } catch (error) {
+      console.error("Error rendering SVG to PNG:", error);
+      res.status(500).json({ message: "Failed to render SVG" });
     }
   });
 
@@ -1518,6 +1654,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating case title:", error);
       res.status(500).json({ message: "Failed to update case title" });
+    }
+  });
+
+  // Transaction management routes
+  app.get("/api/transactions/:documentId", isAuthenticated, async (req: any, res) => {
+    try {
+      const documentId = parseInt(req.params.documentId);
+      if (isNaN(documentId)) {
+        return res.status(400).json({ message: "Invalid document ID" });
+      }
+
+      const transactionList = await db
+        .select()
+        .from(transactions)
+        .where(eq(transactions.documentId, documentId));
+
+      res.json(transactionList);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      res.status(500).json({ message: "Failed to fetch transactions" });
+    }
+  });
+
+  app.post("/api/transactions", isAuthenticated, async (req: any, res) => {
+    try {
+      const { documentId, transactionDate, description, amount, balance, category, status } = req.body;
+
+      const [transaction] = await db
+        .insert(transactions)
+        .values({
+          documentId,
+          transactionDate,
+          description,
+          amount,
+          balance,
+          category,
+          status: status || 'none'
+        })
+        .returning();
+
+      res.json(transaction);
+    } catch (error) {
+      console.error("Error creating transaction:", error);
+      res.status(500).json({ message: "Failed to create transaction" });
+    }
+  });
+
+  app.put("/api/transactions/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const transactionId = parseInt(req.params.id);
+      if (isNaN(transactionId)) {
+        return res.status(400).json({ message: "Invalid transaction ID" });
+      }
+
+      const { status, comments } = req.body;
+
+      const updateData: any = { updatedAt: new Date() };
+      if (status !== undefined) updateData.status = status;
+      if (comments !== undefined) updateData.comments = comments;
+
+      const [updatedTransaction] = await db
+        .update(transactions)
+        .set(updateData)
+        .where(eq(transactions.id, transactionId))
+        .returning();
+
+      if (!updatedTransaction) {
+        return res.status(404).json({ message: "Transaction not found" });
+      }
+
+      res.json(updatedTransaction);
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+      res.status(500).json({ message: "Failed to update transaction" });
     }
   });
 

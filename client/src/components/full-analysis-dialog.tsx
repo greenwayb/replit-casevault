@@ -9,13 +9,15 @@ interface FullAnalysisDialogProps {
   onClose: () => void;
   documentId: number;
   onComplete: (data: any) => void;
+  transactionCount?: number;
 }
 
 export default function FullAnalysisDialog({ 
   isOpen, 
   onClose, 
   documentId, 
-  onComplete 
+  onComplete,
+  transactionCount = 0
 }: FullAnalysisDialogProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -317,7 +319,7 @@ export default function FullAnalysisDialog({
                 )}
                 
                 <p className="text-xs text-muted-foreground">
-                  This process typically takes 1-2 minutes. You can cancel at any time.
+                  Estimated time: {1 + Math.ceil(transactionCount / 80)} minutes. You can cancel at any time.
                 </p>
               </div>
             </div>

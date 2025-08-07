@@ -108,7 +108,7 @@ export function BankingTransactionChart({ xmlData, accountName }: BankingTransac
       };
 
       // Identify key events
-      const events = [];
+      const events: Array<{date: string, label: string, balance: number}> = [];
       let previousBalance = startingBalance;
       
       dailyArray.forEach(day => {
@@ -251,7 +251,7 @@ export function BankingTransactionChart({ xmlData, accountName }: BankingTransac
       <Card>
         <CardContent className="p-6">
           <div style={{ height: '600px' }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" data-testid="transaction-chart">
               <ComposedChart
                 data={dailyData}
                 margin={{ top: 20, right: 30, left: 40, bottom: 60 }}
@@ -285,7 +285,7 @@ export function BankingTransactionChart({ xmlData, accountName }: BankingTransac
                   y={0} 
                   stroke="#666" 
                   strokeDasharray="2 2" 
-                  label={{ value: "Zero Balance", position: "topRight" }}
+                  label={{ value: "Zero Balance", position: "top" }}
                 />
                 
                 {/* Transaction bars */}

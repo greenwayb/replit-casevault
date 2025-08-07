@@ -52,7 +52,7 @@ export default function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      const response = await apiRequest("POST", "/api/login", data);
+      const response = await apiRequest("/api/login", "POST", data);
       return response.json();
     },
     onSuccess: () => {
@@ -74,7 +74,7 @@ export default function AuthPage() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterFormData) => {
-      const response = await apiRequest("POST", "/api/register", data);
+      const response = await apiRequest("/api/register", "POST", data);
       return response.json();
     },
     onSuccess: () => {

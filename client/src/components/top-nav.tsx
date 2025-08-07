@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 
@@ -12,12 +12,26 @@ export function TopNav() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest('POST', '/api/logout');
+      console.log("Top nav logout mutation starting...");
+      try {
+        const response = await apiRequest('/api/logout', 'POST', {});
+        console.log("Top nav logout response:", response.status);
+        const result = await response.json();
+        console.log("Top nav logout result:", result);
+        return result;
+      } catch (error) {
+        console.error("Top nav logout API error:", error);
+        throw error;
+      }
     },
-    onSuccess: () => {
-      window.location.href = '/';
+    onSuccess: (data) => {
+      console.log("Top nav logout successful, redirecting...", data);
+      // Clear all cached queries and redirect to auth page
+      queryClient.clear();
+      window.location.href = '/auth';
     },
-    onError: () => {
+    onError: (error: Error) => {
+      console.error("Top nav logout mutation error:", error);
       toast({
         title: "Error",
         description: "Failed to logout. Please try again.",
@@ -27,6 +41,7 @@ export function TopNav() {
   });
 
   const handleLogout = () => {
+    console.log("Top nav logout button clicked!");
     logoutMutation.mutate();
   };
 
@@ -52,9 +67,9 @@ export function TopNav() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-sm text-gray-700">
             <User className="h-4 w-4" />
-            <span className="font-medium">{user.firstName} {user.lastName}</span>
-            {user.email && (
-              <span className="text-gray-500">({user.email})</span>
+            <span className="font-medium">{(user as any)?.firstName} {(user as any)?.lastName}</span>
+            {(user as any)?.email && (
+              <span className="text-gray-500">({(user as any)?.email})</span>
             )}
           </div>
           <Button

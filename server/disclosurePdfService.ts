@@ -187,7 +187,7 @@ export class DisclosurePdfService {
               }
               
               instDocs.forEach(doc => {
-                const isNew = lastGeneratedAt ? doc.createdAt > lastGeneratedAt : false;
+                const isNew = lastGeneratedAt && doc.createdAt ? doc.createdAt > lastGeneratedAt : false;
                 const description = doc.accountNumber 
                   ? `${doc.originalName} - Account Ending ${doc.accountNumber.slice(-4)}`
                   : doc.originalName;
@@ -214,7 +214,7 @@ export class DisclosurePdfService {
         } else {
           // Standard document listing for other categories
           categoryDocs.forEach(doc => {
-            const isNew = lastGeneratedAt ? doc.createdAt > lastGeneratedAt : false;
+            const isNew = lastGeneratedAt && doc.createdAt ? doc.createdAt > lastGeneratedAt : false;
             rows.push({
               isNew,
               category: code,

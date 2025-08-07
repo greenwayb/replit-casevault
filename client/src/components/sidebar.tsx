@@ -24,15 +24,26 @@ export default function Sidebar({ user }: SidebarProps) {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/logout", {});
-      return response.json();
+      console.log("Starting logout mutation...");
+      try {
+        const response = await apiRequest("/api/logout", "POST", {});
+        console.log("Logout response:", response.status);
+        const result = await response.json();
+        console.log("Logout result:", result);
+        return result;
+      } catch (error) {
+        console.error("Logout API error:", error);
+        throw error;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Logout successful, clearing cache and redirecting...", data);
       // Clear all cached queries and redirect to auth page
       queryClient.clear();
       window.location.href = "/auth";
     },
     onError: (error: Error) => {
+      console.error("Logout mutation error:", error);
       toast({
         title: "Logout failed", 
         description: error.message,
@@ -131,7 +142,10 @@ export default function Sidebar({ user }: SidebarProps) {
           <Button
             variant="ghost"
             className="w-full justify-start text-slate-600 hover:bg-slate-100 font-medium text-sm md:text-base py-2 md:py-2.5 touch-manipulation"
-            onClick={() => logoutMutation.mutate()}
+            onClick={() => {
+              console.log("Logout button clicked!");
+              logoutMutation.mutate();
+            }}
             disabled={logoutMutation.isPending}
           >
             <LogOut className="h-4 w-4 mr-2 md:mr-3 flex-shrink-0" />
