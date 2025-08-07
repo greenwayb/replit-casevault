@@ -84,9 +84,38 @@ export class SVGRenderer {
               -webkit-font-smoothing: antialiased;
               -moz-osx-font-smoothing: grayscale;
               text-rendering: optimizeLegibility;
+              fill: #374151 !important;
+              font-size: 12px !important;
+              visibility: visible !important;
+              opacity: 1 !important;
             }
             .recharts-text {
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+              fill: #374151 !important;
+              font-size: 12px !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+            .recharts-cartesian-axis-tick-value {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+              fill: #6B7280 !important;
+              font-size: 11px !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+            .recharts-legend-item-text {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+              fill: #374151 !important;
+              font-size: 14px !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+            .recharts-layer text {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+              fill: #374151 !important;
+              font-size: 12px !important;
+              visibility: visible !important;
+              opacity: 1 !important;
             }
           </style>
         </head>
@@ -102,11 +131,35 @@ export class SVGRenderer {
       });
       
       // Wait longer for SVG elements and text to fully render
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(3000);
       
-      // Ensure all fonts are loaded
+      // Ensure all fonts are loaded and text is visible
       await page.evaluate(() => {
-        return document.fonts.ready;
+        return Promise.all([
+          document.fonts.ready,
+          new Promise(resolve => {
+            // Force text elements to be visible
+            const textElements = document.querySelectorAll('text');
+            console.log(`Found ${textElements.length} text elements in DOM`);
+            textElements.forEach((text, index) => {
+              const originalFill = text.getAttribute('fill');
+              const originalStyle = text.getAttribute('style');
+              console.log(`Text ${index}: content="${text.textContent}", fill="${originalFill}", style="${originalStyle}"`);
+              
+              text.style.visibility = 'visible';
+              text.style.opacity = '1';
+              text.style.fill = text.style.fill || originalFill || '#374151';
+              text.style.fontSize = text.style.fontSize || '12px';
+              text.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif';
+              
+              // Force attributes as well
+              text.setAttribute('fill', text.style.fill);
+              text.setAttribute('font-family', text.style.fontFamily);
+              text.setAttribute('font-size', text.style.fontSize);
+            });
+            setTimeout(resolve, 500);
+          })
+        ]);
       });
       
       // Take high-quality screenshot of the SVG
