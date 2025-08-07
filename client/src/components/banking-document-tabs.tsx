@@ -122,36 +122,14 @@ export default function BankingDocumentTabs({
     }
   };
 
-  // Enhanced function to capture SVG chart with tab activation
-  const captureSVGChart = async (containerRef: React.RefObject<HTMLDivElement>, chartName: string, tabName: string): Promise<string | null> => {
-    const originalTab = activeTab;
-    
-    try {
-      // Switch to the required tab if not already active
-      if (activeTab !== tabName) {
-        console.log(`Switching to ${tabName} tab for ${chartName} capture...`);
-        setActiveTab(tabName);
-        
-        // Wait for tab switch and component render
-        await new Promise(resolve => setTimeout(resolve, 1500));
-      }
-      
-      // Capture the chart
-      const result = await ClientSVGRenderer.captureChart(containerRef, chartName, {
-        width: 800,
-        height: 600,
-        scale: 2, // High resolution for PDF
-        quality: 95
-      });
-      
-      return result;
-    } finally {
-      // Always restore original tab
-      if (activeTab !== originalTab) {
-        console.log(`Restoring original tab: ${originalTab}`);
-        setActiveTab(originalTab);
-      }
-    }
+  // Enhanced function to capture SVG chart with server-side rendering (the working approach)
+  const captureSVGChart = async (containerRef: React.RefObject<HTMLDivElement>, chartName: string): Promise<string | null> => {
+    return await ClientSVGRenderer.captureChart(containerRef, chartName, {
+      width: 800,
+      height: 600,
+      scale: 2, // High resolution for PDF
+      quality: 95
+    });
   };
 
   const handleExportAnalysisPDF = async () => {
@@ -168,7 +146,7 @@ export default function BankingDocumentTabs({
     
     try {
       console.log('Attempting Sankey capture...');
-      sankeyImage = await captureSVGChart(sankeyRef, 'Sankey', 'sankey');
+      sankeyImage = await captureSVGChart(sankeyRef, 'Sankey');
       console.log('Sankey capture result:', sankeyImage ? 'SUCCESS' : 'FAILED');
     } catch (error) {
       console.log('Sankey capture failed:', error);
@@ -176,7 +154,7 @@ export default function BankingDocumentTabs({
     
     try {
       console.log('Attempting transaction chart capture...');
-      chartImage = await captureSVGChart(chartRef, 'TransactionChart', 'chart');
+      chartImage = await captureSVGChart(chartRef, 'TransactionChart');
       console.log('Transaction chart capture result:', chartImage ? 'SUCCESS' : 'FAILED');
     } catch (error) {
       console.log('Transaction chart capture failed:', error);
