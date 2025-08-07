@@ -107,17 +107,20 @@ export default function BankingDocumentTabs({
   const addWatermark = (doc: jsPDF) => {
     try {
       // Add Family Court Documentation logo watermark in top right
-      doc.setGState(new doc.GState({opacity: 0.15}));
+      const gs = doc.internal.gState;
+      doc.saveGraphicsState();
+      doc.setGState({opacity: 0.15});
       // Add logo image (small size in top right)
       doc.addImage(logoPath, 'PNG', doc.internal.pageSize.width - 50, 5, 40, 20);
-      doc.setGState(new doc.GState({opacity: 1})); // Reset opacity
+      doc.restoreGraphicsState();
     } catch (error) {
       // Fallback to text watermark if image fails
-      doc.setGState(new doc.GState({opacity: 0.1}));
+      doc.saveGraphicsState();
+      doc.setGState({opacity: 0.1});
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
       doc.text('Family Court Documentation', doc.internal.pageSize.width - 60, 15);
-      doc.setGState(new doc.GState({opacity: 1}));
+      doc.restoreGraphicsState();
     }
   };
 
@@ -126,33 +129,77 @@ export default function BankingDocumentTabs({
     try {
       console.log('Starting Sankey diagram capture...');
       
-      // Wait a moment for charts to fully render
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer for charts to fully render
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Check if we're on the sankey tab first
+      const activeTab = document.querySelector('[data-state="active"][value="sankey"]');
+      if (!activeTab) {
+        console.log('Sankey tab is not active, switching...');
+        // Try to activate the sankey tab
+        const sankeyTab = document.querySelector('[value="sankey"]') as HTMLElement;
+        if (sankeyTab) {
+          sankeyTab.click();
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+      
+      // Log all possible containers for debugging
+      const allContainers = document.querySelectorAll('.recharts-responsive-container');
+      console.log('Found responsive containers:', allContainers.length);
+      
+      const allCards = document.querySelectorAll('.card, [class*="card"]');
+      console.log('Found card elements:', allCards.length);
       
       // Find the Sankey diagram container - try multiple selectors
-      const sankeyContainer = document.querySelector('[data-testid="sankey-diagram"]') ||
-                             document.querySelector('.recharts-responsive-container') ||
-                             document.querySelector('.bg-white.rounded-lg.shadow-lg');
+      let sankeyContainer = document.querySelector('[data-testid="sankey-diagram"]') as HTMLElement;
       
       if (!sankeyContainer) {
-        console.log('No Sankey diagram container found');
+        // Look for the first recharts container (likely the Sankey)
+        sankeyContainer = allContainers[0] as HTMLElement;
+        console.log('Using first recharts container as fallback');
+      }
+      
+      if (!sankeyContainer) {
+        // Look for a container with Sankey-specific content
+        sankeyContainer = Array.from(document.querySelectorAll('div')).find((div): div is HTMLElement => 
+          div instanceof HTMLElement && (
+            div.textContent?.includes('Transaction Flow') || 
+            div.textContent?.includes('Sankey') ||
+            div.querySelector('svg')
+          )
+        ) as HTMLElement;
+        console.log('Using content-based detection');
+      }
+      
+      if (!sankeyContainer) {
+        console.log('No Sankey diagram container found after all attempts');
+        console.log('Available elements:', {
+          responsiveContainers: allContainers.length,
+          testIdElements: document.querySelectorAll('[data-testid]').length,
+          svgElements: document.querySelectorAll('svg').length
+        });
         return null;
       }
 
       console.log('Found Sankey container:', sankeyContainer);
-
-      // Use html2canvas to capture the entire container
-      const canvas = await html2canvas(sankeyContainer as HTMLElement, {
-        backgroundColor: '#ffffff',
-        scale: 2, // Higher quality
-        useCORS: true,
-        allowTaint: true,
-        logging: true,
-        width: 1200,
-        height: 600
+      console.log('Container dimensions:', {
+        width: sankeyContainer.offsetWidth,
+        height: sankeyContainer.offsetHeight,
+        visible: sankeyContainer.offsetParent !== null
       });
 
-      const imageData = canvas.toDataURL('image/png', 0.95);
+      // Use html2canvas to capture the entire container
+      const canvas = await html2canvas(sankeyContainer, {
+        backgroundColor: '#ffffff',
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        removeContainer: false
+      });
+
+      const imageData = canvas.toDataURL('image/png', 0.9);
       console.log('Sankey image captured successfully, size:', imageData.length);
       return imageData;
     } catch (error) {
@@ -166,36 +213,70 @@ export default function BankingDocumentTabs({
     try {
       console.log('Starting transaction chart capture...');
       
-      // Wait a moment for charts to fully render
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Check if we're on the chart tab first
+      const activeTab = document.querySelector('[data-state="active"][value="chart"]');
+      if (!activeTab) {
+        console.log('Chart tab is not active, switching...');
+        // Try to activate the chart tab
+        const chartTab = document.querySelector('[value="chart"]') as HTMLElement;
+        if (chartTab) {
+          chartTab.click();
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+      }
+      
+      // Wait longer for charts to fully render
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Log all possible containers for debugging
+      const allContainers = document.querySelectorAll('.recharts-responsive-container');
+      console.log('Found responsive containers for chart:', allContainers.length);
       
       // Find the transaction chart container
-      const chartContainer = document.querySelector('[data-testid="transaction-chart"]') ||
-                            document.querySelectorAll('.recharts-responsive-container')[1] ||
-                            Array.from(document.querySelectorAll('.card')).find(card => 
-                              card.textContent?.includes('Main Chart') || 
-                              card.querySelector('.recharts-responsive-container')
-                            );
+      let chartContainer = document.querySelector('[data-testid="transaction-chart"]') as HTMLElement;
       
       if (!chartContainer) {
-        console.log('No transaction chart container found');
+        // Look for the last recharts container (likely the chart if Sankey was first)
+        chartContainer = allContainers[allContainers.length - 1] as HTMLElement;
+        console.log('Using last recharts container as fallback');
+      }
+      
+      if (!chartContainer) {
+        // Look for a container with chart-specific content
+        chartContainer = Array.from(document.querySelectorAll('div')).find((div): div is HTMLElement => 
+          div instanceof HTMLElement && (
+            div.textContent?.includes('Daily Balance') || 
+            div.textContent?.includes('Transaction Chart') ||
+            div.textContent?.includes('Main Chart') ||
+            (div.querySelector('svg') && div.textContent?.includes('Balance'))
+          )
+        ) as HTMLElement;
+        console.log('Using content-based detection for chart');
+      }
+      
+      if (!chartContainer) {
+        console.log('No transaction chart container found after all attempts');
         return null;
       }
 
       console.log('Found chart container:', chartContainer);
-
-      // Use html2canvas to capture the entire container
-      const canvas = await html2canvas(chartContainer as HTMLElement, {
-        backgroundColor: '#ffffff',
-        scale: 2, // Higher quality
-        useCORS: true,
-        allowTaint: true,
-        logging: true,
-        width: 1200,
-        height: 600
+      console.log('Chart container dimensions:', {
+        width: chartContainer.offsetWidth,
+        height: chartContainer.offsetHeight,
+        visible: chartContainer.offsetParent !== null
       });
 
-      const imageData = canvas.toDataURL('image/png', 0.95);
+      // Use html2canvas to capture the entire container
+      const canvas = await html2canvas(chartContainer, {
+        backgroundColor: '#ffffff',
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        removeContainer: false
+      });
+
+      const imageData = canvas.toDataURL('image/png', 0.9);
       console.log('Transaction chart image captured successfully, size:', imageData.length);
       return imageData;
     } catch (error) {
@@ -209,16 +290,30 @@ export default function BankingDocumentTabs({
 
     console.log('Starting PDF export...');
     
+    // First, make sure we're on a tab that shows charts, then capture
+    console.log('Ensuring Sankey tab is active for capture...');
+    const sankeyTab = document.querySelector('[value="sankey"]') as HTMLElement;
+    if (sankeyTab) {
+      sankeyTab.click();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+    
+    const sankeyImage = await captureSankeyDiagram();
+    console.log('Sankey image captured:', !!sankeyImage);
+    
+    // Switch to chart tab for second capture
+    console.log('Switching to chart tab...');
+    const chartTab = document.querySelector('[value="chart"]') as HTMLElement;
+    if (chartTab) {
+      chartTab.click();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+    
+    const chartImage = await captureTransactionChart();
+    console.log('Chart image captured:', !!chartImage);
+    
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
-    
-    // Capture chart images before creating PDF
-    console.log('Capturing chart images...');
-    const sankeyImage = await captureSankeyDiagram();
-    const chartImage = await captureTransactionChart();
-    
-    console.log('Sankey image captured:', !!sankeyImage);
-    console.log('Chart image captured:', !!chartImage);
     
     // Page 1: Banking Information and Summary (Portrait)
     addWatermark(doc);
