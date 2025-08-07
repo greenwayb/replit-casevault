@@ -110,7 +110,7 @@ export default function BankingDocumentTabs({
   const addWatermark = (doc: jsPDF) => {
     try {
       // Add Family Court Documentation logo watermark in top right
-      doc.addImage(logoPath, 'JPEG', doc.internal.pageSize.width - 35, 5, 25, 12); // Much smaller logo
+      doc.addImage(logoPath, 'PNG', doc.internal.pageSize.width - 50, 5, 40, 20);
     } catch (error) {
       // Fallback to text watermark if image fails
       console.log('Logo failed, using text watermark:', error);
@@ -136,12 +136,12 @@ export default function BankingDocumentTabs({
         await new Promise(resolve => setTimeout(resolve, 1500));
       }
       
-      // Use working configuration for readable charts
+      // Capture the chart
       const result = await ClientSVGRenderer.captureChart(containerRef, chartName, {
         width: 800,
         height: 600,
-        scale: 2,     // 2x scaling that worked before
-        quality: 90
+        scale: 2, // High resolution for PDF
+        quality: 95
       });
       
       return result;
@@ -157,85 +157,29 @@ export default function BankingDocumentTabs({
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
-    console.log('Starting PDF export with aggressive optimization for smaller file size...');
+    console.log('Starting PDF export with enhanced server-side chart capture...');
     
-    // Back to working PDF configuration 
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
     
-    // Use server-side Puppeteer rendering for reliable text capture
+    // Attempt to capture charts with enhanced server-side rendering
     let sankeyImage: string | null = null;
     let chartImage: string | null = null;
     
-    // Use server-side Puppeteer rendering for reliable text capture
     try {
-      console.log('Attempting server-side Sankey capture...');
-      const sankeyContainer = sankeyContainerRef.current;
-      if (sankeyContainer) {
-        const sankeySvg = sankeyContainer.querySelector('svg');
-        if (sankeySvg) {
-          const svgContent = new XMLSerializer().serializeToString(sankeySvg);
-          console.log('Sending Sankey SVG to server for rendering...');
-          
-          const response = await fetch('/api/render/svg-to-png', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              svgContent,
-              options: { width: 800, height: 600, scale: 2 }
-            })
-          });
-          
-          if (response.ok) {
-            const blob = await response.blob();
-            sankeyImage = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.readAsDataURL(blob);
-            });
-            console.log('Sankey image rendered successfully by server');
-          } else {
-            console.error('Server rendering failed for Sankey');
-          }
-        }
-      }
+      console.log('Attempting Sankey capture...');
+      sankeyImage = await captureSVGChart(sankeyRef, 'Sankey', 'sankey');
+      console.log('Sankey capture result:', sankeyImage ? 'SUCCESS' : 'FAILED');
     } catch (error) {
-      console.log('Sankey server capture failed:', error);
+      console.log('Sankey capture failed:', error);
     }
     
     try {
-      console.log('Attempting server-side transaction chart capture...');
-      const chartContainer = transactionContainerRef.current;
-      if (chartContainer) {
-        const chartSvg = chartContainer.querySelector('svg');
-        if (chartSvg) {
-          const svgContent = new XMLSerializer().serializeToString(chartSvg);
-          console.log('Sending Transaction Chart SVG to server for rendering...');
-          
-          const response = await fetch('/api/render/svg-to-png', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              svgContent,
-              options: { width: 800, height: 600, scale: 2 }
-            })
-          });
-          
-          if (response.ok) {
-            const blob = await response.blob();
-            chartImage = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.readAsDataURL(blob);
-            });
-            console.log('Transaction chart image rendered successfully by server');
-          } else {
-            console.error('Server rendering failed for Transaction chart');
-          }
-        }
-      }
+      console.log('Attempting transaction chart capture...');
+      chartImage = await captureSVGChart(chartRef, 'TransactionChart', 'chart');
+      console.log('Transaction chart capture result:', chartImage ? 'SUCCESS' : 'FAILED');
     } catch (error) {
-      console.log('Transaction chart server capture failed:', error);
+      console.log('Transaction chart capture failed:', error);
     }
     
     // Page 1: Banking Information and Summary (Portrait)
@@ -322,7 +266,7 @@ export default function BankingDocumentTabs({
       // Add the captured Sankey diagram image
       try {
         console.log('Adding Sankey image to PDF...');
-        doc.addImage(sankeyImage, 'PNG', 20, 40, 250, 150); // Back to PNG with working size
+        doc.addImage(sankeyImage, 'PNG', 20, 40, 250, 150);
         console.log('Sankey image added successfully');
       } catch (error) {
         console.error('Error adding Sankey image to PDF:', error);
@@ -356,7 +300,7 @@ export default function BankingDocumentTabs({
       // Add the captured transaction chart image
       try {
         console.log('Adding transaction chart image to PDF...');
-        doc.addImage(chartImage, 'PNG', 20, 40, 250, 150); // Back to PNG with working size
+        doc.addImage(chartImage, 'PNG', 20, 40, 250, 150);
         console.log('Transaction chart image added successfully');
       } catch (error) {
         console.error('Error adding chart image to PDF:', error);
@@ -465,34 +409,9 @@ export default function BankingDocumentTabs({
       doc.text(`Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, doc.internal.pageSize.width - 80, doc.internal.pageSize.height - 10);
     }
     
-    // Save PDF with optimization
-    try {
-      console.log('Optimizing PDF for smaller file size...');
-      
-      // Get PDF data with compression and log size information  
-      const pdfData = doc.output('arraybuffer');
-      const originalSize = pdfData.byteLength;
-      console.log(`Optimized PDF size: ${(originalSize / 1024).toFixed(1)} KB (target: <3MB)`);
-      
-      // Create optimized filename and download
-      const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-      const pdfBlob = new Blob([pdfData], { type: 'application/pdf' });
-      
-      const url = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      console.log('Optimized PDF export completed successfully');
-    } catch (error) {
-      console.error('Error during PDF optimization, using standard save:', error);
-      const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-      doc.save(fileName);
-    }
+    // Save the PDF
+    const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
   };
 
 
