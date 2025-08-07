@@ -333,7 +333,7 @@ export function BankingSankeyDiagram({ xmlData, accountName, dateRange }: Bankin
 
       {/* Sankey Diagram */}
       <div className="bg-white rounded-lg shadow-lg p-4" style={{ height: 'calc(100vh - 300px)' }}>
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" data-testid="sankey-diagram">
           <Sankey
             data={sankeyData}
             nodeWidth={150}

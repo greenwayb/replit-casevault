@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet, AlertTriangle, FileDown } from "lucide-react";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import logoPath from "@assets/FamilyCourtDoco-Asset_1754059270273.png";
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
 import { BankingJsonDisplay } from "./banking-json-display";
 import { BankingTransactionChart } from "./banking-transaction-chart";
@@ -101,13 +102,126 @@ export default function BankingDocumentTabs({
     }
   };
 
+  // Function to add watermark to page
+  const addWatermark = (doc: jsPDF) => {
+    try {
+      // Add Family Court Documentation logo watermark in top right
+      doc.setGState(new doc.GState({opacity: 0.15}));
+      // Add logo image (small size in top right)
+      doc.addImage(logoPath, 'PNG', doc.internal.pageSize.width - 50, 5, 40, 20);
+      doc.setGState(new doc.GState({opacity: 1})); // Reset opacity
+    } catch (error) {
+      // Fallback to text watermark if image fails
+      doc.setGState(new doc.GState({opacity: 0.1}));
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Family Court Documentation', doc.internal.pageSize.width - 60, 15);
+      doc.setGState(new doc.GState({opacity: 1}));
+    }
+  };
+
+  // Function to capture Sankey diagram as image
+  const captureSankeyDiagram = async (): Promise<string | null> => {
+    try {
+      // Find the Sankey diagram SVG element - check multiple possible selectors
+      const sankeyElement = document.querySelector('[data-testid="sankey-diagram"] svg') || 
+                           document.querySelector('.recharts-wrapper svg') ||
+                           document.querySelector('.sankey-container svg') ||
+                           document.querySelector('.recharts-responsive-container svg') ||
+                           document.querySelector('svg[role="presentation"]');
+      
+      if (!sankeyElement) {
+        console.log('No Sankey diagram SVG found');
+        return null;
+      }
+
+      // Create canvas and capture the SVG
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      const svgData = new XMLSerializer().serializeToString(sankeyElement as SVGElement);
+      const img = new Image();
+      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(svgBlob);
+
+      return new Promise((resolve) => {
+        img.onload = () => {
+          canvas.width = img.width || 800;
+          canvas.height = img.height || 600;
+          ctx.drawImage(img, 0, 0);
+          const imageData = canvas.toDataURL('image/png');
+          URL.revokeObjectURL(url);
+          resolve(imageData);
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+      });
+    } catch (error) {
+      console.error('Error capturing Sankey diagram:', error);
+      return null;
+    }
+  };
+
+  // Function to capture transaction chart as image
+  const captureTransactionChart = async (): Promise<string | null> => {
+    try {
+      // Find the transaction chart SVG element - check multiple possible selectors
+      const chartElement = document.querySelector('[data-testid="transaction-chart"] svg') || 
+                          document.querySelector('.chart-container svg') ||
+                          // Look for recharts SVGs that are not the Sankey diagram
+                          Array.from(document.querySelectorAll('.recharts-responsive-container svg')).find((svg, index) => index > 0) ||
+                          Array.from(document.querySelectorAll('svg')).find(svg => 
+                            svg.querySelector('.recharts-bar') || 
+                            svg.querySelector('.recharts-line') ||
+                            svg.querySelector('.recharts-area')
+                          );
+      
+      if (!chartElement) {
+        console.log('No transaction chart SVG found');
+        return null;
+      }
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      const svgData = new XMLSerializer().serializeToString(chartElement as SVGElement);
+      const img = new Image();
+      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(svgBlob);
+
+      return new Promise((resolve) => {
+        img.onload = () => {
+          canvas.width = img.width || 800;
+          canvas.height = img.height || 600;
+          ctx.drawImage(img, 0, 0);
+          const imageData = canvas.toDataURL('image/png');
+          URL.revokeObjectURL(url);
+          resolve(imageData);
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+      });
+    } catch (error) {
+      console.error('Error capturing transaction chart:', error);
+      return null;
+    }
+  };
+
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
     
+    // Capture chart images before creating PDF
+    const sankeyImage = await captureSankeyDiagram();
+    const chartImage = await captureTransactionChart();
+    
     // Page 1: Banking Information and Summary (Portrait)
+    addWatermark(doc);
+    
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
     doc.text('Family Court Documentation', 20, 20);
@@ -179,29 +293,58 @@ export default function BankingDocumentTabs({
 
     // Page 2: Sankey Diagram (Landscape)
     doc.addPage('a4', 'landscape');
+    addWatermark(doc);
+    
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.text('Transaction Flow Analysis (Sankey Diagram)', 20, 20);
     
-    // Note: In a real implementation, you'd capture the Sankey diagram as an image
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.text('Sankey diagram visualization would be captured and inserted here.', 20, 40);
-    doc.text('This shows the flow of money in and out of the account with visual representation.', 20, 55);
+    if (sankeyImage) {
+      // Add the captured Sankey diagram image
+      try {
+        doc.addImage(sankeyImage, 'PNG', 20, 40, 250, 150);
+      } catch (error) {
+        console.error('Error adding Sankey image to PDF:', error);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.text('Sankey diagram could not be rendered. Please view the Sankey tab for visualization.', 20, 40);
+      }
+    } else {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.text('Sankey diagram visualization shows the flow of money in and out of the account.', 20, 40);
+      doc.text('Please view the Sankey tab in the application for the interactive visualization.', 20, 55);
+    }
 
     // Page 3: Transaction Chart (Landscape)
     doc.addPage('a4', 'landscape');
+    addWatermark(doc);
+    
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.text('Transaction Chart Analysis', 20, 20);
     
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.text('Transaction chart visualization would be captured and inserted here.', 20, 40);
-    doc.text('This shows transaction patterns, balances over time, and spending categories.', 20, 55);
+    if (chartImage) {
+      // Add the captured transaction chart image
+      try {
+        doc.addImage(chartImage, 'PNG', 20, 40, 250, 150);
+      } catch (error) {
+        console.error('Error adding chart image to PDF:', error);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.text('Transaction chart could not be rendered. Please view the Chart tab for visualization.', 20, 40);
+      }
+    } else {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.text('Transaction chart shows patterns, balances over time, and spending categories.', 20, 40);
+      doc.text('Please view the Chart tab in the application for the interactive visualization.', 20, 55);
+    }
 
     // Page 4: Queried Transactions (Portrait)
     doc.addPage('a4', 'portrait');
+    addWatermark(doc);
+    
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.text('Queried Transactions', 20, 20);
@@ -217,6 +360,7 @@ export default function BankingDocumentTabs({
       queriedTransactions.forEach((transaction: any, index: number) => {
         if (currentY > 250) {
           doc.addPage();
+          addWatermark(doc);
           currentY = 20;
         }
         
@@ -273,6 +417,10 @@ export default function BankingDocumentTabs({
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
+      
+      // Ensure watermark is on every page
+      if (i > 1) addWatermark(doc);
+      
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
       doc.text(`Page ${i} of ${pageCount}`, 20, doc.internal.pageSize.height - 10);
