@@ -417,18 +417,11 @@ export default function BankingDocumentTabs({
       const originalSize = pdfData.byteLength;
       console.log(`Optimized PDF size: ${(originalSize / 1024).toFixed(1)} KB (target: <3MB)`);
       
-      // Create optimized filename and download
+      // Create optimized filename and download using jsPDF save method
       const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-      const pdfBlob = new Blob([pdfData], { type: 'application/pdf' });
       
-      const url = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Use jsPDF's built-in save method which handles download properly
+      doc.save(fileName);
       
       console.log('Optimized PDF export completed successfully');
     } catch (error) {
