@@ -3,12 +3,14 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupLocalAuth, isAuthenticated } from "./localAuth";
 import { randomUUID } from "crypto";
-import { insertCaseSchema, insertDocumentSchema, type Role } from "@shared/schema";
+import { insertCaseSchema, insertDocumentSchema, type Role, transactions, type InsertTransaction } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF, generateXMLFromAnalysis } from "./aiService";
+import { db } from "./db";
+import { eq, desc, and } from "drizzle-orm";
 import { GoogleDriveService } from "./googleDriveService";
 import { DisclosurePdfService } from "./disclosurePdfService";
 
@@ -1596,6 +1598,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating case title:", error);
       res.status(500).json({ message: "Failed to update case title" });
+    }
+  });
+
+  // Transaction management routes
+  app.get("/api/transactions/:documentId", isAuthenticated, async (req: any, res) => {
+    try {
+      const documentId = parseInt(req.params.documentId);
+      if (isNaN(documentId)) {
+        return res.status(400).json({ message: "Invalid document ID" });
+      }
+
+      const transactionList = await db
+        .select()
+        .from(transactions)
+        .where(eq(transactions.documentId, documentId));
+
+      res.json(transactionList);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      res.status(500).json({ message: "Failed to fetch transactions" });
+    }
+  });
+
+  app.post("/api/transactions", isAuthenticated, async (req: any, res) => {
+    try {
+      const { documentId, transactionDate, description, amount, balance, category, status } = req.body;
+
+      const [transaction] = await db
+        .insert(transactions)
+        .values({
+          documentId,
+          transactionDate,
+          description,
+          amount,
+          balance,
+          category,
+          status: status || 'none'
+        })
+        .returning();
+
+      res.json(transaction);
+    } catch (error) {
+      console.error("Error creating transaction:", error);
+      res.status(500).json({ message: "Failed to create transaction" });
+    }
+  });
+
+  app.put("/api/transactions/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const transactionId = parseInt(req.params.id);
+      if (isNaN(transactionId)) {
+        return res.status(400).json({ message: "Invalid transaction ID" });
+      }
+
+      const { status } = req.body;
+
+      const [updatedTransaction] = await db
+        .update(transactions)
+        .set({ 
+          status,
+          updatedAt: new Date()
+        })
+        .where(eq(transactions.id, transactionId))
+        .returning();
+
+      if (!updatedTransaction) {
+        return res.status(404).json({ message: "Transaction not found" });
+      }
+
+      res.json(updatedTransaction);
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+      res.status(500).json({ message: "Failed to update transaction" });
     }
   });
 

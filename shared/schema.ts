@@ -65,6 +65,7 @@ export const roleEnum = pgEnum('role', ['DISCLOSER', 'REVIEWER', 'DISCLOSEE', 'C
 export const caseStatusEnum = pgEnum('case_status', ['ACTIVE', 'UNDER_REVIEW', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED']);
 export const documentStatusEnum = pgEnum('document_status', ['UPLOADED', 'READYFORREVIEW', 'REVIEWED', 'WITHDRAWN']);
 export const categoryEnum = pgEnum('category', ['REAL_PROPERTY', 'BANKING', 'TAXATION', 'SUPERANNUATION', 'EMPLOYMENT', 'SHARES_INVESTMENTS', 'VEHICLES']);
+export const transactionStatusEnum = pgEnum('transaction_status', ['none', 'query']);
 
 export const cases = pgTable("cases", {
   id: serial("id").primaryKey(),
@@ -258,8 +259,24 @@ export const insertCaseInvitationSchema = createInsertSchema(caseInvitations).om
 
 // Types
 
+// Transaction data table for analyzed banking documents
+export const transactions = pgTable("transactions", {
+  id: serial("id").primaryKey(),
+  documentId: integer("document_id").references(() => documents.id, { onDelete: 'cascade' }).notNull(),
+  transactionDate: varchar("transaction_date").notNull(),
+  description: text("description").notNull(),
+  amount: varchar("amount").notNull(), // Store as string to preserve exact formatting
+  balance: varchar("balance"), // Store as string to preserve exact formatting
+  category: varchar("category"),
+  status: transactionStatusEnum("status").default('none'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type Transaction = typeof transactions.$inferSelect;
+export type InsertTransaction = typeof transactions.$inferInsert;
 export type LegalOrganization = typeof legalOrganizations.$inferSelect;
 export type InsertLegalOrganization = typeof legalOrganizations.$inferInsert;
 

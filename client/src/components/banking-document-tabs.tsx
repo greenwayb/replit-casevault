@@ -7,6 +7,7 @@ import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet, Aler
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
 import { BankingJsonDisplay } from "./banking-json-display";
 import { BankingTransactionChart } from "./banking-transaction-chart";
+import { BankingTransactionsTable } from "./banking-transactions-table";
 
 interface BankingDocumentTabsProps {
   document: any;
@@ -96,7 +97,7 @@ export default function BankingDocumentTabs({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="pdf" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             PDF Document
@@ -108,6 +109,14 @@ export default function BankingDocumentTabs({
           >
             <FileSpreadsheet className="h-4 w-4" />
             Summary
+          </TabsTrigger>
+          <TabsTrigger 
+            value="table" 
+            className={`flex items-center gap-2 ${!isFullAnalysisComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFullAnalysisComplete}
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            Transaction Table
           </TabsTrigger>
           <TabsTrigger 
             value="sankey" 
@@ -161,6 +170,23 @@ export default function BankingDocumentTabs({
           )}
         </TabsContent>
 
+        <TabsContent value="table" className="space-y-4">
+          {isFullAnalysisComplete ? (
+            <BankingTransactionsTable 
+              documentId={document.id}
+              xmlData={xmlData || ''}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <FileSpreadsheet className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-600 mb-2">Transaction Table</h3>
+                <p className="text-gray-500 mb-4">Click "AI Analysis" to generate a detailed transaction table with status tracking</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
         <TabsContent value="chart" className="space-y-4">
           {isFullAnalysisComplete ? (
             <BankingTransactionChart 
@@ -173,20 +199,6 @@ export default function BankingDocumentTabs({
                 <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-medium text-gray-600 mb-2">Transaction Chart Analysis</h3>
                 <p className="text-gray-500 mb-4">Click "AI Analysis" to generate interactive transaction charts and balance trends</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="json" className="space-y-4">
-          {isFullAnalysisComplete ? (
-            <BankingJsonDisplay xmlData={xmlData || ''} />
-          ) : (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Code2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">JSON Data Export</h3>
-                <p className="text-gray-500 mb-4">Click "AI Analysis" to convert XML analysis into structured JSON format</p>
               </CardContent>
             </Card>
           )}
