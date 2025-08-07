@@ -281,47 +281,34 @@ export default function BankingDocumentTabs({
     if (!xmlData || !isFullAnalysisComplete) return;
 
     console.log('Starting PDF export...');
+    console.log('Environment check:', {
+      window: typeof window,
+      document: typeof document,
+      querySelector: typeof document?.querySelector,
+      location: typeof window?.location
+    });
     
     // Create PDF document first
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
     
-    // Only attempt chart capture if we're in a proper browser environment
+    // Simple direct approach - just try to capture from current state
     let sankeyImage: string | null = null;
     let chartImage: string | null = null;
     
-    if (typeof window !== 'undefined' && typeof document !== 'undefined' && document.querySelector) {
-      console.log('Browser environment detected, attempting chart capture...');
-      
-      // Switch to Sankey tab and capture
-      console.log('Switching to Sankey tab...');
-      try {
-        const sankeyTab = document.querySelector('[value="sankey"]') as HTMLElement;
-        if (sankeyTab && typeof sankeyTab.click === 'function') {
-          sankeyTab.click();
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          sankeyImage = await captureSankeyDiagram();
-          console.log('Sankey image captured:', !!sankeyImage);
-        }
-      } catch (error) {
-        console.log('Could not switch to Sankey tab:', error);
-      }
-      
-      // Switch to chart tab and capture
-      console.log('Switching to chart tab...');
-      try {
-        const chartTab = document.querySelector('[value="chart"]') as HTMLElement;
-        if (chartTab && typeof chartTab.click === 'function') {
-          chartTab.click();
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          chartImage = await captureTransactionChart();
-          console.log('Chart image captured:', !!chartImage);
-        }
-      } catch (error) {
-        console.log('Could not switch to chart tab:', error);
-      }
-    } else {
-      console.log('Browser environment not available, skipping chart capture');
+    try {
+      console.log('Attempting direct chart capture...');
+      sankeyImage = await captureSankeyDiagram();
+      console.log('Sankey capture result:', !!sankeyImage);
+    } catch (error) {
+      console.log('Sankey capture failed:', error);
+    }
+    
+    try {
+      chartImage = await captureTransactionChart();
+      console.log('Chart capture result:', !!chartImage);
+    } catch (error) {
+      console.log('Chart capture failed:', error);
     }
     
     // Page 1: Banking Information and Summary (Portrait)
