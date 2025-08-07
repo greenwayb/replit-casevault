@@ -107,20 +107,15 @@ export default function BankingDocumentTabs({
   const addWatermark = (doc: jsPDF) => {
     try {
       // Add Family Court Documentation logo watermark in top right
-      const gs = doc.internal.gState;
-      doc.saveGraphicsState();
-      doc.setGState({opacity: 0.15});
-      // Add logo image (small size in top right)
       doc.addImage(logoPath, 'PNG', doc.internal.pageSize.width - 50, 5, 40, 20);
-      doc.restoreGraphicsState();
     } catch (error) {
       // Fallback to text watermark if image fails
-      doc.saveGraphicsState();
-      doc.setGState({opacity: 0.1});
+      console.log('Logo failed, using text watermark:', error);
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
+      doc.setTextColor(200, 200, 200); // Light gray
       doc.text('Family Court Documentation', doc.internal.pageSize.width - 60, 15);
-      doc.restoreGraphicsState();
+      doc.setTextColor(0, 0, 0); // Reset to black
     }
   };
 
