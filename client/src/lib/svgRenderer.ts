@@ -50,6 +50,7 @@ export class ClientSVGRenderer {
     // Count text elements for debugging
     const textCount = (svgContent.match(/<text/g) || []).length;
     console.log(`Enhanced SVG rendering: Found ${textCount} text elements`);
+    console.log('SVG content sample (first 1000 chars):', svgContent.substring(0, 1000));
     
     // Extract dimensions from SVG if not provided
     const width = options.width || svgElement.clientWidth || 800;

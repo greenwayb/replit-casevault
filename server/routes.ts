@@ -1023,6 +1023,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let pngBuffer: Buffer;
 
       if (svgContent) {
+        // Debug: Log SVG content details
+        const textCount = (svgContent.match(/<text/g) || []).length;
+        console.log(`Server received SVG with ${textCount} text elements`);
+        console.log('SVG content sample:', svgContent.substring(0, 500));
+        
         // Try simple Canvas-based rendering first, fallback to Puppeteer
         try {
           pngBuffer = await SimpleSVGRenderer.renderSVGToPNG(svgContent, { width, height, scale });
