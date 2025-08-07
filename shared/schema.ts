@@ -269,6 +269,7 @@ export const transactions = pgTable("transactions", {
   balance: varchar("balance"), // Store as string to preserve exact formatting
   category: varchar("category"),
   status: transactionStatusEnum("status").default('none'),
+  comments: text("comments"), // Comments field with up to 5000 characters
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -1652,14 +1652,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid transaction ID" });
       }
 
-      const { status } = req.body;
+      const { status, comments } = req.body;
+
+      const updateData: any = { updatedAt: new Date() };
+      if (status !== undefined) updateData.status = status;
+      if (comments !== undefined) updateData.comments = comments;
 
       const [updatedTransaction] = await db
         .update(transactions)
-        .set({ 
-          status,
-          updatedAt: new Date()
-        })
+        .set(updateData)
         .where(eq(transactions.id, transactionId))
         .returning();
 

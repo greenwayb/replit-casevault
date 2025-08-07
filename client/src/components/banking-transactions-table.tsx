@@ -4,10 +4,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Search, Download, Filter } from 'lucide-react';
+import { Search, Download, Filter, MessageCircle, MessageSquare, Save, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 interface Transaction {
@@ -18,6 +20,7 @@ interface Transaction {
   balance?: string;
   category?: string;
   status: 'none' | 'query';
+  comments?: string;
 }
 
 interface BankingTransactionsTableProps {
@@ -28,6 +31,9 @@ interface BankingTransactionsTableProps {
 export function BankingTransactionsTable({ documentId, xmlData }: BankingTransactionsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'none' | 'query'>('all');
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const [isCommentDialogOpen, setIsCommentDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -54,7 +60,8 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
           amount: getTransactionText('amount'),
           balance: getTransactionText('balance'),
           category: getTransactionText('transaction_category'),
-          status: 'none'
+          status: 'none',
+          comments: ''
         });
       }
 
@@ -87,6 +94,7 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
         ...xmlTxn,
         id: savedTxn?.id || undefined,
         status: (savedTxn?.status as 'none' | 'query') || 'none',
+        comments: savedTxn?.comments || '',
         rowIndex: index + 1
       };
     });
@@ -119,7 +127,8 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
         amount: transactionData.amount,
         balance: transactionData.balance || '',
         category: transactionData.category || '',
-        status: newStatus
+        status: newStatus,
+        comments: transactionData.comments || ''
       };
 
       if (transactionData.id) {
@@ -148,6 +157,71 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
 
   const handleStatusChange = (transaction: Transaction, newStatus: 'none' | 'query') => {
     updateStatusMutation.mutate({ transactionData: transaction, newStatus });
+  };
+
+  // Comment update mutation
+  const updateCommentMutation = useMutation({
+    mutationFn: async ({ transactionData, newComment }: { 
+      transactionData: Transaction, 
+      newComment: string 
+    }) => {
+      const payload = {
+        documentId,
+        transactionDate: transactionData.transactionDate,
+        description: transactionData.description,
+        amount: transactionData.amount,
+        balance: transactionData.balance || '',
+        category: transactionData.category || '',
+        status: transactionData.status,
+        comments: newComment
+      };
+
+      if (transactionData.id) {
+        // Update existing transaction
+        return await apiRequest(`/api/transactions/${transactionData.id}`, 'PUT', { comments: newComment });
+      } else {
+        // Create new transaction record
+        return await apiRequest('/api/transactions', 'POST', payload);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/transactions', documentId] });
+      setIsCommentDialogOpen(false);
+      setSelectedTransaction(null);
+      setCommentText('');
+      toast({
+        title: "Comment updated",
+        description: "The comment has been saved successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleOpenCommentDialog = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setCommentText(transaction.comments || '');
+    setIsCommentDialogOpen(true);
+  };
+
+  const handleSaveComment = () => {
+    if (selectedTransaction) {
+      updateCommentMutation.mutate({ 
+        transactionData: selectedTransaction, 
+        newComment: commentText 
+      });
+    }
+  };
+
+  const handleCancelComment = () => {
+    setIsCommentDialogOpen(false);
+    setSelectedTransaction(null);
+    setCommentText('');
   };
 
   const formatAmount = (amount: string) => {
@@ -233,6 +307,7 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
                 <TableHead className="text-right">Amount</TableHead>
                 <TableHead className="text-right">Balance</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="w-20">Comments</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -280,11 +355,25 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
                       </Select>
                     </div>
                   </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleOpenCommentDialog(transaction)}
+                      className="h-8 w-8 p-0"
+                    >
+                      {transaction.comments && transaction.comments.trim() ? (
+                        <MessageSquare className="h-4 w-4 text-blue-600" />
+                      ) : (
+                        <MessageCircle className="h-4 w-4 text-gray-400" />
+                      )}
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
               {filteredTransactions.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     {searchTerm || statusFilter !== 'all' 
                       ? 'No transactions match your filters'
                       : 'No transactions found'
@@ -308,6 +397,63 @@ export function BankingTransactionsTable({ documentId, xmlData }: BankingTransac
           </div>
         )}
       </CardContent>
+
+      {/* Comment Dialog */}
+      <Dialog open={isCommentDialogOpen} onOpenChange={setIsCommentDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Transaction Comment</DialogTitle>
+          </DialogHeader>
+          
+          {selectedTransaction && (
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="text-sm text-gray-600 mb-2">
+                  <strong>Date:</strong> {new Date(selectedTransaction.transactionDate).toLocaleDateString()}
+                </div>
+                <div className="text-sm text-gray-600 mb-2">
+                  <strong>Description:</strong> {selectedTransaction.description}
+                </div>
+                <div className="text-sm text-gray-600">
+                  <strong>Amount:</strong> {formatAmount(selectedTransaction.amount)}
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Comment (max 5000 characters)</label>
+                <Textarea
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder="Enter your comment here..."
+                  className="min-h-32 resize-none"
+                  maxLength={5000}
+                />
+                <div className="text-xs text-gray-500 text-right">
+                  {commentText.length}/5000 characters
+                </div>
+              </div>
+              
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleCancelComment}
+                  disabled={updateCommentMutation.isPending}
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSaveComment}
+                  disabled={updateCommentMutation.isPending}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {updateCommentMutation.isPending ? 'Saving...' : 'Save Comment'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
