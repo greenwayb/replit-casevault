@@ -430,42 +430,50 @@ export default function BankingDocumentTabs({
       });
       
       // Create a simple loading indicator
-      const loadingDiv = document.createElement('div');
-      loadingDiv.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        z-index: 10000;
-        text-align: center;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      `;
-      loadingDiv.innerHTML = `
-        <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Optimizing PDF...</div>
-        <div style="font-size: 14px; color: #666;">Compressing images and reducing file size</div>
-        <div style="margin-top: 15px;">
-          <div style="width: 200px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
-            <div style="width: 0%; height: 100%; background: #3b82f6; border-radius: 2px; animation: progress 2s ease-in-out infinite;" id="progress-bar"></div>
+      let loadingDiv: HTMLDivElement | null = null;
+      
+      if (typeof document !== 'undefined') {
+        loadingDiv = document.createElement('div');
+        if (loadingDiv) {
+          loadingDiv.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+          z-index: 10000;
+          text-align: center;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        `;
+          loadingDiv.innerHTML = `
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">Optimizing PDF...</div>
+          <div style="font-size: 14px; color: #666;">Compressing images and reducing file size</div>
+          <div style="margin-top: 15px;">
+            <div style="width: 200px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
+              <div style="width: 0%; height: 100%; background: #3b82f6; border-radius: 2px; animation: progress 2s ease-in-out infinite;" id="progress-bar"></div>
+            </div>
           </div>
-        </div>
-        <style>
-          @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-          }
-        </style>
-      `;
-      document.body.appendChild(loadingDiv);
+          <style>
+            @keyframes progress {
+              0% { width: 0%; }
+              50% { width: 70%; }
+              100% { width: 100%; }
+            }
+          </style>
+        `;
+          document.body.appendChild(loadingDiv);
+        }
+      }
       
       const response = await optimizationPromise;
       
       // Remove loading indicator
-      document.body.removeChild(loadingDiv);
+      if (loadingDiv && typeof document !== 'undefined') {
+        document.body.removeChild(loadingDiv);
+      }
       
       if (response.ok) {
         const blob = await response.blob();

@@ -1049,6 +1049,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Use Ghostscript for PDF optimization (if available)
         const { spawn } = await import('child_process');
+        
+        // Check if ghostscript is available first
+        try {
+          await new Promise<void>((resolve, reject) => {
+            const testProcess = spawn('gs', ['--version']);
+            testProcess.on('close', (code) => {
+              if (code === 0) {
+                resolve();
+              } else {
+                reject(new Error('Ghostscript not available'));
+              }
+            });
+            testProcess.on('error', () => {
+              reject(new Error('Ghostscript command not found'));
+            });
+          });
+        } catch (gsTestError) {
+          throw new Error('Ghostscript not available on system');
+        }
+        
         const gsProcess = spawn('gs', [
           '-sDEVICE=pdfwrite',
           '-dCompatibilityLevel=1.4',
