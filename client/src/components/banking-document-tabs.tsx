@@ -3,7 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet, AlertTriangle } from "lucide-react";
+import { Download, FileText, BarChart3, Code2, TrendingUp, FileSpreadsheet, AlertTriangle, FileDown } from "lucide-react";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { BankingSankeyDiagram } from "./banking-sankey-diagram";
 import { BankingJsonDisplay } from "./banking-json-display";
 import { BankingTransactionChart } from "./banking-transaction-chart";
@@ -52,12 +54,242 @@ export default function BankingDocumentTabs({
     URL.revokeObjectURL(url);
   };
 
+  // Extract bank information from XML
+  const getBankInfo = () => {
+    if (!xmlData) return null;
+    
+    try {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
+      
+      const getElementText = (tagName: string) => {
+        const element = xmlDoc.getElementsByTagName(tagName)[0];
+        return element ? element.textContent?.trim() || '' : '';
+      };
+
+      const accountHolders = Array.from(xmlDoc.getElementsByTagName('account_holder')).map(
+        el => el.textContent?.trim() || ''
+      );
+      
+      return {
+        institution: getElementText('institution'),
+        accountHolders: accountHolders,
+        accountNumber: getElementText('account_number'),
+        accountType: getElementText('account_type'),
+        bsb: getElementText('account_bsb'),
+        startDate: getElementText('start_date'),
+        endDate: getElementText('end_date'),
+        currency: getElementText('currency'),
+        totalCredits: getElementText('total_credits'),
+        totalDebits: getElementText('total_debits')
+      };
+    } catch (error) {
+      console.error('Error parsing XML for bank info:', error);
+      return null;
+    }
+  };
+
+  // Extract transactions data for queried transactions
+  const getQueriedTransactions = async () => {
+    try {
+      const response = await fetch(`/api/transactions/${document.id}`);
+      const transactions = await response.json();
+      return transactions.filter((t: any) => t.status === 'query');
+    } catch (error) {
+      console.error('Error fetching queried transactions:', error);
+      return [];
+    }
+  };
+
+  const handleExportAnalysisPDF = async () => {
+    if (!xmlData || !isFullAnalysisComplete) return;
+
+    const doc = new jsPDF();
+    const bankInfo = getBankInfo();
+    
+    // Page 1: Banking Information and Summary (Portrait)
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Family Court Documentation', 20, 20);
+    
+    doc.setFontSize(14);
+    doc.text('Banking Analysis Report', 20, 30);
+    
+    // Banking Information in two-column layout
+    if (bankInfo) {
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Bank Account Information', 20, 50);
+      
+      // Draw border around banking info
+      doc.setDrawColor(200, 200, 200);
+      doc.rect(15, 55, 180, 60);
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      
+      // Left column
+      const leftColumnInfo = [
+        `Institution: ${bankInfo.institution || 'N/A'}`,
+        `Account Number: ${bankInfo.accountNumber || 'N/A'}`,
+        `Account Type: ${bankInfo.accountType || 'N/A'}`,
+        `BSB: ${bankInfo.bsb || 'N/A'}`,
+        `Currency: ${bankInfo.currency || 'N/A'}`
+      ];
+      
+      // Right column
+      const rightColumnInfo = [
+        `Account Holders: ${bankInfo.accountHolders.length > 0 ? bankInfo.accountHolders.join(', ') : 'N/A'}`,
+        `Statement Period: ${bankInfo.startDate || 'N/A'} to ${bankInfo.endDate || 'N/A'}`,
+        `Total Credits: ${bankInfo.totalCredits || 'N/A'}`,
+        `Total Debits: ${bankInfo.totalDebits || 'N/A'}`,
+        ``
+      ];
+      
+      let yPos = 65;
+      leftColumnInfo.forEach((info, index) => {
+        doc.text(info, 20, yPos);
+        if (rightColumnInfo[index]) {
+          doc.text(rightColumnInfo[index], 110, yPos);
+        }
+        yPos += 10;
+      });
+    }
+
+    // Summary section
+    try {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
+      const summaryElement = xmlDoc.querySelector('analysis_summary');
+      const summary = summaryElement?.textContent?.trim();
+      
+      if (summary) {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Analysis Summary', 20, 130);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        const splitSummary = doc.splitTextToSize(summary, 170);
+        doc.text(splitSummary, 20, 145);
+      }
+    } catch (error) {
+      console.error('Error extracting summary:', error);
+    }
+
+    // Page 2: Sankey Diagram (Landscape)
+    doc.addPage('a4', 'landscape');
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Transaction Flow Analysis (Sankey Diagram)', 20, 20);
+    
+    // Note: In a real implementation, you'd capture the Sankey diagram as an image
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.text('Sankey diagram visualization would be captured and inserted here.', 20, 40);
+    doc.text('This shows the flow of money in and out of the account with visual representation.', 20, 55);
+
+    // Page 3: Transaction Chart (Landscape)
+    doc.addPage('a4', 'landscape');
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Transaction Chart Analysis', 20, 20);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.text('Transaction chart visualization would be captured and inserted here.', 20, 40);
+    doc.text('This shows transaction patterns, balances over time, and spending categories.', 20, 55);
+
+    // Page 4: Queried Transactions (Portrait)
+    doc.addPage('a4', 'portrait');
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Queried Transactions', 20, 20);
+    
+    const queriedTransactions = await getQueriedTransactions();
+    
+    if (queriedTransactions.length > 0) {
+      doc.setFontSize(12);
+      doc.text(`Found ${queriedTransactions.length} queried transactions:`, 20, 35);
+      
+      let currentY = 50;
+      
+      queriedTransactions.forEach((transaction: any, index: number) => {
+        if (currentY > 250) {
+          doc.addPage();
+          currentY = 20;
+        }
+        
+        // Transaction header
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text(`Transaction ${index + 1}`, 20, currentY);
+        currentY += 8;
+        
+        // Transaction details
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        
+        const transactionDetails = [
+          `Date: ${new Date(transaction.transactionDate).toLocaleDateString()}`,
+          `Description: ${transaction.description}`,
+          `Amount: ${transaction.amount}`,
+          `Balance: ${transaction.balance || 'N/A'}`,
+          `Category: ${transaction.category || 'N/A'}`
+        ];
+        
+        transactionDetails.forEach(detail => {
+          doc.text(detail, 25, currentY);
+          currentY += 6;
+        });
+        
+        // Add comment box if there's a comment
+        if (transaction.comments && transaction.comments.trim()) {
+          currentY += 5;
+          
+          const commentBoxHeight = Math.max(20, Math.ceil(transaction.comments.length / 80) * 5 + 10);
+          doc.setDrawColor(200, 200, 200);
+          doc.rect(25, currentY - 5, 160, commentBoxHeight);
+          
+          doc.setFont('helvetica', 'bold');
+          doc.text('Comment:', 30, currentY + 3);
+          
+          doc.setFont('helvetica', 'normal');
+          const splitComment = doc.splitTextToSize(transaction.comments, 150);
+          doc.text(splitComment, 30, currentY + 10);
+          
+          currentY += commentBoxHeight + 5;
+        }
+        
+        currentY += 10;
+      });
+    } else {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.text('No queried transactions found.', 20, 50);
+    }
+
+    // Add footer to all pages
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Page ${i} of ${pageCount}`, 20, doc.internal.pageSize.height - 10);
+      doc.text(`Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, doc.internal.pageSize.width - 80, doc.internal.pageSize.height - 10);
+    }
+    
+    // Save the PDF
+    const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+  };
+
 
 
   return (
     <div className="space-y-4">
-      {/* AI Analysis Button */}
-      <div className="flex justify-center">
+      {/* AI Analysis and Export Buttons */}
+      <div className="flex justify-center gap-4">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -94,6 +326,18 @@ export default function BankingDocumentTabs({
             )}
           </Tooltip>
         </TooltipProvider>
+
+        {isFullAnalysisComplete && (
+          <Button 
+            onClick={handleExportAnalysisPDF}
+            variant="outline"
+            size="lg"
+            className="px-6 py-2 gap-2"
+          >
+            <FileDown className="h-5 w-5" />
+            Export Analysis PDF
+          </Button>
+        )}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
