@@ -207,8 +207,16 @@ export class ClientSVGRenderer {
       const canvgInstance = Canvg.fromString(ctx, svgData);
       await canvgInstance.render();
 
-      // Use high quality for readable text
-      return canvas.toDataURL('image/png', 0.9); // High quality PNG for text readability
+      // Return high-resolution image with smart compression for PDF use
+      // First get high quality PNG for text readability
+      const highQualityPng = canvas.toDataURL('image/png', 0.95);
+      
+      // For PDF use, also create a compressed JPEG version to reduce file size
+      // while maintaining text readability
+      const compressedJpeg = canvas.toDataURL('image/jpeg', 0.85);
+      
+      // Return the JPEG version for smaller file sizes in PDFs
+      return compressedJpeg;
     } catch (error) {
       console.error(`Fallback capture failed for ${chartName}:`, error);
       return null;

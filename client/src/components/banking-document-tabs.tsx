@@ -271,26 +271,7 @@ export default function BankingDocumentTabs({
       // Add the captured Sankey diagram image
       try {
         console.log('Adding Sankey image to PDF...');
-        // Compress the image before adding to PDF to reduce file size
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        
-        await new Promise((resolve, reject) => {
-          img.onload = () => {
-            // Set canvas to desired PDF size
-            canvas.width = 1000;
-            canvas.height = 600;
-            
-            // Draw and compress the image
-            ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const compressedImage = canvas.toDataURL('image/jpeg', 0.8);
-            doc.addImage(compressedImage, 'JPEG', 20, 40, 240, 150);
-            resolve(null);
-          };
-          img.onerror = reject;
-          img.src = sankeyImage;
-        });
+        doc.addImage(sankeyImage, 'JPEG', 20, 40, 240, 150);
         console.log('Sankey image added successfully');
       } catch (error) {
         console.error('Error adding Sankey image to PDF:', error);
@@ -324,26 +305,7 @@ export default function BankingDocumentTabs({
       // Add the captured transaction chart image
       try {
         console.log('Adding transaction chart image to PDF...');
-        // Compress the chart image before adding to PDF
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        
-        await new Promise((resolve, reject) => {
-          img.onload = () => {
-            // Set canvas to desired PDF size
-            canvas.width = 1000;
-            canvas.height = 600;
-            
-            // Draw and compress the image
-            ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const compressedImage = canvas.toDataURL('image/jpeg', 0.8);
-            doc.addImage(compressedImage, 'JPEG', 20, 40, 240, 150);
-            resolve(null);
-          };
-          img.onerror = reject;
-          img.src = chartImage;
-        });
+        doc.addImage(chartImage, 'JPEG', 20, 40, 240, 150);
         console.log('Transaction chart image added successfully');
       } catch (error) {
         console.error('Error adding chart image to PDF:', error);
