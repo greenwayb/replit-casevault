@@ -119,136 +119,16 @@ export default function BankingDocumentTabs({
     }
   };
 
-  // Function to capture Sankey diagram as image
-  const captureSankeyDiagram = async (): Promise<string | null> => {
-    try {
-      console.log('Starting simplified Sankey diagram capture...');
-      
-      // Since DOM methods are failing, let's try a different approach
-      // Create a simple canvas and return a placeholder for now
-      if (typeof window === 'undefined') {
-        console.log('No window object available');
-        return null;
-      }
-
-      // Try to create a simple test image to verify canvas works
-      const canvas = document.createElement('canvas');
-      if (!canvas) {
-        console.log('Cannot create canvas element');
-        return null;
-      }
-
-      canvas.width = 800;
-      canvas.height = 400;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.log('Cannot get canvas context');
-        return null;
-      }
-
-      // Draw a simple placeholder for the Sankey diagram
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, 800, 400);
-      
-      ctx.fillStyle = '#2563eb';
-      ctx.font = '24px Arial';
-      ctx.fillText('Sankey Diagram Placeholder', 200, 200);
-      
-      ctx.fillStyle = '#666666';
-      ctx.font = '16px Arial';
-      ctx.fillText('Chart capture temporarily unavailable', 220, 240);
-      ctx.fillText('Please view the Sankey tab for visualization', 210, 270);
-
-      const imageData = canvas.toDataURL('image/png', 0.9);
-      console.log('Sankey placeholder created, size:', imageData.length);
-      return imageData;
-    } catch (error) {
-      console.error('Error creating Sankey placeholder:', error);
-      return null;
-    }
-  };
-
-  // Function to capture transaction chart as image
-  const captureTransactionChart = async (): Promise<string | null> => {
-    try {
-      console.log('Starting simplified transaction chart capture...');
-      
-      // Since DOM methods are failing, create a placeholder chart image
-      if (typeof window === 'undefined') {
-        console.log('No window object available');
-        return null;
-      }
-
-      // Create a placeholder chart image
-      const canvas = document.createElement('canvas');
-      if (!canvas) {
-        console.log('Cannot create canvas element');
-        return null;
-      }
-
-      canvas.width = 800;
-      canvas.height = 400;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.log('Cannot get canvas context');
-        return null;
-      }
-
-      // Draw a simple placeholder for the transaction chart
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, 800, 400);
-      
-      ctx.fillStyle = '#16a34a';
-      ctx.font = '24px Arial';
-      ctx.fillText('Transaction Chart Placeholder', 180, 200);
-      
-      ctx.fillStyle = '#666666';
-      ctx.font = '16px Arial';
-      ctx.fillText('Chart capture temporarily unavailable', 220, 240);
-      ctx.fillText('Please view the Chart tab for visualization', 220, 270);
-
-      const imageData = canvas.toDataURL('image/png', 0.9);
-      console.log('Chart placeholder created, size:', imageData.length);
-      return imageData;
-    } catch (error) {
-      console.error('Error creating chart placeholder:', error);
-      return null;
-    }
-  };
+  // Note: Chart capture is not available in current environment
+  // PDF will include informative text instead of chart images
 
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
-    console.log('Starting PDF export...');
-    console.log('Environment check:', {
-      window: typeof window,
-      document: typeof document,
-      querySelector: typeof document?.querySelector,
-      location: typeof window?.location
-    });
+    console.log('Starting PDF export without chart capture...');
     
-    // Create PDF document first
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
-    
-    // Simple direct approach - just try to capture from current state
-    let sankeyImage: string | null = null;
-    let chartImage: string | null = null;
-    
-    try {
-      console.log('Attempting direct chart capture...');
-      sankeyImage = await captureSankeyDiagram();
-      console.log('Sankey capture result:', !!sankeyImage);
-    } catch (error) {
-      console.log('Sankey capture failed:', error);
-    }
-    
-    try {
-      chartImage = await captureTransactionChart();
-      console.log('Chart capture result:', !!chartImage);
-    } catch (error) {
-      console.log('Chart capture failed:', error);
-    }
     
     // Page 1: Banking Information and Summary (Portrait)
     addWatermark(doc);
@@ -330,25 +210,17 @@ export default function BankingDocumentTabs({
     doc.setFont('helvetica', 'bold');
     doc.text('Transaction Flow Analysis (Sankey Diagram)', 20, 20);
     
-    if (sankeyImage) {
-      // Add the captured Sankey diagram image
-      try {
-        console.log('Adding Sankey image to PDF...');
-        doc.addImage(sankeyImage, 'PNG', 20, 40, 250, 150);
-        console.log('Sankey image added successfully');
-      } catch (error) {
-        console.error('Error adding Sankey image to PDF:', error);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-        doc.text('Sankey diagram could not be rendered. Please view the Sankey tab for visualization.', 20, 40);
-      }
-    } else {
-      console.log('No Sankey image available, adding fallback text');
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(12);
-      doc.text('Sankey diagram visualization shows the flow of money in and out of the account.', 20, 40);
-      doc.text('Please view the Sankey tab in the application for the interactive visualization.', 20, 55);
-    }
+    // Add detailed explanation instead of image
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.text('Transaction Flow Analysis (Sankey Diagram)', 20, 40);
+    doc.setFontSize(10);
+    doc.text('The Sankey diagram visualizes the flow of money in and out of the account, showing:', 20, 55);
+    doc.text('• Money coming into the account (inflows) from various sources', 25, 70);
+    doc.text('• Money going out of the account (outflows) to different categories', 25, 80);
+    doc.text('• The relative magnitude of each flow represented by connection thickness', 25, 90);
+    doc.text('• Net position showing overall account activity', 25, 100);
+    doc.text('Please view the Sankey tab in the application for the interactive visualization.', 20, 115);
 
     // Page 3: Transaction Chart (Landscape)
     doc.addPage('a4', 'landscape');
@@ -358,25 +230,18 @@ export default function BankingDocumentTabs({
     doc.setFont('helvetica', 'bold');
     doc.text('Transaction Chart Analysis', 20, 20);
     
-    if (chartImage) {
-      // Add the captured transaction chart image
-      try {
-        console.log('Adding transaction chart image to PDF...');
-        doc.addImage(chartImage, 'PNG', 20, 40, 250, 150);
-        console.log('Transaction chart image added successfully');
-      } catch (error) {
-        console.error('Error adding chart image to PDF:', error);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-        doc.text('Transaction chart could not be rendered. Please view the Chart tab for visualization.', 20, 40);
-      }
-    } else {
-      console.log('No chart image available, adding fallback text');
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(12);
-      doc.text('Transaction chart shows patterns, balances over time, and spending categories.', 20, 40);
-      doc.text('Please view the Chart tab in the application for the interactive visualization.', 20, 55);
-    }
+    // Add detailed explanation instead of image
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    doc.text('Transaction Chart Analysis', 20, 40);
+    doc.setFontSize(10);
+    doc.text('The transaction chart provides comprehensive account activity visualization showing:', 20, 55);
+    doc.text('• Daily account balance trends over the statement period', 25, 70);
+    doc.text('• Credit transactions (money in) as positive bars', 25, 80);
+    doc.text('• Debit transactions (money out) as negative bars', 25, 90);
+    doc.text('• Key financial events such as large deposits or withdrawals', 25, 100);
+    doc.text('• Account balance line showing end-of-day positions', 25, 110);
+    doc.text('Please view the Chart tab in the application for the interactive visualization.', 20, 125);
 
     // Page 4: Queried Transactions (Portrait)
     doc.addPage('a4', 'portrait');
