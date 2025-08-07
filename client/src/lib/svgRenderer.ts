@@ -10,13 +10,28 @@ export interface SVGRenderOptions {
 }
 
 export class ClientSVGRenderer {
-  // Render SVG element to PNG using server-side rendering
+  // Render SVG element to PNG using server-side rendering with enhanced text support
   static async renderSVGElementToPNG(
     svgElement: SVGElement, 
     options: SVGRenderOptions = {}
   ): Promise<string> {
     // Get SVG content as string
-    const svgContent = new XMLSerializer().serializeToString(svgElement);
+    let svgContent = new XMLSerializer().serializeToString(svgElement);
+    
+    // Enhance SVG with font definitions for better text rendering
+    if (!svgContent.includes('<defs>')) {
+      svgContent = svgContent.replace('<svg', `<svg><defs><style type="text/css">
+        text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+        .recharts-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #374151; }
+        .recharts-cartesian-axis-tick-value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #6B7280; }
+        .recharts-legend-item-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; fill: #374151; }
+        .recharts-tooltip-wrapper { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+      </style></defs><svg`);
+    }
+    
+    // Count text elements for debugging
+    const textCount = (svgContent.match(/<text/g) || []).length;
+    console.log(`Enhanced SVG rendering: Found ${textCount} text elements`);
     
     // Extract dimensions from SVG if not provided
     const width = options.width || svgElement.clientWidth || 800;

@@ -157,85 +157,28 @@ export default function BankingDocumentTabs({
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
-    console.log('Starting PDF export with aggressive optimization for smaller file size...');
+    console.log('Starting PDF export with proper tab switching and high-quality rendering...');
     
     // Back to working PDF configuration 
     const doc = new jsPDF();
     const bankInfo = getBankInfo();
     
-    // Use server-side Puppeteer rendering for reliable text capture
+    // Use proper tab-switching chart capture for reliable rendering
     let sankeyImage: string | null = null;
     let chartImage: string | null = null;
     
-    // Use server-side Puppeteer rendering for reliable text capture
-    try {
-      console.log('Attempting server-side Sankey capture...');
-      const sankeyContainer = sankeyContainerRef.current;
-      if (sankeyContainer) {
-        const sankeySvg = sankeyContainer.querySelector('svg');
-        if (sankeySvg) {
-          const svgContent = new XMLSerializer().serializeToString(sankeySvg);
-          console.log('Sending Sankey SVG to server for rendering...');
-          
-          const response = await fetch('/api/render/svg-to-png', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              svgContent,
-              options: { width: 800, height: 600, scale: 2 }
-            })
-          });
-          
-          if (response.ok) {
-            const blob = await response.blob();
-            sankeyImage = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.readAsDataURL(blob);
-            });
-            console.log('Sankey image rendered successfully by server');
-          } else {
-            console.error('Server rendering failed for Sankey');
-          }
-        }
-      }
-    } catch (error) {
-      console.log('Sankey server capture failed:', error);
+    // Capture Sankey diagram with proper tab switching
+    console.log('Capturing Sankey diagram with tab switching...');
+    sankeyImage = await captureSVGChart(sankeyRef, 'Sankey', 'sankey');
+    if (sankeyImage) {
+      console.log('Sankey image captured successfully with tab switching');
     }
     
-    try {
-      console.log('Attempting server-side transaction chart capture...');
-      const chartContainer = transactionContainerRef.current;
-      if (chartContainer) {
-        const chartSvg = chartContainer.querySelector('svg');
-        if (chartSvg) {
-          const svgContent = new XMLSerializer().serializeToString(chartSvg);
-          console.log('Sending Transaction Chart SVG to server for rendering...');
-          
-          const response = await fetch('/api/render/svg-to-png', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              svgContent,
-              options: { width: 800, height: 600, scale: 2 }
-            })
-          });
-          
-          if (response.ok) {
-            const blob = await response.blob();
-            chartImage = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.readAsDataURL(blob);
-            });
-            console.log('Transaction chart image rendered successfully by server');
-          } else {
-            console.error('Server rendering failed for Transaction chart');
-          }
-        }
-      }
-    } catch (error) {
-      console.log('Transaction chart server capture failed:', error);
+    // Capture transaction chart with proper tab switching 
+    console.log('Capturing transaction chart with tab switching...');
+    chartImage = await captureSVGChart(chartRef, 'Transaction Chart', 'chart');
+    if (chartImage) {
+      console.log('Transaction chart image captured successfully with tab switching');
     }
     
     // Page 1: Banking Information and Summary (Portrait)

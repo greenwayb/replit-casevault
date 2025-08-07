@@ -59,14 +59,35 @@ export class SVGRenderer {
         deviceScaleFactor: scale
       });
 
-      // Create a complete HTML page with the SVG
+      // Create a complete HTML page with the SVG and enhanced text rendering
       const html = `
         <!DOCTYPE html>
         <html>
         <head>
           <style>
-            body { margin: 0; padding: 20px; background: white; font-family: Arial, sans-serif; }
-            svg { max-width: 100%; height: auto; display: block; }
+            body { 
+              margin: 0; 
+              padding: 20px; 
+              background: white; 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+            }
+            svg { 
+              max-width: 100%; 
+              height: auto; 
+              display: block; 
+              font-family: inherit;
+            }
+            svg text {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+              text-rendering: optimizeLegibility;
+            }
+            .recharts-text {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+            }
           </style>
         </head>
         <body>
@@ -76,19 +97,25 @@ export class SVGRenderer {
       `;
 
       await page.setContent(html, { 
-        waitUntil: 'domcontentloaded',
-        timeout: 5000 
+        waitUntil: 'networkidle0',  // Wait for network to be idle
+        timeout: 8000 
       });
       
-      // Wait a bit for SVG to render
-      await page.waitForTimeout(1000);
+      // Wait longer for SVG elements and text to fully render
+      await page.waitForTimeout(2000);
       
-      // Take screenshot of the SVG
+      // Ensure all fonts are loaded
+      await page.evaluate(() => {
+        return document.fonts.ready;
+      });
+      
+      // Take high-quality screenshot of the SVG
       const screenshot = await page.screenshot({
         type: 'png',
         fullPage: true,
         omitBackground: false,
-        captureBeyondViewport: false
+        captureBeyondViewport: false,
+        encoding: 'binary'
       });
 
       return screenshot as Buffer;
