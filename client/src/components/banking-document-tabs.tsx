@@ -110,7 +110,7 @@ export default function BankingDocumentTabs({
   const addWatermark = (doc: jsPDF) => {
     try {
       // Add Family Court Documentation logo watermark in top right
-      doc.addImage(logoPath, 'PNG', doc.internal.pageSize.width - 50, 5, 40, 20);
+      doc.addImage(logoPath, 'JPEG', doc.internal.pageSize.width - 35, 5, 25, 12); // Much smaller logo
     } catch (error) {
       // Fallback to text watermark if image fails
       console.log('Logo failed, using text watermark:', error);
@@ -136,12 +136,12 @@ export default function BankingDocumentTabs({
         await new Promise(resolve => setTimeout(resolve, 1500));
       }
       
-      // Capture the chart
+      // Capture the chart with optimized settings for smaller file size
       const result = await ClientSVGRenderer.captureChart(containerRef, chartName, {
-        width: 800,
-        height: 600,
-        scale: 2, // High resolution for PDF
-        quality: 95
+        width: 500,  // Smaller width
+        height: 350, // Smaller height
+        scale: 1,    // No scaling to reduce file size
+        quality: 60  // Much lower quality for smaller files
       });
       
       return result;
@@ -157,9 +157,14 @@ export default function BankingDocumentTabs({
   const handleExportAnalysisPDF = async () => {
     if (!xmlData || !isFullAnalysisComplete) return;
 
-    console.log('Starting PDF export with enhanced server-side chart capture...');
+    console.log('Starting PDF export with aggressive optimization for smaller file size...');
     
-    const doc = new jsPDF();
+    // Create PDF with minimal settings for smaller file size
+    const doc = new jsPDF({
+      compress: true,
+      format: 'a4',
+      unit: 'mm'
+    });
     const bankInfo = getBankInfo();
     
     // Attempt to capture charts with enhanced server-side rendering
@@ -266,7 +271,7 @@ export default function BankingDocumentTabs({
       // Add the captured Sankey diagram image
       try {
         console.log('Adding Sankey image to PDF...');
-        doc.addImage(sankeyImage, 'PNG', 20, 40, 250, 150);
+        doc.addImage(sankeyImage, 'JPEG', 20, 40, 180, 120); // Smaller size, JPEG format
         console.log('Sankey image added successfully');
       } catch (error) {
         console.error('Error adding Sankey image to PDF:', error);
@@ -300,7 +305,7 @@ export default function BankingDocumentTabs({
       // Add the captured transaction chart image
       try {
         console.log('Adding transaction chart image to PDF...');
-        doc.addImage(chartImage, 'PNG', 20, 40, 250, 150);
+        doc.addImage(chartImage, 'JPEG', 20, 40, 180, 120); // Smaller size, JPEG format
         console.log('Transaction chart image added successfully');
       } catch (error) {
         console.error('Error adding chart image to PDF:', error);
@@ -413,10 +418,10 @@ export default function BankingDocumentTabs({
     try {
       console.log('Optimizing PDF for smaller file size...');
       
-      // Get PDF data and log size information  
-      const pdfData = doc.output('arraybuffer');
+      // Get PDF data with compression and log size information  
+      const pdfData = doc.output('arraybuffer', { compress: true });
       const originalSize = pdfData.byteLength;
-      console.log(`PDF size: ${(originalSize / 1024).toFixed(1)} KB`);
+      console.log(`Optimized PDF size: ${(originalSize / 1024).toFixed(1)} KB (target: <3MB)`);
       
       // Create optimized filename and download
       const fileName = `Banking_Analysis_Report_${new Date().toISOString().split('T')[0]}.pdf`;

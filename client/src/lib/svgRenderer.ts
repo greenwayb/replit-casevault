@@ -133,13 +133,13 @@ export class ClientSVGRenderer {
         bbox: mainSvg.getBoundingClientRect()
       });
       
-      // Use enhanced dimensions to capture the full chart with optimized quality
+      // Use optimized dimensions for much smaller file sizes
       const enhancedOptions = {
         ...options,
-        width: Math.max(options.width || 800, mainSvg.clientWidth || 800),
-        height: Math.max(options.height || 600, mainSvg.clientHeight || 600),
+        width: Math.min(600, mainSvg.clientWidth || 600),  // Cap at 600px width
+        height: Math.min(400, mainSvg.clientHeight || 400), // Cap at 400px height
         format: 'png' as const,
-        quality: 85  // Slightly lower quality for smaller file sizes
+        quality: 65  // Much lower quality for significantly smaller file sizes
       };
       
       return await this.renderSVGElementToPNG(mainSvg, enhancedOptions);
@@ -195,20 +195,17 @@ export class ClientSVGRenderer {
       
       if (!ctx) return null;
 
-      // Use higher resolution for better quality
-      const svgWidth = mainSvg.clientWidth || 800;
-      const svgHeight = mainSvg.clientHeight || 600;
-      canvas.width = svgWidth * 2; // 2x scale for crisp rendering
-      canvas.height = svgHeight * 2;
-      
-      // Scale the context to match
-      ctx.scale(2, 2);
+      // Use optimized resolution for smaller file sizes
+      const svgWidth = Math.min(600, mainSvg.clientWidth || 600);  // Cap width
+      const svgHeight = Math.min(400, mainSvg.clientHeight || 400); // Cap height
+      canvas.width = svgWidth; // No scaling for smaller files
+      canvas.height = svgHeight;
 
       const canvgInstance = Canvg.fromString(ctx, svgData);
       await canvgInstance.render();
 
-      // Use moderate compression for smaller file sizes
-      return canvas.toDataURL('image/png', 0.85);
+      // Use aggressive compression for much smaller file sizes
+      return canvas.toDataURL('image/jpeg', 0.6); // JPEG with 60% quality
     } catch (error) {
       console.error(`Fallback capture failed for ${chartName}:`, error);
       return null;
