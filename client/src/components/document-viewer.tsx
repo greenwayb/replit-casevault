@@ -306,6 +306,11 @@ export default function DocumentViewer({ document, userRole, onDocumentUpdate }:
               )}
             </div>
             
+            {/* Original Filename Display */}
+            <div className="mt-2 text-sm text-gray-600">
+              <span className="font-medium">Original File:</span> {document.originalName}
+            </div>
+            
             {/* Banking-specific information */}
             {document.category === 'BANKING' && document.aiProcessed && (
               <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">

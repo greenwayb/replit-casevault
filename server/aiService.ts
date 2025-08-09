@@ -29,6 +29,7 @@ export interface BankingDocumentAnalysis {
     accountHolderName: string;
     accountName: string;
     financialInstitution: string;
+    bankAbbreviation?: string;
     accountNumber?: string;
     bsbSortCode?: string;
     transactionDateFrom?: string;
@@ -43,6 +44,7 @@ export interface BankingDocumentAnalysis {
   accountHolderName: string;
   accountName: string;
   financialInstitution: string;
+  bankAbbreviation?: string;
   accountNumber?: string;
   bsbSortCode?: string;
   transactionDateFrom?: string;
@@ -92,6 +94,111 @@ function formatAccountHolderName(name: string): string {
   
   return cleanName;
 }
+
+// Bank name to abbreviation mapping
+const BANK_ABBREVIATIONS: Record<string, string> = {
+  // Major Australian Banks
+  'commonwealth bank': 'CBA',
+  'commonwealth bank of australia': 'CBA',
+  'cba': 'CBA',
+  'westpac': 'WBC',
+  'westpac banking corporation': 'WBC',
+  'australia and new zealand banking group': 'ANZ',
+  'anz': 'ANZ',
+  'anz bank': 'ANZ',
+  'national australia bank': 'NAB',
+  'nab': 'NAB',
+  
+  // Other Major Banks
+  'bendigo bank': 'BEN',
+  'bendigo and adelaide bank': 'BEN',
+  'suncorp': 'SUN',
+  'suncorp bank': 'SUN',
+  'bank of queensland': 'BOQ',
+  'boq': 'BOQ',
+  'ing': 'ING',
+  'ing direct': 'ING',
+  'macquarie bank': 'MQG',
+  'macquarie': 'MQG',
+  
+  // Credit Unions and Smaller Banks
+  'heritage bank': 'HER',
+  'teachers mutual bank': 'TMB',
+  'greater bank': 'GRB',
+  'newcastle permanent': 'NPB',
+  'p&n bank': 'PNB',
+  'police bank': 'POL',
+  'queensland country bank': 'QCB',
+  'regional australia bank': 'RAB',
+  'st george bank': 'STG',
+  'st.george': 'STG',
+  'bankwest': 'BWA',
+  'bank of melbourne': 'BOM',
+  'banksa': 'BSA',
+  
+  // International Banks
+  'hsbc': 'HSBC',
+  'citibank': 'CITI',
+  'anz worldwide': 'ANZ',
+  'jp morgan': 'JPM',
+  'deutsche bank': 'DB',
+  'bnp paribas': 'BNP',
+  'barclays': 'BARC',
+  'lloyds': 'LLOY',
+  'natwest': 'NWG',
+  'rbs': 'RBS',
+  'royal bank of scotland': 'RBS',
+  'halifax': 'HAL',
+  'santander': 'SAN',
+  'chase': 'JPM',
+  'bank of america': 'BAC',
+  'wells fargo': 'WFC',
+  'goldman sachs': 'GS',
+  'morgan stanley': 'MS'
+};
+
+// Helper function to get bank abbreviation
+function getBankAbbreviation(bankName: string): string {
+  if (!bankName) return 'UNK';
+  
+  const cleanBankName = bankName.toLowerCase().trim();
+  
+  // Direct match
+  if (BANK_ABBREVIATIONS[cleanBankName]) {
+    return BANK_ABBREVIATIONS[cleanBankName];
+  }
+  
+  // Partial match - check if any abbreviation key is contained in the bank name
+  for (const [key, abbreviation] of Object.entries(BANK_ABBREVIATIONS)) {
+    if (cleanBankName.includes(key)) {
+      return abbreviation;
+    }
+  }
+  
+  // If no match found, create abbreviation from first letters of words
+  const words = cleanBankName.split(/\s+/).filter(word => 
+    word.length > 2 && 
+    !['bank', 'banking', 'group', 'limited', 'ltd', 'corporation', 'corp', 'inc', 'financial', 'services'].includes(word)
+  );
+  
+  if (words.length > 0) {
+    return words.slice(0, 3).map(word => word.charAt(0).toUpperCase()).join('');
+  }
+  
+  return 'UNK';
+}
+
+// Helper function to format banking account display name
+export function formatBankingAccountName(bankName: string, accountNumber: string, accountName: string): string {
+  const bankAbbrev = getBankAbbreviation(bankName);
+  const cleanAccountNumber = accountNumber?.replace(/\s+/g, '') || 'XXXX';
+  const cleanAccountName = accountName?.trim() || 'Unknown Account';
+  
+  return `${bankAbbrev} ${cleanAccountNumber} ${cleanAccountName}`;
+}
+
+// Export the bank abbreviation function for use in routes
+export { getBankAbbreviation };
 
 // Helper function to estimate processing time based on document complexity
 function estimateProcessingTime(textLength: number, transactionCount: number): { estimatedMinutes: number; description: string } {
@@ -395,11 +502,18 @@ ${pdfText}`
     }
     
     // Validate and normalize the response
+    const accountHolderName = normalizeAccountHolderName(analysisResult.accountHolderName || 'Unknown Holder');
+    const accountName = analysisResult.accountName || 'Unknown Account';
+    const financialInstitution = analysisResult.financialInstitution || 'Unknown Institution';
+    const accountNumber = analysisResult.accountNumber || undefined;
+    const bankAbbreviation = getBankAbbreviation(financialInstitution);
+    
     return {
-      accountHolderName: normalizeAccountHolderName(analysisResult.accountHolderName || 'Unknown Holder'),
-      accountName: analysisResult.accountName || 'Unknown Account',
-      financialInstitution: analysisResult.financialInstitution || 'Unknown Institution',
-      accountNumber: analysisResult.accountNumber || undefined,
+      accountHolderName,
+      accountName,
+      financialInstitution,
+      bankAbbreviation,
+      accountNumber: accountNumber,
       bsbSortCode: analysisResult.bsbSortCode || undefined,
       transactionDateFrom: analysisResult.transactionDateFrom || undefined,
       transactionDateTo: analysisResult.transactionDateTo || undefined,

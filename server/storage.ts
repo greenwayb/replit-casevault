@@ -518,6 +518,8 @@ export class DatabaseStorage implements IStorage {
       accountHolderName?: string;
       accountName?: string;
       financialInstitution?: string;
+      bankAbbreviation?: string;
+      displayName?: string;
       accountNumber?: string;
       bsbSortCode?: string;
       transactionDateFrom?: string;

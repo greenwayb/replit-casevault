@@ -9,7 +9,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { promises as fsPromises } from "fs";
-import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF, generateXMLFromAnalysis } from "./aiService";
+import { analyzeBankingDocument, generateDocumentNumber, generateAccountGroupNumber, generateCSVFromPDF, generateXMLFromAnalysis, formatBankingAccountName, getBankAbbreviation } from "./aiService";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
 import { GoogleDriveService } from "./googleDriveService";
@@ -857,7 +857,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const documentId = parseInt(req.params.id);
       const { bankingInfo, csvInfo, xmlInfo, xmlAnalysisData, isManualReview } = req.body;
       
-      const { BankAbbreviationService } = await import('./bankAbbreviationService');
       const { DocumentNumberingService } = await import('./documentNumberingService');
 
       const document = await storage.getDocumentById(documentId);
@@ -865,10 +864,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found" });
       }
 
-      // Generate bank abbreviation
-      const bankAbbreviation = await BankAbbreviationService.getOrCreateAbbreviation(
-        bankingInfo.financialInstitution
-      );
+      // Generate bank abbreviation using new system
+      const bankAbbreviation = getBankAbbreviation(bankingInfo.financialInstitution);
 
       // Generate hierarchical numbering
       const { groupNumber, documentNumber } = await DocumentNumberingService.generateBankingNumber(
@@ -876,11 +873,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bankingInfo.accountHolderName
       );
 
-      // Generate display name
-      const displayName = DocumentNumberingService.generateBankingDisplayName(
-        documentNumber,
-        bankAbbreviation,
-        bankingInfo.accountNumber || ''
+      // Generate display name using new format: "<ShortBankName> <Account Number> <Account Name>"
+      const displayName = formatBankingAccountName(
+        bankingInfo.financialInstitution,
+        bankingInfo.accountNumber || '',
+        bankingInfo.accountName || ''
       );
 
       // Update document with confirmed banking analysis
@@ -888,6 +885,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         accountHolderName: bankingInfo.accountHolderName,
         accountName: bankingInfo.accountName,
         financialInstitution: bankingInfo.financialInstitution,
+        bankAbbreviation,
+        displayName,
         accountNumber: bankingInfo.accountNumber,
         bsbSortCode: bankingInfo.bsbSortCode,
         transactionDateFrom: bankingInfo.transactionDateFrom || undefined,
